@@ -1,5 +1,12 @@
 # Reality Development Kit (RDK)
 
+<div align="center">
+  <img src="/assets/rdk-logo.png" width="150" />
+
+[Website](https://rdk.omni.dev)
+
+</div>
+
 [**Provide RDK feedback on Omni Backfeed**](https://backfeed.omni.dev/organizations/omni/projects/rdk)
 
 **Omni Reality Development Kit (RDK)** is a React-first framework for building web-based XR experiences — from AR to VR — through one unified API powered by Three.js.
