@@ -16,6 +16,24 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 
 ## Getting Started
 
+### Local Development
+
+Use [Tilt](https://tilt.dev) for a unified development experience:
+
+```bash
+tilt up
+```
+
+or manually:
+
+```bash
+bun run dev      # start development servers
+bun run build    # build all packages
+bun run test     # run tests
+```
+
+### Downstream Installation
+
 Install RDK and required peer dependencies:
 
 ```bash
