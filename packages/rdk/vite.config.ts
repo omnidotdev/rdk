@@ -2,6 +2,10 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
+/**
+ * Vite configuration.
+ * @see https://vite.dev/config
+ */
 const viteConfig = defineConfig(({ mode }) => ({
 	plugins: [
 		dts({

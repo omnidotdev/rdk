@@ -1,6 +1,10 @@
 import { defineConfig } from "vitest/config";
 import { resolve } from "node:path";
 
+/**
+ * Vitest configuration.
+ * @see https://vitest.dev/config
+ */
 const vitestConfig = defineConfig({
 	test: {
 		environment: "jsdom",
