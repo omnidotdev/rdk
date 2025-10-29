@@ -1,12 +1,12 @@
 {
 	"name": "@omnidotdev/rdk",
 	"description": "AR.js with react-three-fiber",
+	"version": "0.0.0",
 	"license": "MIT",
 	"type": "module",
 	"main": "build/index.js",
 	"module": "build/index.js",
 	"types": "build/index.d.ts",
-	"version": "0.0.0",
 	"homepage": "https://github.com/omnidotdev/rdk#readme",
 	"repository": {
 		"type": "git",
