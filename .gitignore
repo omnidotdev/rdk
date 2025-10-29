@@ -1,3 +1,7 @@
 .turbo
 build/
 node_modules/
+
+# environment
+.env.*
+!.env

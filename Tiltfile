@@ -1,5 +1,9 @@
 # Tiltfile for RDK project
 
+# Load environment variables from .env file
+load('ext://dotenv', 'dotenv')
+dotenv()
+
 # Development server
 local_resource(
   'dev',
@@ -52,7 +56,15 @@ local_resource(
 # Knip analysis
 local_resource(
   'knip',
-  'bun knip',
+  'npx knip',
+  auto_init=False,
+  trigger_mode=TRIGGER_MODE_MANUAL
+)
+
+# Test
+local_resource(
+  'test',
+  'bun run test',
   auto_init=False,
   trigger_mode=TRIGGER_MODE_MANUAL
 )
