@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import { resolve } from "node:path";
 
 const vitestConfig = defineConfig({
 	test: {
@@ -8,8 +9,11 @@ const vitestConfig = defineConfig({
 	},
 	resolve: {
 		alias: {
-			"@": "./src",
+			"@": resolve(__dirname, "./src"),
 		},
+	},
+	esbuild: {
+		target: "node14",
 	},
 });
 

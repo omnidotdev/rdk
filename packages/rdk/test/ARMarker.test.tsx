@@ -2,6 +2,7 @@ import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MarkerAnchor } from "../src/engine";
 
+// mock `@react-three/fiber`
 vi.mock("@react-three/fiber", () => ({
 	useFrame: vi.fn(),
 	useThree: () => ({
@@ -11,6 +12,7 @@ vi.mock("@react-three/fiber", () => ({
 	}),
 }));
 
+// mock `XRSessionProvider`
 vi.mock("../src/engine/XRSessionProvider", () => ({
 	useXRSessionProvider: () => ({
 		arToolkitContext: {
@@ -19,13 +21,20 @@ vi.mock("../src/engine/XRSessionProvider", () => ({
 	}),
 }));
 
+// mock AR.js with proper constructor
 vi.mock("@ar-js-org/ar.js/three.js/build/ar-threex", () => ({
-	ArMarkerControls: vi.fn().mockImplementation(() => ({})),
+	ArMarkerControls: vi.fn().mockImplementation(function ArMarkerControls() {
+		return {};
+	}),
 }));
 
+// mock Three.js Group
 beforeEach(() => {
+	vi.clearAllMocks();
 	global.THREE = {
-		Group: vi.fn(),
+		Group: vi.fn().mockImplementation(function Group() {
+			return {};
+		}),
 	};
 });
 
@@ -41,10 +50,11 @@ describe("MarkerAnchor", () => {
 	});
 
 	it("accepts pattern type and URL", () => {
+		const mockCallback = vi.fn();
 		const props = {
 			type: "pattern" as const,
 			patternUrl: "test-pattern.patt",
-			onMarkerFound: vi.fn(),
+			onMarkerFound: mockCallback,
 		};
 
 		const { container } = render(
@@ -57,10 +67,11 @@ describe("MarkerAnchor", () => {
 	});
 
 	it("accepts barcode type and value", () => {
+		const mockCallback = vi.fn();
 		const props = {
 			type: "barcode" as const,
 			barcodeValue: 123,
-			onMarkerLost: vi.fn(),
+			onMarkerLost: mockCallback,
 		};
 
 		const { container } = render(
