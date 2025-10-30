@@ -41,10 +41,10 @@ type BaseMarkerProps = {
 };
 
 /**
- * Full props for the ARMarker component.
+ * Full props for the `MarkerAnchor` component.
  * Marker type determines which fields are required.
  */
-export type ARMarkerProps = PropsWithChildren<
+export type MarkerAnchorProps = PropsWithChildren<
 	BaseMarkerProps & (MarkerPattern | MarkerBarcode | MarkerUnknown)
 >;
 
@@ -59,7 +59,7 @@ const MarkerAnchor = ({
 	params,
 	onMarkerFound,
 	onMarkerLost,
-}: ARMarkerProps): JSX.Element => {
+}: MarkerAnchorProps): JSX.Element => {
 	const markerRoot = useRef<Group>(null);
 
 	const { arToolkitContext } = useXRSessionProvider();

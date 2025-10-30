@@ -5,7 +5,7 @@ import XRSessionProvider from "./XRSessionProvider";
 import type { CanvasProps } from "@react-three/fiber";
 import type { PropsWithChildren } from "react";
 
-export interface ARCanvasProps extends PropsWithChildren, CanvasProps {
+export interface XRCanvasProps extends PropsWithChildren, CanvasProps {
 	/**
 	 * Whether augmented reality is enabled.
 	 * @default true
@@ -68,7 +68,7 @@ const XRCanvas = ({
 	onCameraStreamReady,
 	onCameraStreamError,
 	...rest
-}: ARCanvasProps) => (
+}: XRCanvasProps) => (
 	<Canvas camera={isArEnabled ? { position: [0, 0, 0] } : undefined} {...rest}>
 		{isArEnabled ? (
 			<XRSessionProvider
