@@ -11,10 +11,11 @@ declare module "@ar-js-org/ar.js/three.js/build/ar-threex" {
 	}
 
 	export interface ArToolkitContextParameters {
-		cameraParametersUrl: string;
-		detectionMode: string;
-		patternRatio: number;
-		matrixCodeType: string;
+		// ? should be required? researchg
+		cameraParametersUrl?: string;
+		detectionMode?: string;
+		patternRatio?: number;
+		matrixCodeType?: string;
 		labelingMode?: string;
 		maxDetectionRate?: number;
 		canvasWidth?: number;

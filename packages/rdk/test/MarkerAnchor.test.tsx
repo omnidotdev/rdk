@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MarkerAnchor } from "../src/engine";
+import { MarkerAnchor } from "../src/marker";
 
 // mock `@react-three/fiber`
 vi.mock("@react-three/fiber", () => ({
@@ -14,7 +14,7 @@ vi.mock("@react-three/fiber", () => ({
 
 // mock `XRSessionProvider`
 vi.mock("../src/engine/XRSessionProvider", () => ({
-	useXRSessionProvider: () => ({
+	useXR: () => ({
 		arToolkitContext: {
 			_arMarkersControls: [],
 		},
@@ -41,7 +41,7 @@ beforeEach(() => {
 describe("MarkerAnchor", () => {
 	it("renders without crashing", () => {
 		const { container } = render(
-			<MarkerAnchor type="pattern" patternUrl="test.patt">
+			<MarkerAnchor patternUrl="test.patt">
 				<mesh />
 			</MarkerAnchor>,
 		);
@@ -99,7 +99,7 @@ describe("MarkerAnchor", () => {
 
 	it("renders children", () => {
 		const { getByTestId } = render(
-			<MarkerAnchor type="pattern" patternUrl="test.patt">
+			<MarkerAnchor patternUrl="test.patt">
 				<mesh data-testid="test-child" />
 			</MarkerAnchor>,
 		);

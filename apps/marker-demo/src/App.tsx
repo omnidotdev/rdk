@@ -11,19 +11,12 @@ const App = () => (
 			antialias: false,
 			powerPreference: "default",
 		}}
-		onCreated={({ gl }) => {
-			gl.setSize(window.innerWidth, window.innerHeight);
-		}}
 	>
 		{/* lighting */}
 		<hemisphereLight intensity={0.6} />
 		<directionalLight position={[5, 5, 5]} intensity={1} />
 
-		<MarkerAnchor
-			params={{ smooth: true }}
-			type="pattern"
-			patternUrl="data/rdk.patt"
-		>
+		<MarkerAnchor params={{ smooth: true }} patternUrl="/data/rdk.patt">
 			<Supertorus
 				R={4}
 				n={10}
