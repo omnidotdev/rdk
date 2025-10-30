@@ -40,7 +40,8 @@
 		"format": "biome format --write .",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
-		"test": "vitest"
+		"test": "vitest",
+		"release": "bun run build && changeset publish"
 	},
 	"peerDependencies": {
 		"@ar-js-org/ar.js": "^3.4.7",

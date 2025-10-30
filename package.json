@@ -14,10 +14,13 @@
     "lint": "turbo lint",
     "format": "turbo format",
     "clean": "turbo clean",
-    "test": "turbo test"
+    "test": "turbo test",
+    "release": "bun run --cwd packages/rdk build && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.2",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.7",
     "turbo": "^2.5.8",
     "typescript": "^5.9.3"
   }
