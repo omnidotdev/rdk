@@ -1,10 +1,6 @@
-# Tiltfile for RDK project
-
-# Load environment variables from .env file
 load('ext://dotenv', 'dotenv')
 dotenv()
 
-# Development server
 local_resource(
   'dev',
   'bun run dev',
@@ -13,7 +9,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Build
 local_resource(
   'build',
   'bun run build',
@@ -21,7 +16,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Lint
 local_resource(
   'lint',
   'bun run lint',
@@ -29,7 +23,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Format
 local_resource(
   'format',
   'bun run format',
@@ -37,7 +30,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Clean
 local_resource(
   'clean',
   'bun run clean',
@@ -45,7 +37,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Install dependencies
 local_resource(
   'install',
   'bun install',
@@ -53,7 +44,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Knip analysis
 local_resource(
   'knip',
   'npx knip',
@@ -61,7 +51,6 @@ local_resource(
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-# Test
 local_resource(
   'test',
   'bun run test',
