@@ -46,7 +46,7 @@ const buildSupertorusGeometry = ({
 	const nrm = new Vector3();
 
 	// helper: param surface position at (iu, iv)
-	function surface(iu: number, iv: number, target: Vector3) {
+	const surface = (iu: number, iv: number, target: Vector3) => {
 		// map grid indices -> angles
 		// [0,2π]
 		const u = (iu / uSegments) * Math.PI * 2;
@@ -73,7 +73,7 @@ const buildSupertorusGeometry = ({
 		const z = r * sinVT;
 
 		target.set(x, y, z);
-	}
+	};
 
 	// fill position + uv
 	let ptrP = 0;
