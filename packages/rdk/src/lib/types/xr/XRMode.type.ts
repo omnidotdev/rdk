@@ -1,6 +1,6 @@
 /**
  * Mode of extended reality.
  */
-export type XRMode = "marker";
+export type XRMode = "fiducial";
 // TODO
-// export type XRMode = "marker" | "geolocation" | "webxr";
+// export type XRMode = "fiducial" | "image" | "geolocation" | "webxr";

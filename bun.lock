@@ -9,8 +9,8 @@
         "typescript": "^5.9.3",
       },
     },
-    "apps/marker-demo": {
-      "name": "rdk-marker-demo",
+    "apps/fiducial-demo": {
+      "name": "rdk-fiducial-marker-demo",
       "dependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
         "@omnidotdev/rdk": "workspace:*",
@@ -819,7 +819,7 @@
 
     "quansync": ["quansync@0.2.11", "", {}, "sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA=="],
 
-    "rdk-marker-demo": ["rdk-marker-demo@workspace:apps/marker-demo"],
+    "rdk-fiducial-marker-demo": ["rdk-fiducial-marker-demo@workspace:apps/fiducial-demo"],
 
     "react": ["react@19.2.0", "", {}, "sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ=="],
 

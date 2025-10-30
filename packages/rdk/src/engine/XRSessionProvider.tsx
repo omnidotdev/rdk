@@ -9,7 +9,7 @@ import {
 } from "react";
 import { match } from "ts-pattern";
 
-import { createMarkerBackend } from "marker/markerBackend";
+import createFiducialBackend from "fiducial/fiducialBackend";
 
 import type { PropsWithChildren } from "react";
 import { XRBackend, XRContextValue, XRMode } from "lib/types/xr";
@@ -54,11 +54,11 @@ const XRSessionProvider = ({
 	const backend = useMemo<XRBackend>(
 		() =>
 			match(mode)
-				.with("marker", () => createMarkerBackend(options))
+				.with("fiducial", () => createFiducialBackend(options))
 				// TODO
 				// .with("geolocation", () => createGeoBackend(options as GeoOptions))
 				// .with("webxr", () => createWebXRBackend(options as WebXROptions))
-				.otherwise(() => createMarkerBackend(options)),
+				.otherwise(() => createFiducialBackend(options)),
 		[mode, options],
 	);
 

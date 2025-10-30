@@ -1,5 +1,5 @@
 {
-	"name": "rdk-marker-demo",
+	"name": "rdk-fiducial-marker-demo",
 	"private": true,
 	"type": "module",
 	"scripts": {

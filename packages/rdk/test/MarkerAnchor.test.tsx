@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MarkerAnchor } from "../src/marker";
+import { FiducialAnchor } from "../src/fiducial";
 
 // mock `@react-three/fiber`
 vi.mock("@react-three/fiber", () => ({
@@ -38,12 +38,12 @@ beforeEach(() => {
 	};
 });
 
-describe("MarkerAnchor", () => {
+describe("FiducialAnchor", () => {
 	it("renders without crashing", () => {
 		const { container } = render(
-			<MarkerAnchor patternUrl="test.patt">
+			<FiducialAnchor patternUrl="test.patt">
 				<mesh />
-			</MarkerAnchor>,
+			</FiducialAnchor>,
 		);
 
 		expect(container.firstChild).toBeTruthy();
@@ -58,9 +58,9 @@ describe("MarkerAnchor", () => {
 		};
 
 		const { container } = render(
-			<MarkerAnchor {...props}>
+			<FiducialAnchor {...props}>
 				<mesh />
-			</MarkerAnchor>,
+			</FiducialAnchor>,
 		);
 
 		expect(container.firstChild).toBeTruthy();
@@ -75,9 +75,9 @@ describe("MarkerAnchor", () => {
 		};
 
 		const { container } = render(
-			<MarkerAnchor {...props}>
+			<FiducialAnchor {...props}>
 				<mesh />
-			</MarkerAnchor>,
+			</FiducialAnchor>,
 		);
 
 		expect(container.firstChild).toBeTruthy();
@@ -89,9 +89,9 @@ describe("MarkerAnchor", () => {
 		};
 
 		const { container } = render(
-			<MarkerAnchor {...props}>
+			<FiducialAnchor {...props}>
 				<mesh />
-			</MarkerAnchor>,
+			</FiducialAnchor>,
 		);
 
 		expect(container.firstChild).toBeTruthy();
@@ -99,9 +99,9 @@ describe("MarkerAnchor", () => {
 
 	it("renders children", () => {
 		const { getByTestId } = render(
-			<MarkerAnchor patternUrl="test.patt">
+			<FiducialAnchor patternUrl="test.patt">
 				<mesh data-testid="test-child" />
-			</MarkerAnchor>,
+			</FiducialAnchor>,
 		);
 
 		expect(getByTestId("test-child")).toBeTruthy();
@@ -115,9 +115,9 @@ describe("MarkerAnchor", () => {
 		};
 
 		const { container } = render(
-			<MarkerAnchor {...props}>
+			<FiducialAnchor {...props}>
 				<mesh />
-			</MarkerAnchor>,
+			</FiducialAnchor>,
 		);
 
 		expect(container.firstChild).toBeTruthy();

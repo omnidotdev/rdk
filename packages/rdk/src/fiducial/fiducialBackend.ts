@@ -7,19 +7,20 @@ import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build
 
 // TODO JSDoc
 
-export interface MarkerSessionOptions {
+export interface FiducialSessionOptions {
 	sourceType?: "webcam" | "image" | "video";
 	cameraParametersUrl?: string;
+	// TODO narrow types likely, e.g. 3x3 for matrix code type
 	detectionMode?: string;
 	patternRatio?: number;
 	matrixCodeType?: string;
 }
 
 /**
- * Create a marker-based XR backend.
+ * Create a fiducial marker-based XR backend.
  */
-export const createMarkerBackend = (options: unknown): XRBackend => {
-	const opts = (options || {}) as MarkerSessionOptions;
+const createFiducialBackend = (options: unknown): XRBackend => {
+	const opts = (options || {}) as FiducialSessionOptions;
 
 	let arSource: any;
 	let arContext: any;
@@ -51,13 +52,52 @@ export const createMarkerBackend = (options: unknown): XRBackend => {
 
 			// AR.js context
 			const arConfig: ArToolkitContextParameters = {
-				cameraParametersUrl: opts.cameraParametersUrl,
+				cameraParametersUrl:
+					opts.cameraParametersUrl ??
+					// default to internal camera parameters
+					new URL("../../assets/camera_params.dat", import.meta.url).toString(),
 				detectionMode: opts.detectionMode ?? "mono",
 				patternRatio: opts.patternRatio ?? 0.5,
 				matrixCodeType: opts.matrixCodeType ?? "3x3",
 			};
 
 			arContext = new ArToolkitContext(arConfig);
+
+			const doResize = () => {
+				// let AR.js figure out its internal element size first
+				arSource.onResizeElement();
+
+				// try to use the actual video size first
+				const video = arSource.domElement as
+					| HTMLVideoElement
+					| HTMLImageElement;
+
+				// sometimes on first call videoWidth/videoHeight are 0
+				const vw =
+					(video && ("videoWidth" in video ? video.videoWidth : video.width)) ||
+					window.innerWidth;
+				const vh =
+					(video &&
+						("videoHeight" in video ? video.videoHeight : video.height)) ||
+					window.innerHeight;
+
+				// set THREE renderer to match the source
+				renderer.setSize(vw, vh, false);
+
+				// sync AR.js' canvas and the renderer dom element
+				arSource.copyElementSizeTo(renderer.domElement);
+
+				if (arContext && arContext.arController) {
+					arSource.copyElementSizeTo(arContext.arController.canvas);
+				}
+
+				// OPTIONAL: if you want your THREE camera to match this aspect too:
+				// const aspect = vw / vh;
+				// if ("aspect" in camera) {
+				// 	camera.aspect = aspect;
+				// 	camera.updateProjectionMatrix();
+				// }
+			};
 
 			await new Promise<void>((resolve) => {
 				arContext.init(() => {
@@ -67,22 +107,9 @@ export const createMarkerBackend = (options: unknown): XRBackend => {
 				});
 			});
 
-			// expose for `MarkerAnchor`
+			// expose for the anchor component
 			(this as any)._arSource = arSource;
 			(this as any)._arContext = arContext;
-
-			const doResize = () => {
-				arSource.onResizeElement();
-
-				const w = window.innerWidth;
-				const h = window.innerHeight;
-
-				renderer.setSize(w, h, false);
-				arSource.copyElementSizeTo(renderer.domElement);
-				if (arContext && arContext.arController) {
-					arSource.copyElementSizeTo(arContext.arController.canvas);
-				}
-			};
 
 			window.addEventListener("resize", doResize);
 			resizeHandler = doResize;
@@ -111,3 +138,5 @@ export const createMarkerBackend = (options: unknown): XRBackend => {
 		},
 	};
 };
+
+export default createFiducialBackend;

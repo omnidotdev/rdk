@@ -12,7 +12,7 @@
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is brand new.
 > There is **no published package yet**.
-> Currently, marker-based AR via [AR.js](https://github.com/AR-js-org/AR.js) is working (see [`apps/marker-demo`](./apps/marker-demo)).
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/AR-js-org/AR.js) is working (see [`apps/fiducial-demo`](./apps/fiducial-demo)).
 > Location-based AR using [LocAR.js](https://github.com/locarjs/locar) and native WebXR integration via `@react-three/xr` are coming next.
 
 ## Overview
@@ -45,7 +45,7 @@ Install RDK and required peer dependencies:
 bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber react react-dom three
 ```
 
-See [`apps/marker-demo`](./apps/marker-demo) for an example of usage. More demos will be added as more use cases beyond marker-based AR are implemented.
+See [`apps/fiducial-demo`](./apps/fiducial-demo) for an example of usage. More demos will be added as more use cases beyond fiducial marker-based AR are implemented.
 
 ## Goals: the "Why"
 

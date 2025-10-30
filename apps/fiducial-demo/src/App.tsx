@@ -1,9 +1,9 @@
-import { XRCanvas, MarkerAnchor } from "@omnidotdev/rdk";
+import { XRCanvas, FiducialAnchor } from "@omnidotdev/rdk";
 
 import { Supertorus } from "components";
 
 /**
- * Marker-based AR demo application.
+ * Fiducial marker-based AR demo application.
  */
 const App = () => (
 	<XRCanvas
@@ -16,7 +16,7 @@ const App = () => (
 		<hemisphereLight intensity={0.6} />
 		<directionalLight position={[5, 5, 5]} intensity={1} />
 
-		<MarkerAnchor params={{ smooth: true }} patternUrl="/data/rdk.patt">
+		<FiducialAnchor params={{ smooth: true }} patternUrl="/data/rdk.patt">
 			<Supertorus
 				R={4}
 				n={10}
@@ -25,7 +25,7 @@ const App = () => (
 				scale={0.25}
 				rotation={[Math.PI / 2, 0, 0]}
 			/>
-		</MarkerAnchor>
+		</FiducialAnchor>
 	</XRCanvas>
 );
 

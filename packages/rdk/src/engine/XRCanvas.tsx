@@ -17,7 +17,7 @@ export interface XRCanvasProps extends CanvasProps {
  * Main extended reality canvas that initializes the context. This behaves as a scene root for end users.
  */
 const XRCanvas = ({
-	mode = "marker",
+	mode = "fiducial",
 	sessionOptions,
 	children,
 	...rest
