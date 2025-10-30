@@ -19,6 +19,21 @@
 
 RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.js for geolocation-based AR (coming soon), and WebXR (coming soon) for device-native support under one React-first abstraction powered by Three.js.
 
+| Capability/Use Case                  | Status          | Backend (Current or Proposed)                                                                        | iOS | Android | Notes                                                                                     |
+| ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | --- | ------- | ----------------------------------------------------------------------------------------- |
+| **Fiducial (pattern/barcode)**       | ⚗️ Experimental | [AR.js (ARToolKit)](https://github.com/AR-js-org/AR.js)                                              | ✅  | ✅      | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
+| **Image Tracking (Natural Feature)** | 🧭 Planned      | [AR.js (ARToolKit)](https://github.com/AR-js-org/AR.js)                                              | N/A | N/A     | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
+| **Geolocation / World Anchors**      | 🧭 Planned      | [LocAR.js](https://github.com/locarjs/locar)/WebXR Geo Anchors                                       | N/A | N/A     | Uses GPS + compass; can integrate Mapbox or Cesium.                                       |
+| **WebXR Native AR/VR Session**       | 🧭 Planned      | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A | N/A     | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
+| **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A | N/A     | Uses webcam + ML model; lightweight and fast.                                             |
+| **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A | N/A     | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
+| **Hand Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A | N/A     | Supported on Chrome + Meta; ML fallback possible.                                         |
+| **Plane/Surface Detection**          | 🧭 Planned      | [WebXR Hit Test API](https://immersive-web.github.io/hit-test)/AR.js (limited)                       | N/A | N/A     | Enables AR object placement on flat surfaces.                                             |
+| **Depth Sensing/Environment Mesh**   | 🧭 Planned      | [WebXR Depth Sensing API](https://immersive-web.github.io/depth-sensing)                             | N/A | N/A     | Provides per-pixel depth; early spec.                                                     |
+| **SLAM/Visual Positioning (VPS)**    | 🧭 Planned      | Custom                                                                                               | N/A | N/A     | Requires world map data; long-term goal.                                                  |
+| **Voice/Gesture Interaction**        | 🧭 Planned      | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | N/A | N/A     | Enables multimodal input: voice, hand, gaze.                                              |
+| **Mixed Reality Compositing**        | 🧭 Planned      | WebXR Layers/CanvasCaptureStream                                                                     | N/A | N/A     | Transparent overlays/live compositing.                                                    |
+
 ## Getting Started
 
 ### Local Development
