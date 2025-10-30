@@ -90,13 +90,6 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 				if (arContext && arContext.arController) {
 					arSource.copyElementSizeTo(arContext.arController.canvas);
 				}
-
-				// OPTIONAL: if you want your THREE camera to match this aspect too:
-				// const aspect = vw / vh;
-				// if ("aspect" in camera) {
-				// 	camera.aspect = aspect;
-				// 	camera.updateProjectionMatrix();
-				// }
 			};
 
 			await new Promise<void>((resolve) => {
