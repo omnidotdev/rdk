@@ -33,4 +33,4 @@ jobs:
       - name: Build package
         run: bun run build --filter @omnidotdev/rdk
       - name: Publish package
-        run: bunx pkg-pr-new publish
+        run: bunx pkg-pr-new publish './packages/rdk'
