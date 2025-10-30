@@ -22,7 +22,7 @@ const App = () => (
 		<MarkerAnchor
 			params={{ smooth: true }}
 			type="pattern"
-			patternUrl="data/omni.patt"
+			patternUrl="data/rdk.patt"
 		>
 			<Supertorus
 				R={4}
