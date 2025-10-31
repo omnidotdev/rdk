@@ -6,5 +6,3 @@ export type {
 	XRSessionOptions,
 	XRSessionOptionsMap,
 } from "./XRSessionOptions.type";
-
-// TODO JSDoc all the above

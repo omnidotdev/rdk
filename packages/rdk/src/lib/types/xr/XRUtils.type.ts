@@ -11,7 +11,7 @@ export type InferXRMode<T> = T extends XRSessionOptions<infer M> ? M : never;
  * This ensures mode and sessionOptions are compatible.
  */
 export type XRConfig<TMode extends XRMode> = {
-  /** XR mode to use. */
+	/** XR mode to use. */
 	mode: TMode;
 	/** XR session options for the specified mode. */
 	sessionOptions?: XRSessionOptions<TMode>;
@@ -48,7 +48,7 @@ export const isXRMode = <TMode extends XRMode>(
  * Utility type for XR component props that need mode-specific session options.
  */
 export type XRComponentProps<TMode extends XRMode = XRMode> = {
-  /** XR mode to use. */
+	/** XR mode to use. */
 	mode?: TMode;
 	/** XR session options for the specified mode. */
 	sessionOptions?: XRSessionOptions<TMode>;
