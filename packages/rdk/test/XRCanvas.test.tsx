@@ -1,61 +1,62 @@
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { XRCanvas } from "../src/engine";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
 beforeEach(() => {
-	clearGlobalMocks();
+  clearGlobalMocks();
 });
 
 describe("XRCanvas", () => {
-	it("renders without crashing", () => {
-		const { container } = render(
-			<XRCanvas>
-				<mesh />
-			</XRCanvas>,
-		);
+  it("renders without crashing", () => {
+    const { container } = render(
+      <XRCanvas>
+        <mesh />
+      </XRCanvas>,
+    );
 
-		expect(container.firstChild).toBeTruthy();
-	});
+    expect(container.firstChild).toBeTruthy();
+  });
 
-	it("passes props to underlying Canvas", () => {
-		const mockProps = {
-			gl: { antialias: false },
-		};
+  it("passes props to underlying Canvas", () => {
+    const mockProps = {
+      gl: { antialias: false },
+    };
 
-		const { getByTestId } = render(
-			<XRCanvas {...mockProps}>
-				<mesh />
-			</XRCanvas>,
-		);
+    const { getByTestId } = render(
+      <XRCanvas {...mockProps}>
+        <mesh />
+      </XRCanvas>,
+    );
 
-		const canvas = getByTestId("xr-canvas");
-		expect(canvas).toBeTruthy();
-	});
+    const canvas = getByTestId("xr-canvas");
+    expect(canvas).toBeTruthy();
+  });
 
-	it("renders children", () => {
-		const { getByTestId } = render(
-			<XRCanvas>
-				<mesh data-testid="test-mesh" />
-			</XRCanvas>,
-		);
+  it("renders children", () => {
+    const { getByTestId } = render(
+      <XRCanvas>
+        <mesh data-testid="test-mesh" />
+      </XRCanvas>,
+    );
 
-		expect(getByTestId("test-mesh")).toBeTruthy();
-	});
+    expect(getByTestId("test-mesh")).toBeTruthy();
+  });
 
-	it("accepts AR-specific props", () => {
-		const props = {
-			isArEnabled: true,
-			isTrackingEnabled: false,
-			patternRatio: 0.8,
-		};
+  it("accepts AR-specific props", () => {
+    const props = {
+      isArEnabled: true,
+      isTrackingEnabled: false,
+      patternRatio: 0.8,
+    };
 
-		const { container } = render(
-			<XRCanvas {...props}>
-				<mesh />
-			</XRCanvas>,
-		);
+    const { container } = render(
+      <XRCanvas {...props}>
+        <mesh />
+      </XRCanvas>,
+    );
 
-		expect(container.firstChild).toBeTruthy();
-	});
+    expect(container.firstChild).toBeTruthy();
+  });
 });
