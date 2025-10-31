@@ -3,7 +3,7 @@
 <div align="center">
   <img src="/assets/rdk-logo.png" width="350" />
 
-[Website (Coming Soon)](https://rdk.omni.dev) | [Docs (Coming Soon)](https://docs.omni.dev/rdk/overview) | [Provide feedback on Omni Backfeed](https://backfeed.omni.dev/organizations/omni/projects/rdk)
+[Website (Coming Soon)](https://rdk.omni.dev) | [Docs (Coming Soon)](https://docs.omni.dev/rdk/overview) | [Provide feedback on Omni Backfeed](https://backfeed.omni.dev/organizations/omni/projects/rdk) | [Join Omni community on Discord](https://discord.gg/omnidotdev)
 
 </div>
 
