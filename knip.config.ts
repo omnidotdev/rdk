@@ -23,10 +23,6 @@ export default {
       ],
     },
   },
-  ignoreBinaries: [
-    // NB: `i` is used for `install` in github workflows, but knip provides a false positive. Views it as an unlisted binary
-    "i",
-  ],
   ignoreDependencies: [
     // NB: we use `turbo` at root level, thus biome presents as a false positive
     "@biomejs/biome",
