@@ -11,8 +11,8 @@
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
-> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) is working (see [`apps/fiducial-demo`](./apps/fiducial-demo)).
-> Location-based AR using [LocAR.js](https://github.com/ar-js-org/locar.js) and native WebXR integration via `@react-three/xr` are coming next.
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) and location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js) are working (see [`apps/`](./apps/) for demos).
+> Native WebXR integration via `@react-three/xr` is coming next.
 
 ## Overview
 
@@ -22,7 +22,7 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 | ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | ------- | --- | ----------------------------------------------------------------------------------------- |
 | **Fiducial (Pattern/Barcode)**       | ⚗️ Experimental | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | ✅      | ✅  | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
 | **Image Tracking (Natural Feature)** | 🧭 Planned      | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | N/A     | N/A | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
-| **Geolocation / World Anchors**      | 🧭 Planned      | [LocAR.js](https://github.com/ar-js-org/locar.js)/WebXR Geo Anchors                                  | N/A     | N/A | Uses GPS + compass; can integrate Mapbox or Cesium.                                       |
+| **Geolocation / World Anchors**      | 🧭 Experimental | [LocAR.js](https://github.com/ar-js-org/locar.js)                                                    | N/A     | N/A | Uses GPS + compass; may later integrate Mapbox or Cesium.                                 |
 | **WebXR Native AR/VR Session**       | 🧭 Planned      | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A     | N/A | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
 | **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A | Uses webcam + ML model; lightweight and fast.                                             |
 | **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A     | N/A | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
@@ -56,7 +56,7 @@ bun run test     # run tests
 Install RDK and required peer dependencies:
 
 ```bash
-bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber react react-dom three
+bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber locar react react-dom three
 ```
 
 See [`apps/fiducial-demo`](./apps/fiducial-demo) for an example of usage. More demos will be added as more use cases beyond fiducial marker-based AR are implemented.

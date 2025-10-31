@@ -46,6 +46,7 @@
 	"peerDependencies": {
 		"@ar-js-org/ar.js": "^3.4.7",
 		"@react-three/fiber": "^9.4.0",
+		"locar": "0.1.1",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"three": "^0.180.0"
@@ -61,6 +62,7 @@
 		"@types/react-dom": "^19.2.2",
 		"@types/three": "^0.180.0",
 		"jsdom": "^27.0.1",
+		"locar": "^0.1.1",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"three": "^0.180.0",
