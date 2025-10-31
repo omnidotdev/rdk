@@ -40,7 +40,7 @@
     "format": "biome format --write .",
     "lint": "biome check --diagnostic-level=error .",
     "lint:fix": "biome check --write .",
-    "test": "vitest",
+    "test": "vitest run",
     "release": "bun run build && changeset publish"
   },
   "peerDependencies": {
