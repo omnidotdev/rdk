@@ -1,3 +1,4 @@
+// track https://github.com/AR-js-org/locar.js/issues/14
 declare module "locar" {
   import * as THREE from "three";
 
