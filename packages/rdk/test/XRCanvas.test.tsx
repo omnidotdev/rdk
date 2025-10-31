@@ -1,39 +1,10 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { XRCanvas } from "../src/engine";
+import { clearGlobalMocks } from "./mocks/globals.mock";
 
-// mock `@react-three/fiber`
-vi.mock("@react-three/fiber", () => ({
-	Canvas: ({ children, ...props }: any) => (
-		<div data-testid="xr-canvas" {...props}>
-			{children}
-		</div>
-	),
-}));
-
-// mock `XRSessionProvider`
-vi.mock("../src/engine/XRSessionProvider", () => ({
-	default: ({ children }: any) => <div>{children}</div>,
-}));
-
-// mock AR.js globals
 beforeEach(() => {
-	vi.clearAllMocks();
-	global.THREEx = {
-		ArToolkitSource: vi.fn().mockImplementation(function ArToolkitSource() {
-			return {
-				init: vi.fn().mockResolvedValue(undefined),
-				onReady: vi.fn(),
-			};
-		}),
-		ArToolkitContext: vi.fn().mockImplementation(function ArToolkitContext() {
-			return {
-				init: vi.fn().mockResolvedValue(undefined),
-				update: vi.fn(),
-				_arMarkersControls: [],
-			};
-		}),
-	};
+	clearGlobalMocks();
 });
 
 describe("XRCanvas", () => {

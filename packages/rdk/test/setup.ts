@@ -1,42 +1,14 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
+import { setupGlobalMocks } from "./mocks/globals.mock";
 
-// mock AR.js globals
-global.THREEx = {
-	ArToolkitSource: vi.fn().mockImplementation(function ArToolkitSource() {
-		return {
-			init: vi.fn().mockResolvedValue(undefined),
-			onReady: vi.fn(),
-		};
-	}),
-	ArToolkitContext: vi.fn().mockImplementation(function ArToolkitContext() {
-		return {
-			init: vi.fn().mockResolvedValue(undefined),
-			update: vi.fn(),
-			_arMarkersControls: [],
-		};
-	}),
-	ArMarkerControls: vi.fn().mockImplementation(function ArMarkerControls() {
-		return {};
-	}),
-};
+// set up all global mocks
+setupGlobalMocks();
 
-// mock Three.js globals
-global.THREE = {
-	Group: vi.fn().mockImplementation(function Group() {
-		return {
-			add: vi.fn(),
-			remove: vi.fn(),
-			visible: true,
-		};
-	}),
-	Object3D: vi.fn().mockImplementation(function Object3D() {
-		return {
-			add: vi.fn(),
-			remove: vi.fn(),
-		};
-	}),
-};
-
-// suppress console warnings in tests
-global.console.warn = vi.fn();
+// mock module dependencies
+vi.mock("@react-three/fiber");
+vi.mock("@ar-js-org/ar.js/three.js/build/ar-threex");
+vi.mock(
+	"../src/engine/XRSessionProvider",
+	() => import("./mocks/XRSessionProvider.mock"),
+);

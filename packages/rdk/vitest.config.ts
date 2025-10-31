@@ -12,6 +12,17 @@ const vitestConfig = defineConfig({
 		environment: "jsdom",
 		globals: true,
 		setupFiles: ["./test/setup.ts"],
+		// enable `__mocks__` directory for automatic module mocking
+		mockReset: true,
+		clearMocks: true,
+		restoreMocks: true,
+		// ensure proper DOM environment
+		environmentOptions: {
+			jsdom: {
+				url: "http://localhost:3000",
+				pretendToBeVisual: true,
+			},
+		},
 	},
 	resolve: {
 		alias: {
@@ -19,7 +30,7 @@ const vitestConfig = defineConfig({
 		},
 	},
 	esbuild: {
-		target: "node14",
+		target: "node18",
 	},
 });
 

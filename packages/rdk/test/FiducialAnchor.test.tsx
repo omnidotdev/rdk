@@ -1,41 +1,10 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FiducialAnchor } from "../src/fiducial";
+import { clearGlobalMocks } from "./mocks/globals.mock";
 
-// mock `@react-three/fiber`
-vi.mock("@react-three/fiber", () => ({
-	useFrame: vi.fn(),
-	useThree: () => ({
-		scene: { add: vi.fn(), remove: vi.fn() },
-		camera: {},
-		gl: { domElement: document.createElement("canvas") },
-	}),
-}));
-
-// mock `XRSessionProvider`
-vi.mock("../src/engine/XRSessionProvider", () => ({
-	useXR: () => ({
-		arToolkitContext: {
-			_arMarkersControls: [],
-		},
-	}),
-}));
-
-// mock AR.js with proper constructor
-vi.mock("@ar-js-org/ar.js/three.js/build/ar-threex", () => ({
-	ArMarkerControls: vi.fn().mockImplementation(function ArMarkerControls() {
-		return {};
-	}),
-}));
-
-// mock Three.js Group
 beforeEach(() => {
-	vi.clearAllMocks();
-	global.THREE = {
-		Group: vi.fn().mockImplementation(function Group() {
-			return {};
-		}),
-	};
+	clearGlobalMocks();
 });
 
 describe("FiducialAnchor", () => {
