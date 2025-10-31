@@ -224,6 +224,11 @@ declare module "locar" {
     );
 
     /**
+     * Initialize the device orientation controls. Should be called first to set up permission flow.
+     */
+    init(): void;
+
+    /**
      * Begin listening to orientation + screenorientation (must be called after permission is granted on iOS).
      */
     connect(): void;
