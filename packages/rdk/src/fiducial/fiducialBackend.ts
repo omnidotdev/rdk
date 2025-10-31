@@ -33,19 +33,26 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 			});
 
 			// init source
-			await new Promise<void>((resolve) => {
+			await new Promise<void>((resolve, reject) => {
+				const timeoutId = setTimeout(() => {
+					reject(new Error("AR source initialization timeout"));
+				}, 10000);
+
 				arSource.init(() => {
+					clearTimeout(timeoutId);
 					const el = arSource.domElement as HTMLElement;
-					el.style.position = "fixed";
-					el.style.top = "0";
-					el.style.left = "0";
-					el.style.width = "100vw";
-					el.style.height = "100vh";
-					el.style.objectFit = "cover";
-					// behind R3F canvas
-					el.style.zIndex = "-1";
-					// don't block UI
-					el.style.pointerEvents = "none";
+					if (el) {
+						el.style.position = "fixed";
+						el.style.top = "0";
+						el.style.left = "0";
+						el.style.width = "100vw";
+						el.style.height = "100vh";
+						el.style.objectFit = "cover";
+						// behind R3F canvas
+						el.style.zIndex = "-1";
+						// don't block UI
+						el.style.pointerEvents = "none";
+					}
 					resolve();
 				});
 			});
@@ -92,11 +99,20 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 				}
 			};
 
-			await new Promise<void>((resolve) => {
+			await new Promise<void>((resolve, reject) => {
+				const timeoutId = setTimeout(() => {
+					reject(new Error("AR context initialization timeout"));
+				}, 10000);
+
 				arContext.init(() => {
-					camera.projectionMatrix.copy(arContext.getProjectionMatrix());
-					doResize();
-					resolve();
+					clearTimeout(timeoutId);
+					try {
+						camera.projectionMatrix.copy(arContext.getProjectionMatrix());
+						doResize();
+						resolve();
+					} catch (error) {
+						reject(error);
+					}
 				});
 			});
 
@@ -114,13 +130,40 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 
 			if (!source || !context) return;
 
-			if (source.ready !== false) {
-				context.update(source.domElement);
+			// only update if source is ready and has a valid `domElement`
+			if (source.ready !== false && source.domElement) {
+				try {
+					context.update(source.domElement);
+				} catch (error) {
+					console.warn("AR.js update error:", error);
+				}
 			}
 		},
 
 		dispose() {
-			if (resizeHandler) window.removeEventListener("resize", resizeHandler);
+			if (resizeHandler) {
+				window.removeEventListener("resize", resizeHandler);
+				resizeHandler = undefined;
+			}
+
+			// clean up AR.js resources
+			const source = (this as any)._arSource;
+			const context = (this as any)._arContext;
+
+			if (context && typeof context.dispose === "function") {
+				context.dispose();
+			}
+
+			if (source && source.domElement) {
+				// re the video element from DOM
+				const parent = source.domElement.parentNode;
+				if (parent) {
+					parent.removeChild(source.domElement);
+				}
+			}
+
+			(this as any)._arSource = null;
+			(this as any)._arContext = null;
 		},
 
 		getInternal() {
