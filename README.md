@@ -10,8 +10,7 @@
 **Omni Reality Development Kit (RDK)** is a React-first framework for building web-based XR experiences, from AR to VR, through one unified API powered by Three.js and `react-three-fiber`.
 
 > [!IMPORTANT]
-> **Project Status:** 🚧 This project is brand new.
-> There is **no published package yet**.
+> **Project Status:** 🚧 This project is **brand new**.
 > Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) is working (see [`apps/fiducial-demo`](./apps/fiducial-demo)).
 > Location-based AR using [LocAR.js](https://github.com/ar-js-org/locar.js) and native WebXR integration via `@react-three/xr` are coming next.
 
