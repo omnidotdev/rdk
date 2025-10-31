@@ -177,7 +177,7 @@ const Supertorus = ({
 	return (
 		<mesh geometry={geom} {...meshProps}>
 			{/* TODO change to brand gemstone color */}
-			<meshStandardMaterial metalness={0.2} roughness={0.4} color="blue" />
+			<meshStandardMaterial metalness={0.2} roughness={0.4} color="#00a3a2" />
 		</mesh>
 	);
 };
