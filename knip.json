@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "packages/*": {
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignore": ["build/**", "lib/**", "dist/**", "node_modules/**"]
+    },
+    "apps/*": {
+      "entry": ["src/index.tsx"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignore": ["build/**", "dist/**", "node_modules/**"]
+    }
+  },
+  "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "**/.turbo/**"],
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true
+  }
+}

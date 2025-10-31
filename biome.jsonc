@@ -1,0 +1,43 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+  "files": {
+    // NB: `node_modules` excluded by default
+    "includes": ["**", "!**/build", "**/.turbo/**"],
+  },
+  "formatter": {
+    "indentStyle": "tab",
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+    },
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "a11y": {
+        "useKeyWithClickEvents": "off",
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "warn",
+      },
+      "style": {
+        "noInferrableTypes": "error",
+        "noParameterAssign": "error",
+        "noUnusedTemplateLiteral": "error",
+        "noUselessElse": "error",
+        "useAsConstAssertion": "error",
+        "useConst": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useNumberNamespace": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "useTemplate": "error",
+      },
+      "suspicious": {
+        "noExplicitAny": "warn",
+      },
+    },
+  },
+}
