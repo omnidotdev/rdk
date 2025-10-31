@@ -1,4 +1,4 @@
-// TODO: refactor to use baseline configuration options for entire repo. Use `extends` pattern in workspace configs to apply specific rulesets. See: https://biomejs.dev/guides/big-projects/#monorepo
+// TODO: refactor to use baseline configuration options for entire repo. Use workspace level configs to apply specific rulesets. See: https://biomejs.dev/guides/big-projects/#monorepo
 {
   "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
   "files": {
