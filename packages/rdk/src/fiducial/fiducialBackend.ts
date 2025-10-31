@@ -28,7 +28,12 @@ export interface FiducialSessionOptions {
 /**
  * Create a fiducial marker-based XR backend.
  */
-const createFiducialBackend = (options: unknown): XRBackend => {
+const createFiducialBackend = (
+  options: unknown,
+): XRBackend & {
+  _arSource?: ArToolkitSource | null;
+  _arContext?: ArToolkitContext | null;
+} => {
   const opts = (options || {}) as FiducialSessionOptions;
 
   let arSource: ArToolkitSource;
@@ -103,7 +108,7 @@ const createFiducialBackend = (options: unknown): XRBackend => {
         // sync AR.js' canvas and the renderer dom element
         arSource.copyElementSizeTo(renderer.domElement);
 
-        if (arContext && arContext.arController) {
+        if (arContext?.arController) {
           arSource.copyElementSizeTo(arContext.arController.canvas);
         }
       };
@@ -126,16 +131,16 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       });
 
       // expose for the anchor component
-      (this as any)._arSource = arSource;
-      (this as any)._arContext = arContext;
+      this._arSource = arSource;
+      this._arContext = arContext;
 
       window.addEventListener("resize", doResize);
       resizeHandler = doResize;
     },
 
     update() {
-      const source = (this as any)._arSource;
-      const context = (this as any)._arContext;
+      const source = this._arSource;
+      const context = this._arContext;
 
       if (!source || !context) return;
 
@@ -156,14 +161,16 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       }
 
       // clean up AR.js resources
-      const source = (this as any)._arSource;
-      const context = (this as any)._arContext;
+      const source = this._arSource;
+      const context = this._arContext;
 
-      if (context && typeof context.dispose === "function") {
+      // @ts-expect-error Use as a safe check for a runtime `dispose()` function without TypeScript errors. This ensures that if AR.js ever provides an explicit cleanup method for `ArToolkitContext`, it will still be called
+      if (typeof context?.dispose === "function") {
+        // @ts-expect-error See note above
         context.dispose();
       }
 
-      if (source && source.domElement) {
+      if (source?.domElement) {
         // re the video element from DOM
         const parent = source.domElement.parentNode;
         if (parent) {
@@ -171,14 +178,14 @@ const createFiducialBackend = (options: unknown): XRBackend => {
         }
       }
 
-      (this as any)._arSource = null;
-      (this as any)._arContext = null;
+      this._arSource = null;
+      this._arContext = null;
     },
 
     getInternal() {
       return {
-        arSource: (this as any)._arSource,
-        arContext: (this as any)._arContext,
+        arSource: this._arSource,
+        arContext: this._arContext,
       };
     },
   };

@@ -1,4 +1,7 @@
-import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import {
+  ArMarkerControls,
+  type ArToolkitContext,
+} from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import { useFrame } from "@react-three/fiber";
 import { useXR } from "engine/XRSessionProvider";
 import { type PropsWithChildren, useEffect, useRef } from "react";
@@ -35,12 +38,15 @@ const FiducialAnchor = ({
   const { backend } = useXR();
   const visibleRef = useRef(false);
   const initializedRef = useRef(false);
+  // biome-ignore lint: cast as `any` here because AR.js's `ArMarkerControls` has no official TypeScript types.
   const arControlsRef = useRef<any>(null);
 
   useEffect(() => {
     if (!backend) return;
 
-    const internal = backend.getInternal?.() as any;
+    const internal = backend.getInternal?.() as {
+      arContext: ArToolkitContext | null;
+    };
     const arContext = internal?.arContext;
     const group = groupRef.current;
 
@@ -58,7 +64,9 @@ const FiducialAnchor = ({
     if (!arContext.arController) {
       const id = requestAnimationFrame(() => {
         if (!groupRef.current) return;
-        const again = backend.getInternal?.() as any;
+        const again = backend.getInternal?.() as {
+          arContext: ArToolkitContext | null;
+        };
         const ctx2 = again?.arContext;
         if (!ctx2?.arController) return;
 
@@ -78,6 +86,7 @@ const FiducialAnchor = ({
 
         // cleanup
         return () => {
+          // biome-ignore lint: see @note below
           const anyControls = controls as any;
           /**
            * @note AR.js's `ArMarkerControls` has no official TypeScript types and does not formally declare a `.dispose()` method. Some community builds or future versions may implement one, but it's not guaranteed.
@@ -102,6 +111,7 @@ const FiducialAnchor = ({
     initializedRef.current = true;
 
     return () => {
+      // biome-ignore lint: see @note below
       const anyControls = controls as any;
       /**
        * @note AR.js's `ArMarkerControls` has no official TypeScript types and does not formally declare a `.dispose()` method. Some community builds or future versions may implement one, but it's not guaranteed.
