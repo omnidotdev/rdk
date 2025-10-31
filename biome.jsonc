@@ -22,7 +22,8 @@
         "useKeyWithClickEvents": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "warn",
+        "noUnusedImports": { "fix": "safe", "level": "error" }
       },
       "style": {
         "noInferrableTypes": "error",

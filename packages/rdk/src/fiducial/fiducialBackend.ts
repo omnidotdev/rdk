@@ -31,8 +31,8 @@ export interface FiducialSessionOptions {
 const createFiducialBackend = (options: unknown): XRBackend => {
   const opts = (options || {}) as FiducialSessionOptions;
 
-  let arSource: any;
-  let arContext: any;
+  let arSource: ArToolkitSource;
+  let arContext: ArToolkitContext;
   let resizeHandler: (() => void) | undefined;
 
   return {
