@@ -1,18 +1,20 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, type ReactNode } from "react";
+import { PropsWithChildren, useEffect, useRef } from "react";
 import { Group } from "three";
 import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import { useXR } from "engine/XRSessionProvider";
 
-// TODO JSDoc
-
-export interface FiducialAnchorProps {
+export interface FiducialAnchorProps extends PropsWithChildren {
+	/** Pattern URL. */
 	patternUrl?: string;
+	/** Barcode value. */
 	barcodeValue?: number;
+	/** Additional parameters. */
 	params?: Record<string, unknown>;
+	/** Callback triggered when marker is found. */
 	onMarkerFound?: () => void;
+	/** Callback triggered when marker is lost. */
 	onMarkerLost?: () => void;
-	children?: ReactNode;
 }
 
 /**

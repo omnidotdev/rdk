@@ -5,14 +5,17 @@ import {
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 
-// TODO JSDoc
-
 export interface FiducialSessionOptions {
+	/** Input source type. */
 	sourceType?: "webcam" | "image" | "video";
+	/** Camera parameters URL. */
 	cameraParametersUrl?: string;
 	// TODO narrow types likely, e.g. 3x3 for matrix code type
+	/** Detection mode. */
 	detectionMode?: string;
+	/** Pattern ratio. */
 	patternRatio?: number;
+	/** Matrix code type. */
 	matrixCodeType?: string;
 }
 
