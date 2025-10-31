@@ -1,11 +1,10 @@
-import {
-  ArMarkerControls,
-  type ArToolkitContext,
-} from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import { useFrame } from "@react-three/fiber";
 import { useXR } from "engine/XRSessionProvider";
-import { type PropsWithChildren, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
+import type { ArToolkitContext } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import type { PropsWithChildren } from "react";
 import type { Group } from "three";
 
 export interface FiducialAnchorProps extends PropsWithChildren {

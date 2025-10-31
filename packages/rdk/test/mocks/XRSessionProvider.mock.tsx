@@ -1,5 +1,7 @@
-import { createElement, type ReactNode } from "react";
+import { createElement } from "react";
 import { vi } from "vitest";
+
+import type { ReactNode } from "react";
 
 /**
  * Mock implementation of `XRSessionProvider`.
