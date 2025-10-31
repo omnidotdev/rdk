@@ -1,3 +1,4 @@
+// biome-ignore-start lint/suspicious/noExplicitAny: mock implementation exports and types
 export {
   clearGlobalMocks,
   mockTHREE,
@@ -38,3 +39,4 @@ export interface MockXRContext {
   endSession: ReturnType<typeof import("vitest").vi.fn>;
   error: string | null;
 }
+// biome-ignore-end lint/suspicious/noExplicitAny: mock implementation exports and types
