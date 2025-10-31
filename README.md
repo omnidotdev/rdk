@@ -13,7 +13,7 @@
 > **Project Status:** 🚧 This project is brand new.
 > There is **no published package yet**.
 > Currently, fiducial marker-based AR via [AR.js](https://github.com/AR-js-org/AR.js) is working (see [`apps/fiducial-demo`](./apps/fiducial-demo)).
-> Location-based AR using [LocAR.js](https://github.com/locarjs/locar) and native WebXR integration via `@react-three/xr` are coming next.
+> Location-based AR using [LocAR.js](https://github.com/ar-js-org/locar.js) and native WebXR integration via `@react-three/xr` are coming next.
 
 ## Overview
 
@@ -23,7 +23,7 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 | ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | --- | ------- | ----------------------------------------------------------------------------------------- |
 | **Fiducial (pattern/barcode)**       | ⚗️ Experimental | [AR.js (ARToolKit)](https://github.com/AR-js-org/AR.js)                                              | ✅  | ✅      | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
 | **Image Tracking (Natural Feature)** | 🧭 Planned      | [AR.js (ARToolKit)](https://github.com/AR-js-org/AR.js)                                              | N/A | N/A     | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
-| **Geolocation / World Anchors**      | 🧭 Planned      | [LocAR.js](https://github.com/locarjs/locar)/WebXR Geo Anchors                                       | N/A | N/A     | Uses GPS + compass; can integrate Mapbox or Cesium.                                       |
+| **Geolocation / World Anchors**      | 🧭 Planned      | [LocAR.js](https://github.com/ar-js-org/locar.js)/WebXR Geo Anchors                                  | N/A | N/A     | Uses GPS + compass; can integrate Mapbox or Cesium.                                       |
 | **WebXR Native AR/VR Session**       | 🧭 Planned      | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A | N/A     | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
 | **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A | N/A     | Uses webcam + ML model; lightweight and fast.                                             |
 | **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A | N/A     | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
