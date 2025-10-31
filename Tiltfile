@@ -46,7 +46,7 @@ local_resource(
 
 local_resource(
   'knip',
-  'npx knip',
+  'bunx knip',
   auto_init=False,
   trigger_mode=TRIGGER_MODE_MANUAL
 )
