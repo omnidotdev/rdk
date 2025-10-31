@@ -32,11 +32,7 @@ export const mockXRContext = {
 export const useXR = vi.fn(() => mockXRContext);
 
 export default vi.fn(({ children }: { children: ReactNode }) =>
-	createElement(
-		"div",
-		{ "data-testid": "xr-session-provider" },
-		children,
-	),
+	createElement("div", { "data-testid": "xr-session-provider" }, children),
 );
 
 export const XRSessionProvider = vi.fn(
