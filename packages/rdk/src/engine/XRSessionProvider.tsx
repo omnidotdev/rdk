@@ -32,7 +32,7 @@ export const useXR = (): XRContextValue => {
   return ctx;
 };
 
-interface XRSessionProviderProps<TMode extends XRMode = XRMode>
+interface XRSessionProviderProps<TMode extends XRMode>
   extends PropsWithChildren {
   /** Mode of extended reality. */
   mode: TMode;
@@ -43,7 +43,7 @@ interface XRSessionProviderProps<TMode extends XRMode = XRMode>
 /**
  * Core RDK engine. This owns the "XR session state" (e.g. running, paused, tracking quality), owns the camera feed/pose source, handles ticks per frame, applies transforms, and provides a React context for children to consume.
  */
-const XRSessionProvider = <TMode extends XRMode = XRMode>({
+const XRSessionProvider = <TMode extends XRMode>({
   mode,
   options,
   children,
