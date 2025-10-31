@@ -1,3 +1,2 @@
-import FiducialAnchor from "./FiducialAnchor";
-
-export { FiducialAnchor };
+export { default as FiducialAnchor } from "./FiducialAnchor";
+export type { FiducialSessionOptions } from "./fiducialBackend";

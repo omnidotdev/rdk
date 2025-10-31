@@ -2,5 +2,5 @@
  * Mode of extended reality.
  */
 export type XRMode = "fiducial";
-// TODO
+// TODO as more modes are implemented
 // export type XRMode = "fiducial" | "image" | "geolocation" | "webxr";

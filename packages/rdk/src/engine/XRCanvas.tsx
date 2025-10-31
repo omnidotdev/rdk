@@ -3,25 +3,25 @@ import { Canvas } from "@react-three/fiber";
 import XRSessionProvider from "./XRSessionProvider";
 
 import type { CanvasProps } from "@react-three/fiber";
-import type { XRMode } from "lib/types/xr";
+import type { XRMode, XRSessionOptions } from "lib/types/xr";
 
-export interface XRCanvasProps extends CanvasProps {
+export interface XRCanvasProps<TMode extends XRMode = "fiducial">
+	extends CanvasProps {
 	/** Mode of extended reality. */
-	mode?: XRMode;
+	mode?: TMode;
 	/** Session options, forwarded to the corresponding backend. */
-	// TODO generic narrowing
-	sessionOptions?: unknown;
+	sessionOptions?: XRSessionOptions<TMode>;
 }
 
 /**
  * Main extended reality canvas that initializes the context. This behaves as a scene root for end users.
  */
-const XRCanvas = ({
-	mode = "fiducial",
+const XRCanvas = <TMode extends XRMode = "fiducial">({
+	mode = "fiducial" as TMode,
 	sessionOptions,
 	children,
 	...rest
-}: XRCanvasProps) => (
+}: XRCanvasProps<TMode>) => (
 	<Canvas {...rest}>
 		<XRSessionProvider mode={mode} options={sessionOptions}>
 			{children}

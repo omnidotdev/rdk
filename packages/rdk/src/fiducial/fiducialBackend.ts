@@ -10,13 +10,18 @@ export interface FiducialSessionOptions {
 	sourceType?: "webcam" | "image" | "video";
 	/** Camera parameters URL. */
 	cameraParametersUrl?: string;
-	// TODO narrow types likely, e.g. 3x3 for matrix code type
 	/** Detection mode. */
-	detectionMode?: string;
+	detectionMode?: "color" | "color_and_matrix" | "mono" | "mono_and_matrix";
 	/** Pattern ratio. */
 	patternRatio?: number;
 	/** Matrix code type. */
-	matrixCodeType?: string;
+	matrixCodeType?:
+		| "3x3"
+		| "3x3_HAMMING63"
+		| "3x3_PARITY65"
+		| "4x4"
+		| "4x4_BCH_13_9_3"
+		| "4x4_BCH_13_5_5";
 }
 
 /**

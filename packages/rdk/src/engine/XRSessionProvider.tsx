@@ -12,7 +12,12 @@ import { match } from "ts-pattern";
 import createFiducialBackend from "fiducial/fiducialBackend";
 
 import type { PropsWithChildren } from "react";
-import { XRBackend, XRContextValue, XRMode } from "lib/types/xr";
+import {
+	XRBackend,
+	XRContextValue,
+	XRMode,
+	XRSessionOptions,
+} from "lib/types/xr";
 
 const XRContext = createContext<XRContextValue | null>(null);
 
@@ -28,22 +33,22 @@ export const useXR = (): XRContextValue => {
 	return ctx;
 };
 
-interface XRSessionProviderProps extends PropsWithChildren {
+interface XRSessionProviderProps<TMode extends XRMode = XRMode>
+	extends PropsWithChildren {
 	/** Mode of extended reality. */
-	mode: XRMode;
+	mode: TMode;
 	/** Session options, forwarded to the corresponding backend. */
-	// TODO generic narrowing
-	options?: unknown;
+	options?: XRSessionOptions<TMode>;
 }
 
 /**
  * Core RDK engine. This owns the "XR session state" (e.g. running, paused, tracking quality), owns the camera feed/pose source, handles ticks per frame, applies transforms, and provides a React context for children to consume.
  */
-const XRSessionProvider = ({
+const XRSessionProvider = <TMode extends XRMode = XRMode>({
 	mode,
 	options,
 	children,
-}: XRSessionProviderProps) => {
+}: XRSessionProviderProps<TMode>) => {
 	const [ready, setReady] = useState(false);
 
 	const { camera, gl, scene } = useThree();
@@ -53,9 +58,9 @@ const XRSessionProvider = ({
 	// pick backend by mode
 	const backend = useMemo<XRBackend>(
 		() =>
-			match(mode)
+			match(mode as XRMode)
 				.with("fiducial", () => createFiducialBackend(options))
-				// TODO
+				// TODO as more modes are implemented
 				// .with("geolocation", () => createGeoBackend(options as GeoOptions))
 				// .with("webxr", () => createWebXRBackend(options as WebXROptions))
 				.otherwise(() => createFiducialBackend(options)),

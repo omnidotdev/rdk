@@ -1,3 +1,1 @@
-import XRCanvas from "./XRCanvas";
-
-export { XRCanvas };
+export { default as XRCanvas } from "./XRCanvas";
