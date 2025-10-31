@@ -63,7 +63,7 @@ See [`apps/fiducial-demo`](./apps/fiducial-demo) for an example of usage. More d
 
 ## Goals: the "Why"
 
-Mobile XR today is deeply fragmented: split between native SDKs (ARCore, ARKit) and the web, and further divided by platform politics.
+Web-based XR today is deeply fragmented: split between native SDKs (ARCore, ARKit) and the web, and further divided by platform politics.
 
 Apple’s refusal to support WebXR on iOS despite supporting it on their Vision Pro headset leaves developers maintaining separate code paths for identical use cases.
 
