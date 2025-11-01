@@ -7,7 +7,7 @@
 
 </div>
 
-**Omni Reality Development Kit (RDK)** is a React-first framework for building web-based XR experiences, from AR to VR, through one unified API powered by Three.js and `react-three-fiber`.
+**Omni Reality Development Kit (RDK)** is a React-first framework for building web-based XR experiences, from AR to VR, orchestrated through one unified API powered by Three.js and `react-three-fiber`.
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
@@ -33,6 +33,10 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 | **Voice/Gesture Interaction**        | 🧭 Planned      | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | N/A     | N/A | Enables multimodal input: voice, hand, gaze.                                              |
 | **Mixed Reality Compositing**        | 🧭 Planned      | WebXR Layers/CanvasCaptureStream                                                                     | N/A     | N/A | Transparent overlays/live compositing.                                                    |
 
+## Demos
+
+Demo applications showcasing different AR capabilities can be seen in the `apps/` directory. View their READMEs for more information.
+
 ## Getting Started
 
 ### Local Development
@@ -51,7 +55,14 @@ bun run build    # build all packages
 bun run test     # run tests
 ```
 
-### Downstream Installation
+#### Adding a New Module
+
+If you want to add a new XR module to be orchestrated by the overarching RDK API:
+
+1. Create `packages/rdk/src/[moduleName]`
+2. Add the corresponding mode/module to `XRMode.type.ts`, `XRSessionOptions.type.ts`, `XRUtils.type.ts`, and `XRSessionProvider.type.ts`.
+
+### Installation
 
 Install RDK and required peer dependencies:
 
@@ -83,6 +94,10 @@ Babylon.js support may be added in the future, but RDK is currently focused on t
 
 - [Reactylon](https://www.reactylon.com)
 - [react-babylonjs](https://github.com/brianzinn/react-babylonjs)
+
+## Contributing
+
+See Omni's [contributing docs](https://docs.omni.dev/contributing/overview).
 
 ## License
 
