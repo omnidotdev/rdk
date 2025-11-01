@@ -3,8 +3,8 @@ dotenv()
 
 local_resource(
   "dev",
-  "bun run dev",
-  serve_cmd="bun run dev",
+  "bun dev",
+  serve_cmd="bun dev",
 )
 
 local_resource(
@@ -16,21 +16,21 @@ local_resource(
 
 local_resource(
   "lint",
-  "bun run lint",
+  "bun lint",
   auto_init=False,
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
 local_resource(
   "format",
-  "bun run format",
+  "bun format",
   auto_init=False,
   trigger_mode=TRIGGER_MODE_MANUAL
 )
 
 local_resource(
   "clean",
-  "bun run clean",
+  "bun clean",
   auto_init=False,
   trigger_mode=TRIGGER_MODE_MANUAL
 )
@@ -44,7 +44,7 @@ local_resource(
 
 local_resource(
   "knip",
-  "npx knip",
+  "bun knip",
   auto_init=False,
   trigger_mode=TRIGGER_MODE_MANUAL
 )
