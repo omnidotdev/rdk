@@ -46,6 +46,47 @@ export const mockTHREEx = {
 };
 
 /**
+ * Mock implementation of LocAR.js global object.
+ */
+export const mockLocAR = {
+	LocationBased: vi.fn().mockImplementation(function LocationBased() {
+		return {
+			scene: null,
+			camera: null,
+			add: vi.fn(),
+			remove: vi.fn(),
+			startGps: vi.fn().mockReturnValue(true),
+			stopGps: vi.fn().mockReturnValue(true),
+			fakeGps: vi.fn(),
+			on: vi.fn(),
+			off: vi.fn(),
+			emit: vi.fn(),
+			setElevation: vi.fn(),
+		};
+	}),
+	Webcam: vi.fn().mockImplementation(function Webcam() {
+		return {
+			texture: null,
+			on: vi.fn(),
+			dispose: vi.fn(),
+		};
+	}),
+	DeviceOrientationControls: vi
+		.fn()
+		.mockImplementation(function DeviceOrientationControls() {
+			return {
+				enabled: true,
+				on: vi.fn(),
+				init: vi.fn(),
+				connect: vi.fn(),
+				disconnect: vi.fn(),
+				update: vi.fn(),
+				dispose: vi.fn(),
+			};
+		}),
+};
+
+/**
  * Mock implementation of Three.js THREE global object.
  */
 export const mockTHREE = {
@@ -95,6 +136,8 @@ export function setupGlobalMocks(): void {
 	global.THREEx = mockTHREEx;
 	// @ts-ignore
 	global.THREE = mockTHREE;
+	// @ts-ignore
+	global.LocAR = mockLocAR;
 
 	// Suppress console warnings in tests
 	global.console.warn = vi.fn();
