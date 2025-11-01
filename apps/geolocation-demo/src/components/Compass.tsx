@@ -4,7 +4,7 @@ import * as THREE from "three";
 
 interface CompassProps {
 	/**
-	 * Whether the compass is animated.
+	 * Whether the animation is enabled.
 	 * @default true
 	 */
 	isAnimated?: boolean;

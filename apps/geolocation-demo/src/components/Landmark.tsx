@@ -4,7 +4,7 @@ import * as THREE from "three";
 
 interface LandmarkProps {
 	/**
-	 * Whether the compass is animated.
+	 * Whether the animation is enabled.
 	 * @default false
 	 */
 	isAnimated?: boolean;
