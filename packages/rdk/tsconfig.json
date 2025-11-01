@@ -1,25 +1,25 @@
 {
-	"compilerOptions": {
-		"allowImportingTsExtensions": true,
-		"baseUrl": "src",
-		"declaration": true,
-		"declarationMap": true,
-		"isolatedModules": true,
-		"jsx": "react-jsx",
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"noEmit": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"outDir": "./build",
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"target": "ES2020",
-		"useDefineForClassFields": true
-	},
-	"include": ["src"],
-	"references": [{ "path": "./tsconfig.node.json" }]
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "baseUrl": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./build",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2020",
+    "useDefineForClassFields": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

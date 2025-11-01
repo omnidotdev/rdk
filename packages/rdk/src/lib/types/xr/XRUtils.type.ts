@@ -11,10 +11,10 @@ export type InferXRMode<T> = T extends XRSessionOptions<infer M> ? M : never;
  * This ensures mode and sessionOptions are compatible.
  */
 export type XRConfig<TMode extends XRMode> = {
-	/** XR mode to use. */
-	mode: TMode;
-	/** XR session options for the specified mode. */
-	sessionOptions?: XRSessionOptions<TMode>;
+  /** XR mode to use. */
+  mode: TMode;
+  /** XR session options for the specified mode. */
+  sessionOptions?: XRSessionOptions<TMode>;
 };
 
 /**
@@ -32,7 +32,7 @@ export type XRConfig<TMode extends XRMode> = {
  * ```
  */
 export const createXRConfig = <TMode extends XRMode>(
-	config: XRConfig<TMode>,
+  config: XRConfig<TMode>,
 ): XRConfig<TMode> => config;
 
 /**
@@ -40,18 +40,18 @@ export const createXRConfig = <TMode extends XRMode>(
  * Useful for runtime type checking and narrowing.
  */
 export const isXRMode = <TMode extends XRMode>(
-	mode: XRMode,
-	targetMode: TMode,
+  mode: XRMode,
+  targetMode: TMode,
 ): mode is TMode => mode === targetMode;
 
 /**
  * Utility type for XR component props that need mode-specific session options.
  */
 export type XRComponentProps<TMode extends XRMode = XRMode> = {
-	/** XR mode to use. */
-	mode?: TMode;
-	/** XR session options for the specified mode. */
-	sessionOptions?: XRSessionOptions<TMode>;
+  /** XR mode to use. */
+  mode?: TMode;
+  /** XR session options for the specified mode. */
+  sessionOptions?: XRSessionOptions<TMode>;
 };
 
 /**
@@ -59,22 +59,22 @@ export type XRComponentProps<TMode extends XRMode = XRMode> = {
  * Provides sensible defaults while maintaining type safety.
  */
 export const DEFAULT_XR_SESSION_OPTIONS = {
-	fiducial: {
-		sourceType: "webcam" as const,
-		detectionMode: "mono",
-		patternRatio: 0.5,
-		matrixCodeType: "3x3",
-	},
-	// TODO add defaults for other modes when implemented
-	// image: { ... },
-	// geolocation: { ... },
-	// webxr: { ... },
+  fiducial: {
+    sourceType: "webcam" as const,
+    detectionMode: "mono",
+    patternRatio: 0.5,
+    matrixCodeType: "3x3",
+  },
+  // TODO add defaults for other modes when implemented
+  // image: { ... },
+  // geolocation: { ... },
+  // webxr: { ... },
 } as const satisfies Record<XRMode, XRSessionOptions<XRMode>>;
 
 /**
  * Get default session options for a specific XR mode.
  */
 export const getDefaultSessionOptions = <TMode extends XRMode>(
-	mode: TMode,
+  mode: TMode,
 ): XRSessionOptions<TMode> =>
-	DEFAULT_XR_SESSION_OPTIONS[mode] as XRSessionOptions<TMode>;
+  DEFAULT_XR_SESSION_OPTIONS[mode] as XRSessionOptions<TMode>;

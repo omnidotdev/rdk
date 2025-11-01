@@ -1,25 +1,30 @@
+// TODO: refactor to use baseline configuration options for entire repo. Use workspace level configs to apply specific rulesets. See: https://biomejs.dev/guides/big-projects/#monorepo
 {
   "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
   "files": {
     // NB: `node_modules` excluded by default
-    "includes": ["**", "!**/build", "**/.turbo/**"],
+    "includes": ["**", "!**/build", "**/.turbo/**"]
   },
   "formatter": {
-    "indentStyle": "tab",
+    "enabled": true,
+    "indentStyle": "space",
+    "lineWidth": 80,
+    "indentWidth": 2
   },
   "javascript": {
     "formatter": {
-      "jsxQuoteStyle": "double",
-    },
+      "jsxQuoteStyle": "double"
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
       "a11y": {
-        "useKeyWithClickEvents": "off",
+        "useKeyWithClickEvents": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "warn",
+        "noUnusedImports": { "fix": "safe", "level": "error" }
       },
       "style": {
         "noInferrableTypes": "error",
@@ -34,10 +39,37 @@
         "useSelfClosingElements": "error",
         "useSingleVarDeclarator": "error",
         "useTemplate": "error",
+        "useImportType": {
+          "level": "error",
+          "options": { "style": "separatedType" }
+        }
       },
       "suspicious": {
-        "noExplicitAny": "warn",
-      },
-    },
+        "noExplicitAny": "warn"
+      }
+    }
   },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              { "type": false, "source": [":BUN:", ":NODE:"] },
+              ":BLANK_LINE:",
+              {
+                "type": false,
+                "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
+              },
+              ":BLANK_LINE:",
+              { "type": false, "source": ["**"] },
+              ":BLANK_LINE:",
+              { "type": true }
+            ]
+          }
+        }
+      }
+    }
+  }
 }

@@ -11,7 +11,10 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "cache": false
+    },
+    "lint:fix": {
+      "cache": false
     },
     "format": {
       "cache": false
