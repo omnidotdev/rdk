@@ -3,8 +3,23 @@ dotenv()
 
 local_resource(
   "dev",
-  "bun dev",
-  serve_cmd="bun dev",
+  serve_cmd="bun dev --filter @omnidotdev/rdk",
+)
+
+local_resource(
+  "dev-demo-fiducial",
+  serve_cmd="bun dev --filter rdk-fiducial-demo",
+  auto_init=False,
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["demo-fiducial"]
+)
+
+local_resource(
+  "dev-demo-geolocation",
+  serve_cmd="bun dev --filter rdk-geolocation-demo",
+  auto_init=False,
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["demo-geolocation"]
 )
 
 local_resource(
