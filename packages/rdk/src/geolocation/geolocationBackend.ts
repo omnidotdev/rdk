@@ -79,7 +79,10 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
 					deviceOrientation.createObtainPermissionGestureDialog();
 				}
 			} catch (err) {
-				console.warn("[geolocationBackend] Could not request orientation permissions:", err);
+				console.warn(
+					"[geolocationBackend] Could not request orientation permissions:",
+					err,
+				);
 			}
 
 			deviceOrientation.init?.();

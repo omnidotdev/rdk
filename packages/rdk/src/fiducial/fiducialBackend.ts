@@ -118,8 +118,8 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 						camera.projectionMatrix.copy(arContext.getProjectionMatrix());
 						doResize();
 						resolve();
-					} catch (error) {
-						reject(error);
+					} catch (err) {
+						reject(err);
 					}
 				});
 			});
@@ -142,8 +142,8 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 			if (source.ready !== false && source.domElement) {
 				try {
 					context.update(source.domElement);
-				} catch (error) {
-					console.warn("AR.js update error:", error);
+				} catch (err) {
+					console.warn("AR.js update error:", err);
 				}
 			}
 		},
