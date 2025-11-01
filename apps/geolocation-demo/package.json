@@ -1,0 +1,35 @@
+{
+	"name": "rdk-geolocation-demo",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"format": "biome format --write .",
+		"type-check": "tsc --noEmit",
+		"clean": "rm -rf build"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.2",
+		"@types/react": "^19.2.2",
+		"@types/react-dom": "^19.2.2",
+		"@types/three": "^0.180.0",
+		"@vitejs/plugin-react": "^5.1.0",
+		"typescript": "^5.9.3",
+		"vite": "^7.1.12",
+		"vite-plugin-mkcert": "^1.17.9",
+		"vite-tsconfig-paths": "^5.1.4"
+	},
+	"dependencies": {
+		"@omnidotdev/rdk": "workspace:*",
+		"@react-three/drei": "^10.7.6",
+		"@react-three/fiber": "^9.4.0",
+		"locar": "^0.1.1",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
+		"three": "^0.180.0"
+	}
+}
