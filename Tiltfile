@@ -5,8 +5,6 @@ local_resource(
   "dev",
   "bun run dev",
   serve_cmd="bun run dev",
-  auto_init=False,
-  trigger_mode=TRIGGER_MODE_MANUAL
 )
 
 local_resource(
