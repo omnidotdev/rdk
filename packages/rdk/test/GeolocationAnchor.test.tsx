@@ -4,12 +4,13 @@ import { GeolocationAnchor } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
 const GOING_TO_THE_SUN_MONTAIN_COORDINATES = {
-  latitude: 48.68951980519457,
-  longitude: -113.6363247804274,
-} as const, MACHU_PICCHU_COORDINATES = {
-  latitude: -13.163068158989277,
-  longitude: -72.5451171875,
-} as const;
+		latitude: 48.68951980519457,
+		longitude: -113.6363247804274,
+	} as const,
+	MACHU_PICCHU_COORDINATES = {
+		latitude: -13.163068158989277,
+		longitude: -72.5451171875,
+	} as const;
 
 beforeEach(() => {
 	clearGlobalMocks();
