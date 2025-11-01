@@ -1,5 +1,6 @@
 export * from "./engine";
 export * from "./fiducial";
+export * from "./geolocation";
 
 // export XR types for consumer use
 export type {

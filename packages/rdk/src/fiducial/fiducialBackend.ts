@@ -25,7 +25,7 @@ export interface FiducialSessionOptions {
 }
 
 /**
- * Create a fiducial marker-based XR backend.
+ * Create a fiducial marker-based AR backend.
  */
 const createFiducialBackend = (options: unknown): XRBackend => {
 	const opts = (options || {}) as FiducialSessionOptions;

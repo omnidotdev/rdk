@@ -1,4 +1,5 @@
-import type { FiducialSessionOptions } from "../../../fiducial";
+import type { FiducialSessionOptions } from "fiducial";
+import type { GeolocationSessionOptions } from "geolocation";
 
 /**
  * Session options mapping for different XR modes.
@@ -6,10 +7,7 @@ import type { FiducialSessionOptions } from "../../../fiducial";
  */
 export interface XRSessionOptionsMap {
 	fiducial: FiducialSessionOptions;
-	// TODO add more modes as they are implemented
-	// image: ImageTrackingSessionOptions;
-	// geolocation: GeolocationSessionOptions;
-	// webxr: WebXRSessionOptions;
+	geolocation: GeolocationSessionOptions;
 }
 
 /**
