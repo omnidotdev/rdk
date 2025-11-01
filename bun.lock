@@ -18,7 +18,29 @@
         "@omnidotdev/rdk": "workspace:*",
         "@react-three/drei": "^10.7.6",
         "@react-three/fiber": "^9.4.0",
-        "locar": "0.1.1",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "three": "^0.180.0",
+      },
+      "devDependencies": {
+        "@biomejs/biome": "^2.3.2",
+        "@types/react": "^19.2.2",
+        "@types/react-dom": "^19.2.2",
+        "@types/three": "^0.180.0",
+        "@vitejs/plugin-react": "^5.1.0",
+        "typescript": "^5.9.3",
+        "vite": "^7.1.12",
+        "vite-plugin-mkcert": "^1.17.9",
+        "vite-tsconfig-paths": "^5.1.4",
+      },
+    },
+    "apps/geolocation-demo": {
+      "name": "rdk-geolocation-demo",
+      "dependencies": {
+        "@omnidotdev/rdk": "workspace:*",
+        "@react-three/drei": "^10.7.6",
+        "@react-three/fiber": "^9.4.0",
+        "locar": "^0.1.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "three": "^0.180.0",
@@ -968,6 +990,8 @@
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 
     "rdk-fiducial-marker-demo": ["rdk-fiducial-marker-demo@workspace:apps/fiducial-demo"],
+
+    "rdk-geolocation-demo": ["rdk-geolocation-demo@workspace:apps/geolocation-demo"],
 
     "react": ["react@19.2.0", "", {}, "sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ=="],
 
