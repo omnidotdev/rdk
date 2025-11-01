@@ -60,7 +60,7 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
 				console.error("[geolocationBackend] webcam error:", error);
 			});
 
-			// device orientation
+			// device orientation using LocAR.js built-in permission handling
 			deviceOrientation = new LocAR.DeviceOrientationControls(camera);
 
 			deviceOrientation.on("deviceorientationgranted", (ev: any) => {
@@ -68,8 +68,19 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
 			});
 
 			deviceOrientation.on("deviceorientationerror", (err: any) => {
-				console.error("[geolocationBackend] device orientation error:", err);
+				console.error("[geolocationBackend] Device orientation error:", err);
 			});
+
+			// Use LocAR.js built-in permission methods
+			try {
+				if (deviceOrientation.requestOrientationPermissions) {
+					await deviceOrientation.requestOrientationPermissions();
+				} else if (deviceOrientation.createObtainPermissionGestureDialog) {
+					deviceOrientation.createObtainPermissionGestureDialog();
+				}
+			} catch (err) {
+				console.warn("[geolocationBackend] Could not request orientation permissions:", err);
+			}
 
 			deviceOrientation.init?.();
 
