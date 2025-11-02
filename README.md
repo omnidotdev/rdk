@@ -7,12 +7,12 @@
 
 </div>
 
-**Omni Reality Development Kit (RDK)** is a React-first framework for building web-based XR experiences, from AR to VR, through one unified API powered by Three.js and `react-three-fiber`.
+**Omni Reality Development Kit (RDK)** is a React-first framework for building web-based XR experiences, from AR to VR, orchestrated through one unified API powered by Three.js and `react-three-fiber`.
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
-> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) is working (see [`apps/fiducial-demo`](./apps/fiducial-demo)).
-> Location-based AR using [LocAR.js](https://github.com/ar-js-org/locar.js) and native WebXR integration via `@react-three/xr` are coming next.
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) and location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js) are working (see [`apps/`](./apps/) for demos).
+> Native WebXR integration via `@react-three/xr` is coming next.
 
 ## Overview
 
@@ -22,7 +22,7 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 | ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | ------- | --- | ----------------------------------------------------------------------------------------- |
 | **Fiducial (Pattern/Barcode)**       | ⚗️ Experimental | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | ✅      | ✅  | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
 | **Image Tracking (Natural Feature)** | 🧭 Planned      | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | N/A     | N/A | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
-| **Geolocation / World Anchors**      | 🚧 In Progress (https://github.com/omnidotdev/rdk/pull/8)      | [LocAR.js](https://github.com/ar-js-org/locar.js)/WebXR Geo Anchors                                  | N/A     | N/A | Uses GPS + compass; can integrate Mapbox or Cesium.                                       |
+| **Geolocation / World Anchors**      | 🧭 Experimental | [LocAR.js](https://github.com/ar-js-org/locar.js)                                                    | N/A     | N/A | Uses GPS + compass; may later integrate Mapbox or Cesium.                                 |
 | **WebXR Native AR/VR Session**       | 🧭 Planned      | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A     | N/A | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
 | **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A | Uses webcam + ML model; lightweight and fast.                                             |
 | **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A     | N/A | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
@@ -32,6 +32,10 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 | **SLAM/Visual Positioning (VPS)**    | 🧭 Planned      | Custom                                                                                               | N/A     | N/A | Requires world map data; long-term goal.                                                  |
 | **Voice/Gesture Interaction**        | 🧭 Planned      | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | N/A     | N/A | Enables multimodal input: voice, hand, gaze.                                              |
 | **Mixed Reality Compositing**        | 🧭 Planned      | WebXR Layers/CanvasCaptureStream                                                                     | N/A     | N/A | Transparent overlays/live compositing.                                                    |
+
+## Demos
+
+Demo applications showcasing different AR capabilities can be seen in the `apps/` directory. View their READMEs for more information.
 
 ## Getting Started
 
@@ -51,12 +55,19 @@ bun run build    # build all packages
 bun run test     # run tests
 ```
 
-### Downstream Installation
+#### Adding a New Module
+
+If you want to add a new XR module to be orchestrated by the overarching RDK API:
+
+1. Create `packages/rdk/src/[moduleName]`
+2. Add the corresponding mode/module to `XRMode.type.ts`, `XRSessionOptions.type.ts`, `XRUtils.type.ts`, and `XRSessionProvider.type.ts`.
+
+### Installation
 
 Install RDK and required peer dependencies:
 
 ```bash
-bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber react react-dom three
+bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber locar react react-dom three
 ```
 
 See [`apps/fiducial-demo`](./apps/fiducial-demo) for an example of usage. More demos will be added as more use cases beyond fiducial marker-based AR are implemented.
@@ -83,6 +94,10 @@ Babylon.js support may be added in the future, but RDK is currently focused on t
 
 - [Reactylon](https://www.reactylon.com)
 - [react-babylonjs](https://github.com/brianzinn/react-babylonjs)
+
+## Contributing
+
+See Omni's [contributing docs](https://docs.omni.dev/contributing/overview).
 
 ## License
 

@@ -65,10 +65,7 @@ export const DEFAULT_XR_SESSION_OPTIONS = {
 		patternRatio: 0.5,
 		matrixCodeType: "3x3",
 	},
-	// TODO add defaults for other modes when implemented
-	// image: { ... },
-	// geolocation: { ... },
-	// webxr: { ... },
+	geolocation: {},
 } as const satisfies Record<XRMode, XRSessionOptions<XRMode>>;
 
 /**

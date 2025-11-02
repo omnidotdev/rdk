@@ -5,6 +5,44 @@ import { createElement, ReactNode } from "react";
  * Mock implementation of `XRSessionProvider`.
  */
 export const mockXRContext = {
+	mode: "fiducial",
+	ready: true,
+	backend: {
+		init: vi.fn().mockResolvedValue(undefined),
+		update: vi.fn(),
+		dispose: vi.fn(),
+		getInternal: vi.fn(() => ({
+			arContext: {
+				_arMarkersControls: [],
+				init: vi.fn().mockResolvedValue(undefined),
+				update: vi.fn(),
+				parameters: {},
+				arController: null,
+				dispose: vi.fn(),
+			},
+			arSource: {
+				init: vi.fn().mockResolvedValue(undefined),
+				onReady: vi.fn(),
+				domElement:
+					typeof document !== "undefined"
+						? document.createElement("video")
+						: {},
+				parameters: {},
+				ready: false,
+				dispose: vi.fn(),
+			},
+			locar: {
+				add: vi.fn(),
+				remove: vi.fn(),
+				startGps: vi.fn().mockReturnValue(true),
+				stopGps: vi.fn().mockReturnValue(true),
+				fakeGps: vi.fn(),
+				on: vi.fn(),
+				off: vi.fn(),
+				emit: vi.fn(),
+			},
+		})),
+	},
 	arToolkitContext: {
 		_arMarkersControls: [],
 		init: vi.fn().mockResolvedValue(undefined),

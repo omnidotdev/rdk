@@ -9,9 +9,11 @@ import {
 } from "react";
 import { match } from "ts-pattern";
 
-import createFiducialBackend from "fiducial/fiducialBackend";
-
-import type { PropsWithChildren } from "react";
+import { createFiducialBackend, FiducialSessionOptions } from "fiducial";
+import {
+	createGeolocationBackend,
+	GeolocationSessionOptions,
+} from "geolocation";
 import {
 	XRBackend,
 	XRContextValue,
@@ -19,7 +21,9 @@ import {
 	XRSessionOptions,
 } from "lib/types/xr";
 
-const XRContext = createContext<XRContextValue | null>(null);
+import type { PropsWithChildren } from "react";
+
+export const XRContext = createContext<XRContextValue | null>(null);
 
 /**
  * Use `XRSessionProvider` context.
@@ -59,11 +63,15 @@ const XRSessionProvider = <TMode extends XRMode = XRMode>({
 	const backend = useMemo<XRBackend>(
 		() =>
 			match(mode as XRMode)
-				.with("fiducial", () => createFiducialBackend(options))
-				// TODO as more modes are implemented
-				// .with("geolocation", () => createGeoBackend(options as GeoOptions))
-				// .with("webxr", () => createWebXRBackend(options as WebXROptions))
-				.otherwise(() => createFiducialBackend(options)),
+				.with("fiducial", () =>
+					createFiducialBackend(options as FiducialSessionOptions),
+				)
+				.with("geolocation", () =>
+					createGeolocationBackend(options as GeolocationSessionOptions),
+				)
+				.otherwise(() => {
+					throw new Error(`Unsupported XR mode "${mode}"`);
+				}),
 		[mode, options],
 	);
 
@@ -88,8 +96,8 @@ const XRSessionProvider = <TMode extends XRMode = XRMode>({
 	}, [backend, scene, camera, gl]);
 
 	// update backend per frame
-	useFrame((_state, dt) => {
-		backendRef.current?.update?.(dt);
+	useFrame(() => {
+		backendRef.current?.update?.();
 	});
 
 	// memoize value so consumers don't rerender unnecessarily

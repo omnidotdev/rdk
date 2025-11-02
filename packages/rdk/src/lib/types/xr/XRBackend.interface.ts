@@ -16,7 +16,7 @@ export interface XRBackend {
 	 * Update the XR backend on each frame.
 	 * @param dt delta time since last frame in seconds
 	 */
-	update?(dt: number): void;
+	update?(dt?: number): void;
 
 	/**
 	 * Clean up resources when the backend is no longer needed.

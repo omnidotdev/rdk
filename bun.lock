@@ -12,7 +12,7 @@
       },
     },
     "apps/fiducial-demo": {
-      "name": "rdk-fiducial-marker-demo",
+      "name": "rdk-fiducial-demo",
       "dependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
         "@omnidotdev/rdk": "workspace:*",
@@ -34,9 +34,32 @@
         "vite-tsconfig-paths": "^5.1.4",
       },
     },
+    "apps/geolocation-demo": {
+      "name": "rdk-geolocation-demo",
+      "dependencies": {
+        "@omnidotdev/rdk": "workspace:*",
+        "@react-three/drei": "^10.7.6",
+        "@react-three/fiber": "^9.4.0",
+        "locar": "^0.1.1",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "three": "^0.180.0",
+      },
+      "devDependencies": {
+        "@biomejs/biome": "^2.3.2",
+        "@types/react": "^19.2.2",
+        "@types/react-dom": "^19.2.2",
+        "@types/three": "^0.180.0",
+        "@vitejs/plugin-react": "^5.1.0",
+        "typescript": "^5.9.3",
+        "vite": "^7.1.12",
+        "vite-plugin-mkcert": "^1.17.9",
+        "vite-tsconfig-paths": "^5.1.4",
+      },
+    },
     "packages/rdk": {
       "name": "@omnidotdev/rdk",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "devDependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
         "@biomejs/biome": "^2.3.2",
@@ -48,6 +71,7 @@
         "@types/react-dom": "^19.2.2",
         "@types/three": "^0.180.0",
         "jsdom": "^27.0.1",
+        "locar": "^0.1.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "three": "^0.180.0",
@@ -61,6 +85,7 @@
       "peerDependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
         "@react-three/fiber": "^9.4.0",
+        "locar": "0.1.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "three": "^0.180.0",
@@ -808,6 +833,8 @@
 
     "local-pkg": ["local-pkg@1.1.2", "", { "dependencies": { "mlly": "^1.7.4", "pkg-types": "^2.3.0", "quansync": "^0.2.11" } }, "sha512-arhlxbFRmoQHl33a0Zkle/YWlmNwoyt6QNZEIJcqNbdrsix5Lvc4HyyI3EnwxTYlZYc32EbYrQ8SzEZ7dqgg9A=="],
 
+    "locar": ["locar@0.1.1", "", { "dependencies": { "three": "^0.175.0" } }, "sha512-XrhopHgGRgyxK5xU0V2qXhwtqIx8iQHVA0umuVrdfqt7SpwdBgLc0kAWjI6lBavciyWVm64O+DEHmbfi4JRTuQ=="],
+
     "locate-path": ["locate-path@5.0.0", "", { "dependencies": { "p-locate": "^4.1.0" } }, "sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g=="],
 
     "lodash": ["lodash@4.17.21", "", {}, "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="],
@@ -962,7 +989,9 @@
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 
-    "rdk-fiducial-marker-demo": ["rdk-fiducial-marker-demo@workspace:apps/fiducial-demo"],
+    "rdk-fiducial-demo": ["rdk-fiducial-demo@workspace:apps/fiducial-demo"],
+
+    "rdk-geolocation-demo": ["rdk-geolocation-demo@workspace:apps/geolocation-demo"],
 
     "react": ["react@19.2.0", "", {}, "sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ=="],
 
@@ -1263,6 +1292,8 @@
     "end-of-stream/once": ["once@1.4.0", "", { "dependencies": { "wrappy": "1" } }, "sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w=="],
 
     "its-fine/@types/react-reconciler": ["@types/react-reconciler@0.28.9", "", { "peerDependencies": { "@types/react": "*" } }, "sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg=="],
+
+    "locar/three": ["three@0.175.0", "", {}, "sha512-nNE3pnTHxXN/Phw768u0Grr7W4+rumGg/H6PgeseNJojkJtmeHJfZWi41Gp2mpXl1pg1pf1zjwR4McM1jTqkpg=="],
 
     "micromatch/picomatch": ["picomatch@2.3.1", "", {}, "sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA=="],
 

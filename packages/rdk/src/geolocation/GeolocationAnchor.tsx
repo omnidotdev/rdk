@@ -1,0 +1,193 @@
+import { useFrame, createPortal, useThree } from "@react-three/fiber";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Group } from "three";
+
+import { useXR } from "engine/XRSessionProvider";
+
+import type { PropsWithChildren } from "react";
+
+// global registry to track all anchors and prevent interference
+const anchorRegistry = new Map<
+	string,
+	{
+		/** Anchor group. */
+		anchor: Group;
+		/** Whether the anchor is attached to the real world. */
+		isAttached: boolean;
+		/** Physical target latitude. */
+		latitude: number;
+		/** Physical target longitude. */
+		longitude: number;
+		/** Physical altitude. */
+		altitude: number;
+		/** Callback triggered when the anchor is attached to the real world. */
+		onAttached?: () => void;
+		/** Callback triggered when the anchor's GPS position is updated. */
+		onGpsUpdate?: (pos: any) => void;
+	}
+>();
+
+let gpsInitialized = false;
+
+let globalGpsHandler: ((ev: any) => void) | null = null;
+
+export interface GeolocationAnchorProps extends PropsWithChildren {
+	/** Physical target latitude (where you want the AR object placed in the real world). */
+	latitude: number;
+	/** Physical target longitude (where you want the AR object placed in the real world). */
+	longitude: number;
+	/**
+	 * Physical altitude.
+	 * @default 0
+	 */
+	altitude?: number;
+	/**
+	 * Whether to face the camera every frame (for labels/sprites).
+	 * @default true
+	 */
+	isBillboard?: boolean;
+	/** Called once actually attached to LocAR (after first `gpsupdate`). */
+	onAttached?: () => void;
+	/** Forward raw GPS updates. */
+	onGpsUpdate?: (pos: any) => void;
+}
+
+/**
+ * Geolocation anchor.
+ */
+const GeolocationAnchor = ({
+	latitude,
+	longitude,
+	altitude = 0,
+	isBillboard = true,
+	onAttached,
+	onGpsUpdate,
+	children,
+}: GeolocationAnchorProps) => {
+	const { backend } = useXR();
+
+	const { camera } = useThree();
+
+	const [anchor] = useState(() => new Group()),
+		[anchorId] = useState(() => Math.random().toString(36).slice(2, 11));
+
+	const hasAttachedRef = useRef(false);
+
+	const stableOnAttached = useCallback(() => {
+		onAttached?.();
+	}, [onAttached]);
+
+	const stableOnGpsUpdate = useCallback(
+		(pos: any) => {
+			onGpsUpdate?.(pos);
+		},
+		[onGpsUpdate],
+	);
+
+	useEffect(() => {
+		if (!backend) return;
+
+		const internal = backend.getInternal?.() as any;
+
+		const locar = internal?.locar;
+
+		if (!locar) return;
+
+		// register this anchor with its coordinates
+		anchorRegistry.set(anchorId, {
+			anchor,
+			isAttached: false,
+			latitude,
+			longitude,
+			altitude: altitude || 0,
+			onAttached: stableOnAttached,
+			onGpsUpdate: stableOnGpsUpdate,
+		});
+
+		// set up global GPS handler once
+		if (!gpsInitialized) {
+			globalGpsHandler = (ev: any) => {
+				const pos = ev.position ?? ev;
+
+				// process all registered anchors
+				anchorRegistry.forEach((entry) => {
+					if (!entry.isAttached) {
+						try {
+							locar.add(
+								entry.anchor,
+								entry.longitude,
+								entry.latitude,
+								entry.altitude,
+							);
+							entry.isAttached = true;
+							entry.onAttached?.();
+						} catch (err) {
+							console.error(`❌ Failed to attach anchor:`, err);
+						}
+					}
+
+					// call GPS update callback for all anchors
+					entry.onGpsUpdate?.(pos);
+				});
+			};
+
+			locar.on?.("gpsupdate", globalGpsHandler);
+			gpsInitialized = true;
+		}
+
+		// mark this anchor as needing attachment tracking
+		hasAttachedRef.current = false;
+
+		return () => {
+			// clean up anchor
+			const entry = anchorRegistry.get(anchorId);
+			if (entry?.isAttached) {
+				try {
+					if (typeof locar.remove === "function") {
+						locar.remove(anchor);
+					} else {
+						anchor.removeFromParent();
+					}
+				} catch (err) {
+					console.warn(`⚠️ Error removing anchor ${anchorId}:`, err);
+				}
+			}
+
+			// remove from registry
+			anchorRegistry.delete(anchorId);
+
+			// clean up global handler if no more anchors
+			if (anchorRegistry.size === 0 && globalGpsHandler) {
+				locar.off?.("gpsupdate", globalGpsHandler);
+				globalGpsHandler = null;
+				gpsInitialized = false;
+			}
+		};
+	}, [
+		backend,
+		anchor,
+		anchorId,
+		latitude,
+		longitude,
+		altitude,
+		stableOnAttached,
+		stableOnGpsUpdate,
+	]);
+
+	// billboard after LocAR owns the object
+	useFrame(() => {
+		if (!isBillboard) return;
+		if (!camera) return;
+
+		// check if anchor is attached in registry
+		const entry = anchorRegistry.get(anchorId);
+		if (!entry?.isAttached) return;
+
+		anchor.lookAt(camera.position);
+	});
+
+	// render content into the LocAR-owned anchor
+	return createPortal(<group>{children}</group>, anchor);
+};
+
+export default GeolocationAnchor;
