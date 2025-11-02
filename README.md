@@ -11,7 +11,7 @@
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
-> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) and location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js) are working (see [`apps/`](./apps/) for demos), though they are **experimental** Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) and location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
 > Native WebXR integration via `@react-three/xr` is coming next.
 
 ## Overview
