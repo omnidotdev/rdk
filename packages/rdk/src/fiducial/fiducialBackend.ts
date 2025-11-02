@@ -36,6 +36,7 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 
 	return {
 		async init({ camera, renderer }: XRBackendInitArgs) {
+			// AR.js needs its own video source for proper marker detection
 			arSource = new ArToolkitSource({
 				sourceType: opts.sourceType ?? "webcam",
 			});
@@ -163,7 +164,6 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 			}
 
 			if (source && source.domElement) {
-				// re the video element from DOM
 				const parent = source.domElement.parentNode;
 				if (parent) {
 					parent.removeChild(source.domElement);

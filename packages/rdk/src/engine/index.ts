@@ -1,1 +1,1 @@
-export { default as XRCanvas } from "./XRCanvas";
+export { default as XR } from "./XR";

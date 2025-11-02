@@ -64,8 +64,7 @@ const GeolocationAnchor = ({
 	onGpsUpdate,
 	children,
 }: GeolocationAnchorProps) => {
-	const { backend } = useXR();
-
+	const { backends } = useXR();
 	const { camera } = useThree();
 
 	const [anchor] = useState(() => new Group()),
@@ -85,86 +84,134 @@ const GeolocationAnchor = ({
 	);
 
 	useEffect(() => {
-		if (!backend) return;
+		let cancelled = false;
 
-		const internal = backend.getInternal?.() as any;
+		const initializeAnchor = async () => {
+			try {
+				const geolocationBackend = backends.find((backend) => {
+					const internal = backend.getInternal?.() as any;
 
-		const locar = internal?.locar;
-
-		if (!locar) return;
-
-		// register this anchor with its coordinates
-		anchorRegistry.set(anchorId, {
-			anchor,
-			isAttached: false,
-			latitude,
-			longitude,
-			altitude: altitude || 0,
-			onAttached: stableOnAttached,
-			onGpsUpdate: stableOnGpsUpdate,
-		});
-
-		// set up global GPS handler once
-		if (!gpsInitialized) {
-			globalGpsHandler = (ev: any) => {
-				const pos = ev.position ?? ev;
-
-				// process all registered anchors
-				anchorRegistry.forEach((entry) => {
-					if (!entry.isAttached) {
-						try {
-							locar.add(
-								entry.anchor,
-								entry.longitude,
-								entry.latitude,
-								entry.altitude,
-							);
-							entry.isAttached = true;
-							entry.onAttached?.();
-						} catch (err) {
-							console.error(`❌ Failed to attach anchor:`, err);
-						}
-					}
-
-					// call GPS update callback for all anchors
-					entry.onGpsUpdate?.(pos);
+					return internal?.locar;
 				});
-			};
 
-			locar.on?.("gpsupdate", globalGpsHandler);
-			gpsInitialized = true;
-		}
+				if (!geolocationBackend || cancelled) return;
 
-		// mark this anchor as needing attachment tracking
-		hasAttachedRef.current = false;
+				const internal = geolocationBackend.getInternal?.() as any;
+
+				const locar = internal?.locar;
+
+				if (!locar) return;
+
+				// register this anchor with its coordinates
+				anchorRegistry.set(anchorId, {
+					anchor,
+					isAttached: false,
+					latitude,
+					longitude,
+					altitude: altitude || 0,
+					onAttached: stableOnAttached,
+					onGpsUpdate: stableOnGpsUpdate,
+				});
+
+				// set up global GPS handler once
+				if (!gpsInitialized) {
+					globalGpsHandler = (ev: any) => {
+						const pos = ev.position ?? ev;
+
+						// process all registered anchors
+						anchorRegistry.forEach((entry) => {
+							if (!entry.isAttached) {
+								try {
+									locar.add(
+										entry.anchor,
+										entry.longitude,
+										entry.latitude,
+										entry.altitude,
+									);
+
+									entry.isAttached = true;
+
+									console.log(
+										`🔗 Attached anchor at ${entry.latitude}, ${entry.longitude}, ${entry.altitude}`,
+									);
+
+									entry.onAttached?.();
+								} catch (err) {
+									console.error(`❌ Failed to attach anchor:`, err);
+								}
+							}
+
+							// call GPS update callback for all anchors
+							entry.onGpsUpdate?.(pos);
+						});
+					};
+
+					locar.on?.("gpsupdate", globalGpsHandler);
+
+					gpsInitialized = true;
+				}
+
+				// mark this anchor as needing attachment tracking
+				hasAttachedRef.current = false;
+			} catch (err) {
+				console.error("Failed to initialize geolocation backend:", err);
+			}
+		};
+
+		initializeAnchor();
 
 		return () => {
+			cancelled = true;
+
 			// clean up anchor
 			const entry = anchorRegistry.get(anchorId);
+
 			if (entry?.isAttached) {
 				try {
-					if (typeof locar.remove === "function") {
+					const geolocationBackend = backends.find((backend) => {
+						const internal = backend.getInternal?.() as any;
+
+						return internal?.locar;
+					});
+
+					const internal = geolocationBackend?.getInternal?.() as any;
+
+					const locar = internal?.locar;
+
+					if (typeof locar?.remove === "function") {
 						locar.remove(anchor);
 					} else {
 						anchor.removeFromParent();
 					}
 				} catch (err) {
-					console.warn(`⚠️ Error removing anchor ${anchorId}:`, err);
+					console.error(`⚠️ Error removing anchor ${anchorId}:`, err);
 				}
 			}
 
-			// remove from registry
+			// remove anchor from registry
 			anchorRegistry.delete(anchorId);
 
 			// clean up global handler if no more anchors
 			if (anchorRegistry.size === 0 && globalGpsHandler) {
-				locar.off?.("gpsupdate", globalGpsHandler);
+				const geolocationBackend = backends.find((backend) => {
+					const internal = backend.getInternal?.() as any;
+
+					return internal?.locar;
+				});
+
+				const internal = geolocationBackend?.getInternal?.() as any;
+
+				const locar = internal?.locar;
+
+				locar?.off?.("gpsupdate", globalGpsHandler);
+
 				globalGpsHandler = null;
+
 				gpsInitialized = false;
 			}
 		};
 	}, [
-		backend,
+		backends,
 		anchor,
 		anchorId,
 		latitude,

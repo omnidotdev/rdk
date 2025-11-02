@@ -31,86 +31,94 @@ const FiducialAnchor = ({
 	children,
 }: FiducialAnchorProps) => {
 	const groupRef = useRef<Group>(null);
-	const { backend } = useXR();
+	const { backends } = useXR();
 	const visibleRef = useRef(false);
 	const initializedRef = useRef(false);
 	const arControlsRef = useRef<any>(null);
 
 	useEffect(() => {
-		if (!backend) return;
+		let cancelled = false;
 
-		const internal = backend.getInternal?.() as any;
-		const arContext = internal?.arContext;
-		const group = groupRef.current;
+		const initializeAnchor = async () => {
+			try {
+				const fiducialBackend = backends.find((backend) => {
+					const internal = backend.getInternal?.() as any;
 
-		if (!arContext || !group) return;
+					return internal?.arContext;
+				});
 
-		// normalize so users can pass "data/rdk.patt" or "/data/rdk.patt"
-		const finalPatternUrl =
-			patternUrl && !patternUrl.startsWith("/") ? `/${patternUrl}` : patternUrl;
+				if (!fiducialBackend || cancelled) return;
 
-		// hide by default; AR.js will set `visible=true` when marker is found
-		group.visible = false;
-		initializedRef.current = false;
+				const internal = fiducialBackend.getInternal?.() as any;
 
-		// AR.js sometimes doesn't have arController immediately
-		if (!arContext.arController) {
-			const id = requestAnimationFrame(() => {
-				if (!groupRef.current) return;
-				const again = backend.getInternal?.() as any;
-				const ctx2 = again?.arContext;
-				if (!ctx2?.arController) return;
+				const arContext = internal?.arContext;
 
-				const controls = new ArMarkerControls(ctx2, groupRef.current, {
-					type: finalPatternUrl
-						? "pattern"
-						: barcodeValue
-							? "barcode"
-							: "unknown",
-					patternUrl: finalPatternUrl,
+				const group = groupRef.current;
+
+				if (!arContext || !group) return;
+
+				// hide by default; AR.js will set `visible=true` when marker is found
+				group.visible = false;
+				initializedRef.current = false;
+
+				// AR.js sometimes doesn't have `arController` immediately
+				if (!arContext.arController) {
+					requestAnimationFrame(() => {
+						if (!groupRef.current || cancelled) return;
+
+						const again = fiducialBackend.getInternal?.() as any;
+
+						const ctx = again?.arContext;
+
+						if (!ctx?.arController) return;
+
+						const controls = new ArMarkerControls(ctx, groupRef.current, {
+							type: patternUrl
+								? "pattern"
+								: barcodeValue
+									? "barcode"
+									: "unknown",
+							patternUrl,
+							barcodeValue,
+							...params,
+						});
+
+						arControlsRef.current = controls;
+						initializedRef.current = true;
+					});
+
+					return;
+				}
+
+				const controls = new ArMarkerControls(arContext, group, {
+					type: patternUrl ? "pattern" : barcodeValue ? "barcode" : "unknown",
+					patternUrl,
 					barcodeValue,
 					...params,
 				});
 
 				arControlsRef.current = controls;
+
 				initializedRef.current = true;
+			} catch (err) {
+				console.error("Failed to initialize fiducial backend:", err);
+			}
+		};
 
-				// cleanup
-				return () => {
-					const anyControls = controls as any;
-					/**
-					 * @note AR.js's `ArMarkerControls` has no official TypeScript types and does not formally declare a `.dispose()` method. Some community builds or future versions may implement one, but it's not guaranteed.
-					 *
-					 * Cast to `any` here as a safe check for a runtime `dispose()` function without TypeScript errors. This ensures that if AR.js ever provides an explicit cleanup method, it will still be called
-					 */
-					if (typeof anyControls.dispose === "function") anyControls.dispose();
-					initializedRef.current = false;
-				};
-			});
-			return () => cancelAnimationFrame(id);
-		}
-
-		const controls = new ArMarkerControls(arContext, group, {
-			type: finalPatternUrl ? "pattern" : barcodeValue ? "barcode" : "unknown",
-			patternUrl: finalPatternUrl,
-			barcodeValue,
-			...params,
-		});
-
-		arControlsRef.current = controls;
-		initializedRef.current = true;
+		initializeAnchor();
 
 		return () => {
-			const anyControls = controls as any;
+			cancelled = true;
+			const anyControls = arControlsRef.current as any;
 			/**
 			 * @note AR.js's `ArMarkerControls` has no official TypeScript types and does not formally declare a `.dispose()` method. Some community builds or future versions may implement one, but it's not guaranteed.
 			 *
 			 * Cast to `any` here as a safe check for a runtime `dispose()` function without TypeScript errors. This ensures that if AR.js ever provides an explicit cleanup method, it will still be called
 			 */
-			if (typeof anyControls.dispose === "function") anyControls.dispose();
+			if (typeof anyControls?.dispose === "function") anyControls.dispose();
 			initializedRef.current = false;
 		};
-	}, [backend, patternUrl, barcodeValue, params]);
+	}, [backends, patternUrl, barcodeValue, params]);
 
 	// watch visibility
 	useFrame(() => {
@@ -119,6 +127,7 @@ const FiducialAnchor = ({
 		// always keep group hidden until AR.js is initialized and controls it
 		if (!group || !initializedRef.current) {
 			if (group) group.visible = false;
+
 			return;
 		}
 
@@ -136,7 +145,8 @@ const FiducialAnchor = ({
 	return (
 		<group
 			ref={groupRef}
-			visible={false} // Start invisible by default
+			// start invisible by default
+			visible={false}
 		>
 			{children}
 		</group>
