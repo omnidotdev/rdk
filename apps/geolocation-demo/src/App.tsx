@@ -35,8 +35,8 @@ const App = () => (
 				options={
 					{
 						// enable fake GPS for testing: uncomment and adjust to preferred location
-						// fakeLat: ...,
-						// fakeLon: ...,
+						// fakeLat: BASE_LATITUDE,
+						// fakeLon: BASE_LONGITUDE,
 					}
 				}
 			>
