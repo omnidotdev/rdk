@@ -60,7 +60,7 @@ bun run test     # run tests
 If you want to add a new XR module to be orchestrated by the overarching RDK API:
 
 1. Create `packages/rdk/src/[moduleName]`
-2. Export your module files from `packages/rdk/src/index.ts`
+2. Export the module files from `packages/rdk/src/index.ts`
 3. If needed, add session compatibility checks to `XRSessionProvider`
 
 See the `fiducial/` and `geolocation/` modules for reference implementations.
