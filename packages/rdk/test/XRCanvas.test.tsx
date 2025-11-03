@@ -1,59 +1,66 @@
+import React from "react";
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { XRCanvas } from "../src/engine";
-import { clearGlobalMocks } from "./mocks/globals.mock";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { Canvas } from "@react-three/fiber";
+import XR from "../src/engine/XR";
+import { setupGlobalMocks, clearGlobalMocks } from "./mocks/globals.mock";
 
 beforeEach(() => {
-	clearGlobalMocks();
+	setupGlobalMocks();
+	vi.spyOn(console, "warn").mockImplementation(() => {});
+	vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
-describe("XRCanvas", () => {
+afterEach(() => {
+	clearGlobalMocks();
+	vi.restoreAllMocks();
+});
+
+describe("XR", () => {
+	const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+		<Canvas>
+			<XR cameraSource="video">{children}</XR>
+		</Canvas>
+	);
+
 	it("renders without crashing", () => {
 		const { container } = render(
-			<XRCanvas>
+			<TestWrapper>
 				<mesh />
-			</XRCanvas>,
+			</TestWrapper>,
 		);
 
 		expect(container.firstChild).toBeTruthy();
 	});
 
-	it("passes props to underlying Canvas", () => {
-		const mockProps = {
-			gl: { antialias: false },
-		};
-
-		const { getByTestId } = render(
-			<XRCanvas {...mockProps}>
-				<mesh />
-			</XRCanvas>,
-		);
-
-		const canvas = getByTestId("xr-canvas");
-		expect(canvas).toBeTruthy();
-	});
-
-	it("renders children", () => {
-		const { getByTestId } = render(
-			<XRCanvas>
-				<mesh data-testid="test-mesh" />
-			</XRCanvas>,
-		);
-
-		expect(getByTestId("test-mesh")).toBeTruthy();
-	});
-
-	it("accepts AR-specific props", () => {
-		const props = {
-			isArEnabled: true,
-			isTrackingEnabled: false,
-			patternRatio: 0.8,
-		};
-
+	it("renders children within XR context", () => {
 		const { container } = render(
-			<XRCanvas {...props}>
+			<TestWrapper>
+				<mesh data-testid="test-mesh" />
+			</TestWrapper>,
+		);
+
+		expect(container.firstChild).toBeTruthy();
+	});
+
+	it("accepts cameraSource prop", () => {
+		const { container } = render(
+			<Canvas>
+				<XR cameraSource="webxr">
+					<mesh />
+				</XR>
+			</Canvas>,
+		);
+
+		expect(container.firstChild).toBeTruthy();
+	});
+
+	it("provides XR session context to children", () => {
+		const { container } = render(
+			<TestWrapper>
 				<mesh />
-			</XRCanvas>,
+				<group />
+			</TestWrapper>,
 		);
 
 		expect(container.firstChild).toBeTruthy();

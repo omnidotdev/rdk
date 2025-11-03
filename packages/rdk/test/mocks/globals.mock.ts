@@ -139,7 +139,8 @@ export function setupGlobalMocks(): void {
 	// @ts-ignore
 	global.LocAR = mockLocAR;
 
-	// Suppress console warnings in tests
+	// suppress console warnings in tests
+	// @ts-ignore
 	global.console.warn = vi.fn();
 }
 

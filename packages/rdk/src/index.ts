@@ -4,9 +4,6 @@ export * from "./geolocation";
 
 // export XR types for consumer use
 export type {
-	XRMode,
-	XRSessionOptions,
-	XRSessionOptionsMap,
 	XRBackend,
 	XRContextValue,
 } from "./lib/types/xr";
