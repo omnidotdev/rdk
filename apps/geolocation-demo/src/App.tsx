@@ -41,7 +41,6 @@ const App = () => (
 				}
 			>
 				<GeolocationAnchor
-					isBillboard
 					latitude={COORDS.center.lat}
 					longitude={COORDS.center.lon}
 					onAttached={() => console.log("🟠 Orange box attached!")}
@@ -55,7 +54,6 @@ const App = () => (
 				<GeolocationAnchor
 					latitude={COORDS.north.lat}
 					longitude={COORDS.north.lon}
-					isBillboard
 					onAttached={() => console.log("🎯 Main GPS Pin attached!")}
 					onGpsUpdate={(pos) => console.log("📍 GPS update:", pos)}
 				>
@@ -66,7 +64,6 @@ const App = () => (
 					latitude={COORDS.south.lat}
 					longitude={COORDS.south.lon}
 					altitude={10}
-					isBillboard
 					onAttached={() => console.log("🔴 Large red cube attached!")}
 				>
 					<mesh scale={1}>
@@ -80,9 +77,9 @@ const App = () => (
 				</GeolocationAnchor>
 
 				<GeolocationAnchor
+					isBillboard={false}
 					latitude={COORDS.east.lat}
 					longitude={COORDS.east.lon}
-					isBillboard={false}
 					onAttached={() => console.log("🗼 Tower attached!")}
 				>
 					<Landmark isAnimated type="tower" color="#4a90e2" scale={10} />
@@ -91,16 +88,15 @@ const App = () => (
 				<GeolocationAnchor
 					latitude={COORDS.west.lat}
 					longitude={COORDS.west.lon}
-					isBillboard
 					onAttached={() => console.log("🧭 Compass attached!")}
 				>
 					<Compass isAnimated scale={1.2} />
 				</GeolocationAnchor>
 
 				<GeolocationAnchor
+					isBillboard={false}
 					latitude={COORDS.northeast.lat}
 					longitude={COORDS.northeast.lon}
-					isBillboard={false}
 					onAttached={() => console.log("🏢 Building attached!")}
 				>
 					<Landmark type="building" color="#27ae60" scale={8} />
