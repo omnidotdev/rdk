@@ -73,7 +73,7 @@ describe("XRSessionProvider", () => {
 					}
 				},
 
-			// ensure geo session registers second
+				// ensure geo session registers second
 				sessionType === "GeolocationSession" ? 50 : 0,
 			);
 
@@ -152,10 +152,10 @@ describe("XRSessionProvider", () => {
 
 		await waitFor(() => {
 			expect(console.error).toHaveBeenCalledWith(
-			expect.stringContaining(
-				"❌ [RDK] INCOMPATIBLE SESSIONS: FiducialSession and GeolocationSession cannot be used together",
-			),
-		);
+				expect.stringContaining(
+					"❌ [RDK] INCOMPATIBLE SESSIONS: FiducialSession and GeolocationSession cannot be used together",
+				),
+			);
 		});
 	});
 
