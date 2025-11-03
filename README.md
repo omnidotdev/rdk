@@ -37,6 +37,16 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 
 Demo applications showcasing different AR capabilities can be seen in the `apps/` directory. View their READMEs for more information.
 
+## Ecosystem
+
+Since RDK builds on [`@react-three/fiber`](https://github.com/pmndrs/react-three-fiber) and [`three.js`](https://github.com/mrdoob/three.js), the R3F and Three.js ecosystems are accessible to RDK. Explore the ecosystem by visiting the [official website](https://react-three-fiber.vercel.app/) and [GitHub repository](https://github.com/pmndrs/react-three-fiber).
+
+## Performance
+
+RDK is brand new, performance patterns are still being explored. However, we are committed to optimizing performance and ensuring a smooth user experience, and community discussion and benchmarks are appreciated.
+
+For now, we proxy performance suggestions to [R3F's performance guide](https://r3f.docs.pmnd.rs/advanced/scaling-performance) where applicable. Great practices for scaling are outlined there, such as mesh instancing and resource caching.
+
 ## Getting Started
 
 ### Local Development
