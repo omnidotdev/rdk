@@ -3,7 +3,7 @@ import type { PropsWithChildren } from "react";
 
 export interface XRProps extends PropsWithChildren {
 	/**
-	 * Camera source type; video uses `getUserMedia`, webxr reserved for future `@react-three/xr`
+	 * Camera source type; video uses `getUserMedia`, webxr reserved for future `@react-three/xr`.
 	 * @default "video"
 	 */
 	cameraSource?: "video" | "webxr";
