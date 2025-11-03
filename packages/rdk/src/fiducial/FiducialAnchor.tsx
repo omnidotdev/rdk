@@ -19,8 +19,6 @@ export interface FiducialAnchorProps extends PropsWithChildren {
 
 /**
  * Fiducial anchor that attaches its child group to a real-world fiducial marker.
- *
- * Must be used inside `<XRCanvas mode="fiducial" />`.
  */
 const FiducialAnchor = ({
 	patternUrl,
