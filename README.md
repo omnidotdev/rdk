@@ -18,20 +18,20 @@
 
 RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.js for geolocation-based AR (coming soon), and WebXR (coming soon) for device-native support under one React-first abstraction powered by Three.js.
 
-| Capability/Use Case                  | Status          | Backend (Current or Proposed)                                                                        | Android | iOS | Notes                                                                                     |
-| ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | ------- | --- | ----------------------------------------------------------------------------------------- |
-| **Fiducial (Pattern/Barcode)**       | ⚗️ Experimental | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | ✅      | ✅  | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
-| **Image Tracking (Natural Feature)** | 🧭 Planned      | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | N/A     | N/A | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
+| Capability/Use Case                  | Status                  | Backend (Current or Proposed)                                                                        | Android | iOS | Notes                                                                                     |
+| ------------------------------------ | ----------------------- | ---------------------------------------------------------------------------------------------------- | ------- | --- | ----------------------------------------------------------------------------------------- |
+| **Fiducial (Pattern/Barcode)**       | ⚗️ Experimental         | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | ✅      | ✅  | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
+| **Image Tracking (Natural Feature)** | 🧭 Planned              | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | N/A     | N/A | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
 | **Geolocation / World Anchors**      | ⏳ Coming Soon (v0.2.0) | [LocAR.js](https://github.com/ar-js-org/locar.js)                                                    | N/A     | N/A | Uses GPS + compass; may later integrate Mapbox or Cesium.                                 |
-| **WebXR Native AR/VR Session**       | 🧭 Planned      | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A     | N/A | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
-| **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A | Uses webcam + ML model; lightweight and fast.                                             |
-| **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A     | N/A | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
-| **Hand Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A | Supported on Chrome + Meta; ML fallback possible.                                         |
-| **Plane/Surface Detection**          | 🧭 Planned      | [WebXR Hit Test API](https://immersive-web.github.io/hit-test)/ar.js (limited)                       | N/A     | N/A | Enables AR object placement on flat surfaces.                                             |
-| **Depth Sensing/Environment Mesh**   | 🧭 Planned      | [WebXR Depth Sensing API](https://immersive-web.github.io/depth-sensing)                             | N/A     | N/A | Provides per-pixel depth; early spec.                                                     |
-| **SLAM/Visual Positioning (VPS)**    | 🧭 Planned      | Custom                                                                                               | N/A     | N/A | Requires world map data; long-term goal.                                                  |
-| **Voice/Gesture Interaction**        | 🧭 Planned      | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | N/A     | N/A | Enables multimodal input: voice, hand, gaze.                                              |
-| **Mixed Reality Compositing**        | 🧭 Planned      | WebXR Layers/CanvasCaptureStream                                                                     | N/A     | N/A | Transparent overlays/live compositing.                                                    |
+| **WebXR Native AR/VR Session**       | 🧭 Planned              | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A     | N/A | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
+| **Face Tracking**                    | 🧭 Planned              | -                                                                                                    | N/A     | N/A | Uses webcam + ML model; lightweight and fast.                                             |
+| **Body/Pose Tracking**               | 🧭 Planned              | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A     | N/A | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
+| **Hand Tracking**                    | 🧭 Planned              | -                                                                                                    | N/A     | N/A | Supported on Chrome + Meta; ML fallback possible.                                         |
+| **Plane/Surface Detection**          | 🧭 Planned              | [WebXR Hit Test API](https://immersive-web.github.io/hit-test)/ar.js (limited)                       | N/A     | N/A | Enables AR object placement on flat surfaces.                                             |
+| **Depth Sensing/Environment Mesh**   | 🧭 Planned              | [WebXR Depth Sensing API](https://immersive-web.github.io/depth-sensing)                             | N/A     | N/A | Provides per-pixel depth; early spec.                                                     |
+| **SLAM/Visual Positioning (VPS)**    | 🧭 Planned              | Custom                                                                                               | N/A     | N/A | Requires world map data; long-term goal.                                                  |
+| **Voice/Gesture Interaction**        | 🧭 Planned              | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | N/A     | N/A | Enables multimodal input: voice, hand, gaze.                                              |
+| **Mixed Reality Compositing**        | 🧭 Planned              | WebXR Layers/CanvasCaptureStream                                                                     | N/A     | N/A | Transparent overlays/live compositing.                                                    |
 
 ## Demos
 
@@ -60,7 +60,10 @@ bun run test     # run tests
 If you want to add a new XR module to be orchestrated by the overarching RDK API:
 
 1. Create `packages/rdk/src/[moduleName]`
-2. Add the corresponding mode/module to `XRMode.type.ts`, `XRSessionOptions.type.ts`, `XRUtils.type.ts`, and `XRSessionProvider.type.ts`.
+2. Export your module files from `packages/rdk/src/index.ts`
+3. If needed, add session compatibility checks to `XRSessionProvider`
+
+See the `fiducial/` and `geolocation/` modules for reference implementations.
 
 ### Installation
 
