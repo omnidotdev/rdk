@@ -83,21 +83,11 @@ const createFiducialBackend = (options: unknown): XRBackend => {
 				// let AR.js figure out its internal element size first
 				arSource.onResizeElement();
 
-				// try to use the actual video size first
-				const video = arSource.domElement as
-					| HTMLVideoElement
-					| HTMLImageElement;
+				// use viewport dimensions to match the fullscreen video background
+				const vw = window.innerWidth;
+				const vh = window.innerHeight;
 
-				// sometimes on first call videoWidth/videoHeight are 0
-				const vw =
-					(video && ("videoWidth" in video ? video.videoWidth : video.width)) ||
-					window.innerWidth;
-				const vh =
-					(video &&
-						("videoHeight" in video ? video.videoHeight : video.height)) ||
-					window.innerHeight;
-
-				// set THREE renderer to match the source
+				// set THREE renderer to match viewport (same as video background)
 				renderer.setSize(vw, vh, false);
 
 				// sync AR.js' canvas and the renderer dom element
