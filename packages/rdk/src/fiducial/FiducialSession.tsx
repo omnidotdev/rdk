@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { useXR } from "engine/XRSessionProvider";
-import createFiducialBackend from "./fiducialBackend";
+import { createFiducialBackend } from "fiducial";
 
-import type { FiducialSessionOptions } from "./fiducialBackend";
-import type { XRBackend } from "lib/types/xr";
 import type { PropsWithChildren } from "react";
+import type { FiducialSessionOptions } from "fiducial";
+import type { XRBackend } from "lib/types/xr";
 
 export interface FiducialSessionProps extends PropsWithChildren {
 	/** Fiducial session options. */
@@ -20,8 +20,6 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
 	const { registerBackend, unregisterBackend } = useXR();
 
 	const backendRef = useRef<XRBackend | null>(null);
-
-	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -41,11 +39,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
 					backendRef.current = backend;
 				}
 			} catch (err) {
-				const errorMessage = err instanceof Error ? err.message : String(err);
-
-				console.error("[FiducialSession] Failed to initialize:", error);
-
-				if (!cancelled) setError(errorMessage);
+				console.error("[FiducialSession] Failed to initialize:", err);
 			}
 		};
 

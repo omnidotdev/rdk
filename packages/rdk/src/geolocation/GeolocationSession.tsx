@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { useXR } from "engine/XRSessionProvider";
-import createGeolocationBackend from "./geolocationBackend";
+import { createGeolocationBackend } from "geolocation";
 
-import type { GeolocationSessionOptions } from "./geolocationBackend";
-import type { XRBackend } from "lib/types/xr";
 import type { PropsWithChildren } from "react";
+import type { GeolocationSessionOptions } from "geolocation";
+import type { XRBackend } from "lib/types/xr";
 
 export interface GeolocationSessionProps extends PropsWithChildren {
 	/** Geolocation session options. */
@@ -20,8 +20,6 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
 	const { registerBackend, unregisterBackend } = useXR();
 
 	const backendRef = useRef<XRBackend | null>(null);
-
-	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -41,11 +39,7 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
 					backendRef.current = backend;
 				}
 			} catch (err) {
-				const errorMessage = err instanceof Error ? err.message : String(err);
-
-				console.error("[GeolocationSession] Failed to initialize:", error);
-
-				if (!cancelled) setError(errorMessage);
+				console.error("[GeolocationSession] Failed to initialize:", err);
 			}
 		};
 
