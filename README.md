@@ -16,7 +16,7 @@
 
 ## Overview
 
-RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.js for geolocation-based AR (coming soon), and WebXR (coming soon) for device-native support under one React-first abstraction powered by Three.js.
+RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.js for geolocation-based AR, and WebXR (coming soon) for device-native support under one React-first abstraction powered by Three.js.
 
 | Capability/Use Case                  | Status          | Backend (Current or Proposed)                                                                        | Android | iOS | Notes                                                                                     |
 | ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | ------- | --- | ----------------------------------------------------------------------------------------- |
