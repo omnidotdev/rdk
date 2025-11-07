@@ -22,7 +22,7 @@ RDK unifies multiple XR technologies, such as AR.js for marker-based AR, LocAR.j
 | ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- | ------- | --- | ----------------------------------------------------------------------------------------- |
 | **Fiducial (Pattern/Barcode)**       | ⚗️ Experimental | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | ✅      | ✅  | Uses `.patt` or barcode markers. Reliable for printed markers. No WebXR dependency.       |
 | **Image Tracking (Natural Feature)** | 🧭 Planned      | [AR.js (ARToolKit)](https://github.com/ar-js-org/ar.js)                                              | N/A     | N/A | May use `.mind` or `XRTrackedImage`. Ideal for logos or posters. Requires image database. |
-| **Geolocation / World Anchors**      | ⚗️ Experimental | [LocAR.js](https://github.com/ar-js-org/locar.js)                                                    | ✅     | ✅ | Uses GPS + compass; may later integrate Mapbox or Cesium.                                 |
+| **Geolocation / World Anchors**      | ⚗️ Experimental | [LocAR.js](https://github.com/ar-js-org/locar.js)                                                    | ✅      | ✅  | Uses GPS + compass; may later integrate Mapbox or Cesium.                                 |
 | **WebXR Native AR/VR Session**       | 🧭 Planned      | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | N/A     | N/A | Entry point for true AR/VR sessions. Ties into `XRSessionProvider`.                       |
 | **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A | Uses webcam + ML model; lightweight and fast.                                             |
 | **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A     | N/A | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
@@ -100,6 +100,10 @@ Our long-term focus areas include:
 - **Rust + WebAssembly** for on-device SLAM and visual positioning with near-native performance
 - **WebGPU + Web Workers** for parallelized rendering and physics acceleration
 - **Interoperable modules** designed to plug into any renderer or sensor source over time
+
+## What about React Native?
+
+RDK is designed for web-based XR. We may explore ways to integrate RDK with React Native to enable developers to build cross-platform XR applications using a single codebase, but this is not guaranteed. For now, take a look at [react-native-webgpu](https://github.com/wcandillon/react-native-webgpu). This library blends React Native, Three.js (react-three-fiber), and WebGPU. At the time of writing, it does not appear to support XR, but it could be extended to do so.
 
 ## What about Babylon.js?
 
