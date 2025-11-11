@@ -71,20 +71,7 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
 				console.error("[geolocationBackend] Device orientation error:", err);
 			});
 
-			// Use LocAR.js built-in permission methods
-			try {
-				if (deviceOrientation.requestOrientationPermissions) {
-					await deviceOrientation.requestOrientationPermissions();
-				} else if (deviceOrientation.createObtainPermissionGestureDialog) {
-					deviceOrientation.createObtainPermissionGestureDialog();
-				}
-			} catch (err) {
-				console.warn(
-					"[geolocationBackend] Could not request orientation permissions:",
-					err,
-				);
-			}
-
+			// Initialize permission handling
 			deviceOrientation.init?.();
 
 			// GPS events; just log here, components can listen via `getInternal()`
