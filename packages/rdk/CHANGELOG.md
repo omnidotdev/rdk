@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.2.1
+
+### Patch Changes
+
+- [#17](https://github.com/omnidotdev/rdk/pull/17) [`68b6de2`](https://github.com/omnidotdev/rdk/commit/68b6de2709183129f0fa1f18695d27f38c08caca) Thanks [@nickw1](https://github.com/nickw1)! - Remove unnecessary permission calls in geolocation backend
+
 ## 0.2.0
 
 ### Minor Changes
