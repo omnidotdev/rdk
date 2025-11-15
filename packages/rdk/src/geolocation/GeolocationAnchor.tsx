@@ -6,25 +6,27 @@ import { useXR } from "engine/XRSessionProvider";
 
 import type { PropsWithChildren } from "react";
 
+interface Anchor {
+	/** Anchor group. */
+	anchor: Group;
+	/** Whether the anchor is attached to the real world. */
+	isAttached: boolean;
+	/** Physical target latitude. */
+	latitude: number;
+	/** Physical target longitude. */
+	longitude: number;
+	/** Physical altitude. */
+	altitude: number;
+	/** Callback triggered when the anchor is attached to the real world. */
+	onAttached?: () => void;
+	/** Callback triggered when the anchor's GPS position is updated. */
+	onGpsUpdate?: (pos: any) => void;
+};
+
 // global registry to track all anchors and prevent interference
 const anchorRegistry = new Map<
 	string,
-	{
-		/** Anchor group. */
-		anchor: Group;
-		/** Whether the anchor is attached to the real world. */
-		isAttached: boolean;
-		/** Physical target latitude. */
-		latitude: number;
-		/** Physical target longitude. */
-		longitude: number;
-		/** Physical altitude. */
-		altitude: number;
-		/** Callback triggered when the anchor is attached to the real world. */
-		onAttached?: () => void;
-		/** Callback triggered when the anchor's GPS position is updated. */
-		onGpsUpdate?: (pos: any) => void;
-	}
+	Anchor
 >();
 
 let gpsInitialized = false;
@@ -102,8 +104,29 @@ const GeolocationAnchor = ({
 
 				if (!locar) return;
 
-				// register this anchor with its coordinates
-				anchorRegistry.set(anchorId, {
+				const addAnchor = (anchor: Anchor) => {
+                    try {
+                        locar.add(
+                            anchor.anchor,
+                            anchor.longitude,
+                            anchor.latitude,
+                            anchor.altitude,
+                        );
+
+                        anchor.isAttached = true;
+
+                        console.log(
+                            `🔗 Attached anchor at ${anchor.latitude}, ${anchor.longitude}, ${anchor.altitude}`,
+                        );
+
+                        anchor.onAttached?.();
+                    } catch (err) {
+                        console.error(`❌ Failed to attach anchor:`, err);
+                    }
+                };
+
+
+				const curAnchor = {
 					anchor,
 					isAttached: false,
 					latitude,
@@ -111,7 +134,9 @@ const GeolocationAnchor = ({
 					altitude: altitude || 0,
 					onAttached: stableOnAttached,
 					onGpsUpdate: stableOnGpsUpdate,
-				});
+				};
+				// register this anchor with its coordinates
+				anchorRegistry.set(anchorId, curAnchor);
 
 				// set up global GPS handler once
 				if (!gpsInitialized) {
@@ -121,24 +146,7 @@ const GeolocationAnchor = ({
 						// process all registered anchors
 						anchorRegistry.forEach((entry) => {
 							if (!entry.isAttached) {
-								try {
-									locar.add(
-										entry.anchor,
-										entry.longitude,
-										entry.latitude,
-										entry.altitude,
-									);
-
-									entry.isAttached = true;
-
-									console.log(
-										`🔗 Attached anchor at ${entry.latitude}, ${entry.longitude}, ${entry.altitude}`,
-									);
-
-									entry.onAttached?.();
-								} catch (err) {
-									console.error(`❌ Failed to attach anchor:`, err);
-								}
+								addAnchor(entry);
 							}
 
 							// call GPS update callback for all anchors
@@ -154,6 +162,11 @@ const GeolocationAnchor = ({
 					locar.on?.("gpsupdate", globalGpsHandler);
 
 					gpsInitialized = true;
+				}
+
+				// in case anchor is added after we receive a GPS position
+				if(!curAnchor.isAttached) {
+					addAnchor(curAnchor);
 				}
 
 				// mark this anchor as needing attachment tracking
