@@ -146,6 +146,11 @@ const GeolocationAnchor = ({
 						});
 					};
 
+					const lastLocation = locar.getLastKnownLocation();
+					if(lastLocation !== null) {
+						globalGpsHandler?.({coords: lastLocation});
+					}
+
 					locar.on?.("gpsupdate", globalGpsHandler);
 
 					gpsInitialized = true;
