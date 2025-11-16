@@ -5,6 +5,7 @@ import { Group } from "three";
 import { useXR } from "engine/XRSessionProvider";
 
 import type { PropsWithChildren } from "react";
+import type { LonLat } from "locar";
 
 interface Anchor {
 	/** Anchor group. */
@@ -30,6 +31,7 @@ const anchorRegistry = new Map<
 >();
 
 let gpsInitialized = false;
+let lastLocation : LonLat | null = null;
 
 let globalGpsHandler: ((ev: any) => void) | null = null;
 
@@ -138,6 +140,7 @@ const GeolocationAnchor = ({
 				// register this anchor with its coordinates
 				anchorRegistry.set(anchorId, curAnchor);
 
+
 				// set up global GPS handler once
 				if (!gpsInitialized) {
 					globalGpsHandler = (ev: any) => {
@@ -154,19 +157,22 @@ const GeolocationAnchor = ({
 						});
 					};
 
-					const lastLocation = locar.getLastKnownLocation();
+					lastLocation = locar.getLastKnownLocation();
 					if(lastLocation !== null) {
-						globalGpsHandler?.({coords: lastLocation});
+						// in case anchor is added after we receive a GPS position
+						if(!curAnchor.isAttached) {
+							addAnchor(curAnchor);
+						}
 					}
 
 					locar.on?.("gpsupdate", globalGpsHandler);
 
 					gpsInitialized = true;
+
 				}
 
-				// in case anchor is added after we receive a GPS position
-				if(!curAnchor.isAttached) {
-					addAnchor(curAnchor);
+				if(lastLocation !== null) {
+					globalGpsHandler?.({coords: lastLocation});
 				}
 
 				// mark this anchor as needing attachment tracking
