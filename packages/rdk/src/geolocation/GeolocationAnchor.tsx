@@ -22,16 +22,13 @@ interface Anchor {
 	onAttached?: () => void;
 	/** Callback triggered when the anchor's GPS position is updated. */
 	onGpsUpdate?: (pos: any) => void;
-};
+}
 
 // global registry to track all anchors and prevent interference
-const anchorRegistry = new Map<
-	string,
-	Anchor
->();
+const anchorRegistry = new Map<string, Anchor>();
 
 let gpsInitialized = false;
-let lastLocation : LonLat | null = null;
+let lastLocation: LonLat | null = null;
 
 let globalGpsHandler: ((ev: any) => void) | null = null;
 
@@ -107,26 +104,25 @@ const GeolocationAnchor = ({
 				if (!locar) return;
 
 				const addAnchor = (anchor: Anchor) => {
-                    try {
-                        locar.add(
-                            anchor.anchor,
-                            anchor.longitude,
-                            anchor.latitude,
-                            anchor.altitude,
-                        );
+					try {
+						locar.add(
+							anchor.anchor,
+							anchor.longitude,
+							anchor.latitude,
+							anchor.altitude,
+						);
 
-                        anchor.isAttached = true;
+						anchor.isAttached = true;
 
-                        console.log(
-                            `🔗 Attached anchor at ${anchor.latitude}, ${anchor.longitude}, ${anchor.altitude}`,
-                        );
+						console.log(
+							`🔗 Attached anchor at ${anchor.latitude}, ${anchor.longitude}, ${anchor.altitude}`,
+						);
 
-                        anchor.onAttached?.();
-                    } catch (err) {
-                        console.error(`❌ Failed to attach anchor:`, err);
-                    }
-                };
-
+						anchor.onAttached?.();
+					} catch (err) {
+						console.error(`❌ Failed to attach anchor:`, err);
+					}
+				};
 
 				const curAnchor = {
 					anchor,
@@ -139,7 +135,6 @@ const GeolocationAnchor = ({
 				};
 				// register this anchor with its coordinates
 				anchorRegistry.set(anchorId, curAnchor);
-
 
 				// set up global GPS handler once
 				if (!gpsInitialized) {
@@ -158,9 +153,9 @@ const GeolocationAnchor = ({
 					};
 
 					lastLocation = locar.getLastKnownLocation();
-					if(lastLocation !== null) {
+					if (lastLocation !== null) {
 						// in case anchor is added after we receive a GPS position
-						if(!curAnchor.isAttached) {
+						if (!curAnchor.isAttached) {
 							addAnchor(curAnchor);
 						}
 					}
@@ -168,11 +163,10 @@ const GeolocationAnchor = ({
 					locar.on?.("gpsupdate", globalGpsHandler);
 
 					gpsInitialized = true;
-
 				}
 
-				if(lastLocation !== null) {
-					globalGpsHandler?.({coords: lastLocation});
+				if (lastLocation !== null) {
+					globalGpsHandler?.({ coords: lastLocation });
 				}
 
 				// mark this anchor as needing attachment tracking
