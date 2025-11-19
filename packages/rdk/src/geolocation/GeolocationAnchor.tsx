@@ -1,11 +1,9 @@
-import { useFrame, createPortal, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState, useCallback } from "react";
-import { Group } from "three";
-
+import { createPortal, useFrame, useThree } from "@react-three/fiber";
 import { useXR } from "engine/XRSessionProvider";
-
-import type { PropsWithChildren } from "react";
 import type { LonLat } from "locar";
+import type { PropsWithChildren } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Group } from "three";
 
 interface Anchor {
   /** Anchor group. */
@@ -124,7 +122,7 @@ const GeolocationAnchor = ({
 
             anchor.onAttached?.();
           } catch (err) {
-            console.error(`❌ Failed to attach anchor:`, err);
+            console.error("❌ Failed to attach anchor:", err);
           }
         };
 
