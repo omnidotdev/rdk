@@ -103,6 +103,10 @@ const GeolocationAnchor = ({
 
 				if (!locar) return;
 
+				/**
+				 * Add an anchor to the scene.
+				 * @param anchor Anchor to add
+				 */
 				const addAnchor = (anchor: Anchor) => {
 					try {
 						locar.add(
@@ -133,6 +137,7 @@ const GeolocationAnchor = ({
 					onAttached: stableOnAttached,
 					onGpsUpdate: stableOnGpsUpdate,
 				};
+
 				// register this anchor with its coordinates
 				anchorRegistry.set(anchorId, curAnchor);
 
@@ -143,9 +148,7 @@ const GeolocationAnchor = ({
 
 						// process all registered anchors
 						anchorRegistry.forEach((entry) => {
-							if (!entry.isAttached) {
-								addAnchor(entry);
-							}
+							if (!entry.isAttached) addAnchor(entry);
 
 							// call GPS update callback for all anchors
 							entry.onGpsUpdate?.(pos);
@@ -153,12 +156,10 @@ const GeolocationAnchor = ({
 					};
 
 					lastLocation = locar.getLastKnownLocation();
-					if (lastLocation !== null) {
+
+					if (lastLocation !== null && !curAnchor.isAttached)
 						// in case anchor is added after we receive a GPS position
-						if (!curAnchor.isAttached) {
-							addAnchor(curAnchor);
-						}
-					}
+						addAnchor(curAnchor);
 
 					locar.on?.("gpsupdate", globalGpsHandler);
 
@@ -166,7 +167,10 @@ const GeolocationAnchor = ({
 				}
 
 				if (lastLocation !== null) {
-					globalGpsHandler?.({ coords: lastLocation });
+					// add anchor if not already attached
+					if (!curAnchor.isAttached) addAnchor(curAnchor);
+
+					curAnchor.onGpsUpdate?.({ position: lastLocation });
 				}
 
 				// mark this anchor as needing attachment tracking
