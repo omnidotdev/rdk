@@ -17,4 +17,4 @@ export interface XRContextValue {
   unregisterBackend: (backend: XRBackend, sessionType?: string) => void;
 }
 
-import { XRBackend } from "./XRBackend.interface";
+import type { XRBackend } from "./XRBackend.interface";

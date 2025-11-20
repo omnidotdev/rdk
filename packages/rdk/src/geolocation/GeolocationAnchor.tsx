@@ -21,6 +21,7 @@ interface Anchor {
   /** Callback triggered when the anchor is attached to the real world. */
   onAttached?: () => void;
   /** Callback triggered when the anchor's GPS position is updated. */
+  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
   onGpsUpdate?: (pos: any) => void;
 }
 
@@ -30,7 +31,8 @@ const anchorRegistry = new Map<string, Anchor>();
 let gpsInitialized = false;
 let lastLocation: LonLat | null = null;
 
-let globalGpsHandler: ((ev: any) => void) | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+let globalGpsHandler: ((evt: any) => void) | null = null;
 
 export interface GeolocationAnchorProps extends PropsWithChildren {
   /** Physical target latitude (where you want the AR object placed in the real world). */
@@ -50,6 +52,7 @@ export interface GeolocationAnchorProps extends PropsWithChildren {
   /** Called once actually attached to LocAR (after first `gpsupdate`). */
   onAttached?: () => void;
   /** Forward raw GPS updates. */
+  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
   onGpsUpdate?: (pos: any) => void;
 }
 
@@ -78,6 +81,7 @@ const GeolocationAnchor = ({
   }, [onAttached]);
 
   const stableOnGpsUpdate = useCallback(
+    // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
     (pos: any) => {
       onGpsUpdate?.(pos);
     },
@@ -90,6 +94,7 @@ const GeolocationAnchor = ({
     const initializeAnchor = async () => {
       try {
         const geolocationBackend = backends.find((backend) => {
+          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
           const internal = backend.getInternal?.() as any;
 
           return internal?.locar;
@@ -97,6 +102,7 @@ const GeolocationAnchor = ({
 
         if (!geolocationBackend || cancelled) return;
 
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         const internal = geolocationBackend.getInternal?.() as any;
 
         const locar = internal?.locar;
@@ -117,10 +123,6 @@ const GeolocationAnchor = ({
             );
 
             anchor.isAttached = true;
-
-            console.log(
-              `🔗 Attached anchor at ${anchor.latitude}, ${anchor.longitude}, ${anchor.altitude}`,
-            );
 
             anchor.onAttached?.();
           } catch (err) {
@@ -143,8 +145,9 @@ const GeolocationAnchor = ({
 
         // set up global GPS handler once
         if (!gpsInitialized) {
-          globalGpsHandler = (ev: any) => {
-            const pos = ev.position ?? ev;
+          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+          globalGpsHandler = (evt: any) => {
+            const pos = evt.position ?? evt;
 
             // process all registered anchors
             anchorRegistry.forEach((entry) => {
@@ -191,11 +194,13 @@ const GeolocationAnchor = ({
       if (entry?.isAttached) {
         try {
           const geolocationBackend = backends.find((backend) => {
+            // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
             const internal = backend.getInternal?.() as any;
 
             return internal?.locar;
           });
 
+          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
           const internal = geolocationBackend?.getInternal?.() as any;
 
           const locar = internal?.locar;
@@ -216,11 +221,13 @@ const GeolocationAnchor = ({
       // clean up global handler if no more anchors
       if (anchorRegistry.size === 0 && globalGpsHandler) {
         const geolocationBackend = backends.find((backend) => {
+          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
           const internal = backend.getInternal?.() as any;
 
           return internal?.locar;
         });
 
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         const internal = geolocationBackend?.getInternal?.() as any;
 
         const locar = internal?.locar;

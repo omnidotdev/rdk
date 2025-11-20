@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber";
-import { PropsWithChildren, useEffect, useRef } from "react";
-import { Group } from "three";
+import type { PropsWithChildren } from "react";
+import { useEffect, useRef } from "react";
+import type { Group } from "three";
 import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import { useXR } from "engine/XRSessionProvider";
 
@@ -32,6 +33,7 @@ const FiducialAnchor = ({
   const { backends } = useXR();
   const visibleRef = useRef(false);
   const initializedRef = useRef(false);
+  // biome-ignore lint/suspicious/noExplicitAny: TODO
   const arControlsRef = useRef<any>(null);
 
   useEffect(() => {
@@ -40,6 +42,7 @@ const FiducialAnchor = ({
     const initializeAnchor = async () => {
       try {
         const fiducialBackend = backends.find((backend) => {
+          // biome-ignore lint/suspicious/noExplicitAny: TODO
           const internal = backend.getInternal?.() as any;
 
           return internal?.arContext;
@@ -47,6 +50,7 @@ const FiducialAnchor = ({
 
         if (!fiducialBackend || cancelled) return;
 
+        // biome-ignore lint/suspicious/noExplicitAny: TODO
         const internal = fiducialBackend.getInternal?.() as any;
 
         const arContext = internal?.arContext;
@@ -64,6 +68,7 @@ const FiducialAnchor = ({
           requestAnimationFrame(() => {
             if (!groupRef.current || cancelled) return;
 
+            // biome-ignore lint/suspicious/noExplicitAny: TODO
             const again = fiducialBackend.getInternal?.() as any;
 
             const ctx = again?.arContext;
@@ -107,6 +112,7 @@ const FiducialAnchor = ({
 
     return () => {
       cancelled = true;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       const anyControls = arControlsRef.current as any;
       /**
        * @note AR.js's `ArMarkerControls` has no official TypeScript types and does not formally declare a `.dispose()` method. Some community builds or future versions may implement one, but it's not guaranteed.

@@ -8,7 +8,7 @@ const GOING_TO_THE_SUN_MONTAIN_COORDINATES = {
     longitude: -113.6363247804274,
   } as const,
   MACHU_PICCHU_COORDINATES = {
-    latitude: -13.163068158989277,
+    latitude: -13.16306815898927,
     longitude: -72.5451171875,
   } as const;
 

@@ -1,4 +1,5 @@
-import React from "react";
+import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import "@testing-library/jest-dom";
@@ -37,17 +38,17 @@ afterEach(() => {
 });
 
 describe("XRSessionProvider", () => {
-  const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  const TestWrapper = ({ children }: { children: ReactNode }) => (
     <Canvas>
       <XRSessionProvider cameraSource="video">{children}</XRSessionProvider>
     </Canvas>
   );
 
   ({ sessionType }: { sessionType: string }) => {
-    const [error, setError] = React.useState<string | null>(null);
-    const [registered, setRegistered] = React.useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [registered, setRegistered] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
       // simulate session registration with a slight delay to ensure order
       const timeout = setTimeout(
         async () => {
@@ -106,9 +107,10 @@ describe("XRSessionProvider", () => {
   it("displays compatibility error when both session types would be registered", async () => {
     // create a direct test of the `registerBackend` function
     const TestCompatibilityCheck = () => {
-      const [_error, setError] = React.useState<string | null>(null);
-      const sessionTypesRef = React.useRef<Set<string>>(new Set());
+      const [_error, setError] = useState<string | null>(null);
+      const sessionTypesRef = useRef<Set<string>>(new Set());
 
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       const registerBackend = async (_backend: any, sessionType?: string) => {
         if (sessionType) {
           const newSessionTypes = new Set([
@@ -129,7 +131,8 @@ describe("XRSessionProvider", () => {
         }
       };
 
-      React.useEffect(() => {
+      // biome-ignore lint/correctness/useExhaustiveDependencies: `registerBackend` changes on every render
+      useEffect(() => {
         const testCompatibility = async () => {
           try {
             // register first session: should succeed
@@ -161,10 +164,11 @@ describe("XRSessionProvider", () => {
 
   it("allows individual session types without errors", async () => {
     const TestSingleSession = ({ sessionType }: { sessionType: string }) => {
-      const [success, setSuccess] = React.useState(false);
-      const sessionTypesRef = React.useRef<Set<string>>(new Set());
+      const [success, setSuccess] = useState(false);
+      const sessionTypesRef = useRef<Set<string>>(new Set());
 
-      const registerBackend = async (backend: any, sessionType?: string) => {
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
+      const registerBackend = async (_backend: any, sessionType?: string) => {
         if (sessionType) {
           const newSessionTypes = new Set([
             ...sessionTypesRef.current,
@@ -181,13 +185,14 @@ describe("XRSessionProvider", () => {
         }
       };
 
-      React.useEffect(() => {
+      // biome-ignore lint/correctness/useExhaustiveDependencies: `registerBackend` changes on every render
+      useEffect(() => {
         const testSingle = async () => {
           try {
             await registerBackend({}, sessionType);
 
             setSuccess(true);
-          } catch (err) {
+          } catch (_err) {
             // should not error for single session
           }
         };
@@ -238,10 +243,11 @@ describe("XRSessionProvider", () => {
       firstSession: string;
       secondSession: string;
     }) => {
-      const [error, setError] = React.useState<string | null>(null);
-      const sessionTypesRef = React.useRef<Set<string>>(new Set());
+      const [error, setError] = useState<string | null>(null);
+      const sessionTypesRef = useRef<Set<string>>(new Set());
 
-      const registerBackend = async (backend: any, sessionType?: string) => {
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
+      const registerBackend = async (_backend: any, sessionType?: string) => {
         if (sessionType) {
           const newSessionTypes = new Set([
             ...sessionTypesRef.current,
@@ -260,7 +266,8 @@ describe("XRSessionProvider", () => {
         }
       };
 
-      React.useEffect(() => {
+      // biome-ignore lint/correctness/useExhaustiveDependencies: `registerBackend` changes on every render
+      useEffect(() => {
         const testOrder = async () => {
           try {
             await registerBackend({}, firstSession);

@@ -1,5 +1,6 @@
 import { vi } from "vitest";
-import { createElement, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { createElement } from "react";
 
 /**
  * Mock implementation of `XRSessionProvider`.
@@ -101,9 +102,9 @@ export function setXRSessionActive(): void {
 /**
  * Set XR context to error state.
  */
-export function setXRSessionError(error: string): void {
-  // @ts-ignore
-  mockXRContext.error = error;
+export function setXRSessionError(err: string): void {
+  // @ts-expect-error
+  mockXRContext.error = err;
   mockXRContext.isSessionActive = false;
   mockXRContext.isTrackingActive = false;
 }

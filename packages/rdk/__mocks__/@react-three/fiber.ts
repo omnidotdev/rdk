@@ -19,6 +19,7 @@ export const useThree = vi.fn(() => ({
   },
 }));
 
+// biome-ignore lint/suspicious/noExplicitAny: TODO
 export const Canvas = vi.fn(({ children, ...props }: any) =>
   createElement("div", { "data-testid": "xr-canvas", ...props }, children),
 );

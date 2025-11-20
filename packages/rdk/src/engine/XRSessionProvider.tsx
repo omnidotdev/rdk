@@ -8,7 +8,7 @@ import {
   useRef,
 } from "react";
 
-import { XRBackend, XRContextValue } from "lib/types/xr";
+import type { XRBackend, XRContextValue } from "lib/types/xr";
 
 import type { PropsWithChildren } from "react";
 
@@ -40,7 +40,7 @@ const XRSessionProvider = ({
   children,
 }: XRSessionProviderProps) => {
   const [backends, setBackends] = useState<XRBackend[]>([]);
-  const [sessionTypes, setSessionTypes] = useState<Set<string>>(new Set());
+  const [_sessionTypes, setSessionTypes] = useState<Set<string>>(new Set());
   const sessionTypesRef = useRef<Set<string>>(new Set());
 
   const { scene, camera: threeCamera, gl } = useThree();
@@ -141,7 +141,7 @@ const XRSessionProvider = ({
       registerBackend,
       unregisterBackend,
     }),
-    [cameraSource, backends, registerBackend, unregisterBackend, sessionTypes],
+    [cameraSource, backends, registerBackend, unregisterBackend],
   );
 
   return <XRContext.Provider value={value}>{children}</XRContext.Provider>;

@@ -132,15 +132,15 @@ export const mockTHREE = {
  * Call this in test setup files or individual tests.
  */
 export function setupGlobalMocks(): void {
-  // @ts-ignore
+  // @ts-expect-error
   global.THREEx = mockTHREEx;
-  // @ts-ignore
+  // @ts-expect-error
   global.THREE = mockTHREE;
-  // @ts-ignore
+  // @ts-expect-error
   global.LocAR = mockLocAR;
 
   // suppress console warnings in tests
-  // @ts-ignore
+  // @ts-expect-error
   global.console.warn = vi.fn();
 }
 

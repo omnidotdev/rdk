@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Canvas } from "@react-three/fiber";

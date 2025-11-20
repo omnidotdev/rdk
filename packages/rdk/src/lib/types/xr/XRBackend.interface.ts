@@ -1,4 +1,4 @@
-import { XRBackendInitArgs } from "./XRBackendInitArgs.interface";
+import type { XRBackendInitArgs } from "./XRBackendInitArgs.interface";
 
 /**
  * Extended reality backend interface.

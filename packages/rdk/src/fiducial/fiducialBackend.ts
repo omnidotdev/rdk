@@ -30,7 +30,9 @@ export interface FiducialSessionOptions {
 const createFiducialBackend = (options: unknown): XRBackend => {
   const opts = (options || {}) as FiducialSessionOptions;
 
+  // biome-ignore lint/suspicious/noExplicitAny: TODO
   let arSource: any;
+  // biome-ignore lint/suspicious/noExplicitAny: TODO
   let arContext: any;
   let resizeHandler: (() => void) | undefined;
 
@@ -93,7 +95,7 @@ const createFiducialBackend = (options: unknown): XRBackend => {
         // sync AR.js' canvas and the renderer dom element
         arSource.copyElementSizeTo(renderer.domElement);
 
-        if (arContext && arContext.arController) {
+        if (arContext?.arController) {
           arSource.copyElementSizeTo(arContext.arController.canvas);
         }
       };
@@ -116,7 +118,9 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       });
 
       // expose for the anchor component
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       (this as any)._arSource = arSource;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       (this as any)._arContext = arContext;
 
       window.addEventListener("resize", doResize);
@@ -124,7 +128,9 @@ const createFiducialBackend = (options: unknown): XRBackend => {
     },
 
     update() {
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       const source = (this as any)._arSource;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       const context = (this as any)._arContext;
 
       if (!source || !context) return;
@@ -146,27 +152,33 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       }
 
       // clean up AR.js resources
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       const source = (this as any)._arSource;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       const context = (this as any)._arContext;
 
       if (context && typeof context.dispose === "function") {
         context.dispose();
       }
 
-      if (source && source.domElement) {
+      if (source?.domElement) {
         const parent = source.domElement.parentNode;
         if (parent) {
           parent.removeChild(source.domElement);
         }
       }
 
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       (this as any)._arSource = null;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
       (this as any)._arContext = null;
     },
 
     getInternal() {
       return {
+        // biome-ignore lint/suspicious/noExplicitAny: TODO
         arSource: (this as any)._arSource,
+        // biome-ignore lint/suspicious/noExplicitAny: TODO
         arContext: (this as any)._arContext,
       };
     },

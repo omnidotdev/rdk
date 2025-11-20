@@ -1,6 +1,6 @@
 import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
 import * as LocAR from "locar";
-import * as THREE from "three";
+import type * as THREE from "three";
 
 /**
  * Options for the geolocation backend.
@@ -20,8 +20,11 @@ export interface GeolocationSessionOptions {
 const createGeolocationBackend = (options: unknown): XRBackend => {
   const opts = (options || {}) as GeolocationSessionOptions;
 
+  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
   let locar: any;
+  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
   let webcam: any;
+  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
   let deviceOrientation: any;
   let resizeHandler: (() => void) | undefined;
 
@@ -39,6 +42,7 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
         );
 
       cameraRef = camera;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       rendererRef = renderer as any;
 
       // location-based handler
@@ -52,21 +56,25 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
         null,
       );
 
-      webcam.on("webcamstarted", (ev: any) => {
-        scene.background = ev.texture;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+      webcam.on("webcamstarted", (evt: any) => {
+        scene.background = evt.texture;
       });
 
-      webcam.on("webcamerror", (error: any) => {
-        console.error("[geolocationBackend] webcam error:", error);
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+      webcam.on("webcamerror", (err: any) => {
+        console.error("[geolocationBackend] webcam error:", err);
       });
 
       // device orientation using LocAR.js built-in permission handling
       deviceOrientation = new LocAR.DeviceOrientationControls(camera);
 
-      deviceOrientation.on("deviceorientationgranted", (ev: any) => {
-        ev.target?.connect?.();
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+      deviceOrientation.on("deviceorientationgranted", (evt: any) => {
+        evt.target?.connect?.();
       });
 
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       deviceOrientation.on("deviceorientationerror", (err: any) => {
         console.error("[geolocationBackend] Device orientation error:", err);
       });
@@ -75,6 +83,7 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
       deviceOrientation.init?.();
 
       // GPS events; just log here, components can listen via `getInternal()`
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       locar.on("gpserror", (err: any) => {
         console.error("[geolocationBackend] gps error:", err);
       });
@@ -96,7 +105,9 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
         rendererRef.setSize(w, h, false);
 
         // camera can be perspective or other
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         (cameraRef as any).aspect = w / h;
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         (cameraRef as any).updateProjectionMatrix?.();
       };
 
@@ -107,21 +118,30 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
       resizeHandler = doResize;
 
       // expose for React side
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._locar = locar;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._webcam = webcam;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._deviceOrientation = deviceOrientation;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._scene = scene;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._camera = camera;
     },
 
     update() {
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
       dev?.update?.();
     },
 
     dispose() {
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const locarAny = (this as any)._locar;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const webcamAny = (this as any)._webcam;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
 
       if (locarAny?.stopGps) locarAny.stopGps();
@@ -135,19 +155,29 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
         resizeHandler = undefined;
       }
 
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._locar = null;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._webcam = null;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._deviceOrientation = null;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._scene = null;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       (this as any)._camera = null;
     },
 
     getInternal() {
       return {
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         locar: (this as any)._locar,
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         webcam: (this as any)._webcam,
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         deviceOrientation: (this as any)._deviceOrientation,
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         scene: (this as any)._scene,
+        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
         camera: (this as any)._camera,
       };
     },
