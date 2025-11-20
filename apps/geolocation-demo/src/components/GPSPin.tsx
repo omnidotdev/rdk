@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import type * as THREE from "three";
 
 interface GPSPinProps {
   /**

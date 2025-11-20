@@ -1,11 +1,9 @@
 import { useFrame } from "@react-three/fiber";
-import { type ComponentProps, useMemo, useRef } from "react";
-import {
-  BufferGeometry,
-  Float32BufferAttribute,
-  type Mesh,
-  Vector3,
-} from "three";
+import { useMemo, useRef } from "react";
+import { BufferGeometry, Float32BufferAttribute, Vector3 } from "three";
+
+import type { ComponentProps } from "react";
+import type { Mesh } from "three";
 
 declare global {
   namespace JSX {

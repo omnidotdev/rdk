@@ -43,6 +43,7 @@ const App = () => (
         <GeolocationAnchor
           latitude={COORDS.center.lat}
           longitude={COORDS.center.lon}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🟠 Orange box attached!")}
         >
           <mesh scale={3}>
@@ -54,7 +55,9 @@ const App = () => (
         <GeolocationAnchor
           latitude={COORDS.north.lat}
           longitude={COORDS.north.lon}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🎯 Main GPS Pin attached!")}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onGpsUpdate={(pos) => console.log("📍 GPS update:", pos)}
         >
           <GPSPin isAnimated color="#ff4444" scale={15} />
@@ -64,6 +67,7 @@ const App = () => (
           latitude={COORDS.south.lat}
           longitude={COORDS.south.lon}
           altitude={10}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🔴 Large red cube attached!")}
         >
           <mesh scale={1}>
@@ -80,6 +84,7 @@ const App = () => (
           isBillboard={false}
           latitude={COORDS.east.lat}
           longitude={COORDS.east.lon}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🗼 Tower attached!")}
         >
           <Landmark isAnimated type="tower" color="#4a90e2" scale={10} />
@@ -88,6 +93,7 @@ const App = () => (
         <GeolocationAnchor
           latitude={COORDS.west.lat}
           longitude={COORDS.west.lon}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🧭 Compass attached!")}
         >
           <Compass isAnimated scale={1.2} />
@@ -97,6 +103,7 @@ const App = () => (
           isBillboard={false}
           latitude={COORDS.northeast.lat}
           longitude={COORDS.northeast.lon}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🏢 Building attached!")}
         >
           <Landmark type="building" color="#27ae60" scale={8} />
@@ -105,6 +112,7 @@ const App = () => (
         <GeolocationAnchor
           latitude={COORDS.center.lat}
           longitude={COORDS.center.lon + 0.0003}
+          // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🏛️ Monument attached!")}
         >
           <Landmark isAnimated type="monument" color="#8e44ad" scale={0.8} />
