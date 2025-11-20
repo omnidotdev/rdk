@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.2.2
+
+### Patch Changes
+
+- [#19](https://github.com/omnidotdev/rdk/pull/19) [`f2b80f6`](https://github.com/omnidotdev/rdk/commit/f2b80f6f78d3252c21cb3921bd4e8d46e81c0a4a) Thanks [@nickw1](https://github.com/nickw1)! - Fix anchor initialization by using `getLastKnownLocation()` (LocAR 0.1.4) to seed GPS data immediately instead of waiting for a new update. This ensures anchors are added to the scene reliably even when GPS arrives before anchor creation.
+
 ## 0.2.1
 
 ### Patch Changes
