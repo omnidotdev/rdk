@@ -1,43 +1,81 @@
+// see https://biomejs.dev/reference/configuration
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "options": {
+            "groups": [
+              { "type": false, "source": [":BUN:", ":NODE:"] },
+              ":BLANK_LINE:",
+              {
+                "type": false,
+                // TODO look into this for TS `baseUrl` (https://github.com/omnidotdev/golden/pull/1#discussion_r2487186008)
+                "source": [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"]
+              },
+              ":BLANK_LINE:",
+              { "type": false, "source": ["**"] },
+              ":BLANK_LINE:",
+              { "type": true }
+            ]
+          }
+        }
+      }
+    }
+  },
   "files": {
-    // NB: `node_modules` excluded by default
-    "includes": ["**", "!**/build", "**/.turbo/**"],
+    "includes": [
+      "**",
+      "!!**/*.gen.*",
+      "!!**/.cache/**",
+      "!!**/build/**",
+      "!!**/bun.lock",
+      "!!**/dist/**",
+      "!!**/generated/**",
+      "!!**/node_modules/**",
+      "!!**/out/**",
+      "!!**/public/**",
+      "!!**/vendor/**",
+      "!!**/certificates/**"
+    ]
   },
   "formatter": {
-    "indentStyle": "tab",
-  },
-  "javascript": {
-    "formatter": {
-      "jsxQuoteStyle": "double",
-    },
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
   },
   "linter": {
-    "enabled": true,
     "rules": {
-      "a11y": {
-        "useKeyWithClickEvents": "off",
-      },
       "correctness": {
-        "useExhaustiveDependencies": "warn",
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "error"
+        }
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "fix": "safe",
+          "level": "error",
+          "options": {
+            "attributes": ["class", "className"],
+            "functions": ["cn", "clsx", "classnames", "cva", "tv"]
+          }
+        }
       },
       "style": {
-        "noInferrableTypes": "error",
-        "noParameterAssign": "error",
-        "noUnusedTemplateLiteral": "error",
-        "noUselessElse": "error",
-        "useAsConstAssertion": "error",
-        "useConst": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useNumberNamespace": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "useTemplate": "error",
+        "useImportType": {
+          "level": "error",
+          "options": { "style": "separatedType" }
+        }
       },
       "suspicious": {
-        "noExplicitAny": "warn",
-      },
-    },
-  },
+        "noArrayIndexKey": "warn",
+        "noConsole": {
+          "level": "error",
+          "options": { "allow": ["error", "warn"] }
+        }
+      }
+    }
+  }
 }
