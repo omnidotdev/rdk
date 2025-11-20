@@ -1,76 +1,76 @@
 {
-	"name": "@omnidotdev/rdk",
-	"description": "AR.js with react-three-fiber",
-	"version": "0.2.2",
-	"license": "MIT",
-	"type": "module",
-	"main": "build/index.js",
-	"module": "build/index.js",
-	"types": "build/index.d.ts",
-	"homepage": "https://github.com/omnidotdev/rdk#readme",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/omnidotdev/rdk.git"
-	},
-	"bugs": {
-		"url": "https://github.com/omnidotdev/rdk/issues"
-	},
-	"files": [
-		"build/"
-	],
-	"keywords": [
-		"react",
-		"react-three-fiber",
-		"ar.js",
-		"ar",
-		"three",
-		"typescript"
-	],
-	"exports": {
-		".": {
-			"types": "./build/index.d.ts",
-			"import": "./build/index.js",
-			"require": "./build/index.cjs"
-		}
-	},
-	"scripts": {
-		"build": "vite build",
-		"clean": "rm -rf build",
-		"dev": "vite build --watch --mode development",
-		"format": "biome format --write .",
-		"lint": "biome check .",
-		"lint:fix": "biome check --write .",
-		"test": "vitest",
-		"release": "bun run build && changeset publish"
-	},
-	"peerDependencies": {
-		"@ar-js-org/ar.js": "^3.4.7",
-		"@react-three/fiber": "^9.4.0",
-		"locar": "0.1.4",
-		"react": "^19.2.0",
-		"react-dom": "^19.2.0",
-		"three": "^0.180.0"
-	},
-	"devDependencies": {
-		"@ar-js-org/ar.js": "^3.4.7",
-		"@biomejs/biome": "^2.3.2",
-		"@react-three/fiber": "^9.4.0",
-		"@testing-library/jest-dom": "^6.9.1",
-		"@testing-library/react": "^16.3.0",
-		"@types/node": "^24.9.2",
-		"@types/react": "^19.2.2",
-		"@types/react-dom": "^19.2.2",
-		"@types/three": "^0.180.0",
-		"jsdom": "^27.0.1",
-		"locar": "^0.1.4",
-		"react": "^19.2.0",
-		"react-dom": "^19.2.0",
-		"three": "^0.180.0",
-		"ts-pattern": "^5.9.0",
-		"typescript": "^5.9.3",
-		"vite": "^7.1.12",
-		"vite-plugin-dts": "^4.5.4",
-		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.5"
-	}
+  "name": "@omnidotdev/rdk",
+  "description": "AR.js with react-three-fiber",
+  "version": "0.2.2",
+  "license": "MIT",
+  "type": "module",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "types": "build/index.d.ts",
+  "homepage": "https://github.com/omnidotdev/rdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omnidotdev/rdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/omnidotdev/rdk/issues"
+  },
+  "files": [
+    "build/"
+  ],
+  "keywords": [
+    "react",
+    "react-three-fiber",
+    "ar.js",
+    "ar",
+    "three",
+    "typescript"
+  ],
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "require": "./build/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rf build",
+    "dev": "vite build --watch --mode development",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest",
+    "release": "bun run build && changeset publish"
+  },
+  "peerDependencies": {
+    "@ar-js-org/ar.js": "^3.4.7",
+    "@react-three/fiber": "^9.4.0",
+    "locar": "0.1.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@ar-js-org/ar.js": "^3.4.7",
+    "@biomejs/biome": "^2.3.2",
+    "@react-three/fiber": "^9.4.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.9.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "^0.180.0",
+    "jsdom": "^27.0.1",
+    "locar": "^0.1.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.180.0",
+    "ts-pattern": "^5.9.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.5"
+  }
 }

@@ -8,8 +8,8 @@ import type { FiducialSessionOptions } from "fiducial";
 import type { XRBackend } from "lib/types/xr";
 
 export interface FiducialSessionProps extends PropsWithChildren {
-	/** Fiducial session options. */
-	options?: FiducialSessionOptions;
+  /** Fiducial session options. */
+  options?: FiducialSessionOptions;
 }
 
 /**
@@ -17,45 +17,45 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
 const FiducialSession = ({ options, children }: FiducialSessionProps) => {
-	const { registerBackend, unregisterBackend } = useXR();
+  const { registerBackend, unregisterBackend } = useXR();
 
-	const backendRef = useRef<XRBackend | null>(null);
+  const backendRef = useRef<XRBackend | null>(null);
 
-	useEffect(() => {
-		let cancelled = false;
+  useEffect(() => {
+    let cancelled = false;
 
-		const initSession = async () => {
-			try {
-				// create fiducial backend, which creates its own video for AR.js
-				const backend = createFiducialBackend({
-					...options,
-				});
+    const initSession = async () => {
+      try {
+        // create fiducial backend, which creates its own video for AR.js
+        const backend = createFiducialBackend({
+          ...options,
+        });
 
-				if (cancelled) return;
+        if (cancelled) return;
 
-				registerBackend(backend, "FiducialSession");
+        registerBackend(backend, "FiducialSession");
 
-				if (!cancelled) {
-					backendRef.current = backend;
-				}
-			} catch (err) {
-				console.error("[FiducialSession] Failed to initialize:", err);
-			}
-		};
+        if (!cancelled) {
+          backendRef.current = backend;
+        }
+      } catch (err) {
+        console.error("[FiducialSession] Failed to initialize:", err);
+      }
+    };
 
-		initSession();
+    initSession();
 
-		return () => {
-			cancelled = true;
-			if (backendRef.current) {
-				unregisterBackend(backendRef.current, "FiducialSession");
+    return () => {
+      cancelled = true;
+      if (backendRef.current) {
+        unregisterBackend(backendRef.current, "FiducialSession");
 
-				backendRef.current = null;
-			}
-		};
-	}, [registerBackend, unregisterBackend, options]);
+        backendRef.current = null;
+      }
+    };
+  }, [registerBackend, unregisterBackend, options]);
 
-	return <>{children}</>;
+  return <>{children}</>;
 };
 
 // static property to identify session type for compatibility checking

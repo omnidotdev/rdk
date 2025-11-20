@@ -81,7 +81,7 @@ const GeolocationAnchor = ({
     (pos: any) => {
       onGpsUpdate?.(pos);
     },
-    [onGpsUpdate]
+    [onGpsUpdate],
   );
 
   useEffect(() => {
@@ -113,13 +113,13 @@ const GeolocationAnchor = ({
               anchor.anchor,
               anchor.longitude,
               anchor.latitude,
-              anchor.altitude
+              anchor.altitude,
             );
 
             anchor.isAttached = true;
 
             console.log(
-              `🔗 Attached anchor at ${anchor.latitude}, ${anchor.longitude}, ${anchor.altitude}`
+              `🔗 Attached anchor at ${anchor.latitude}, ${anchor.longitude}, ${anchor.altitude}`,
             );
 
             anchor.onAttached?.();
