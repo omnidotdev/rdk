@@ -122,6 +122,8 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       (this as any)._arSource = arSource;
       // biome-ignore lint/suspicious/noExplicitAny: TODO
       (this as any)._arContext = arContext;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
+      (this as any)._camera = camera;
 
       window.addEventListener("resize", doResize);
       resizeHandler = doResize;
@@ -132,6 +134,8 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       const source = (this as any)._arSource;
       // biome-ignore lint/suspicious/noExplicitAny: TODO
       const context = (this as any)._arContext;
+      // biome-ignore lint/suspicious/noExplicitAny: TODO
+      const camera = (this as any)._camera;
 
       if (!source || !context) return;
 
@@ -139,6 +143,10 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       if (source.ready !== false && source.domElement) {
         try {
           context.update(source.domElement);
+
+          // update camera projection matrix each frame to fix positioning
+          if (camera && context.getProjectionMatrix)
+            camera.projectionMatrix.copy(context.getProjectionMatrix());
         } catch (err) {
           console.warn("AR.js update error:", err);
         }

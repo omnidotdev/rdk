@@ -3,7 +3,7 @@ import type { PropsWithChildren } from "react";
 import { useEffect, useRef } from "react";
 import type { Group } from "three";
 import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
-import { useXR } from "engine/XRSessionProvider";
+import useXRStore from "engine/useXRStore";
 
 export interface FiducialAnchorProps extends PropsWithChildren {
   /** Pattern URL. */
@@ -30,7 +30,7 @@ const FiducialAnchor = ({
   children,
 }: FiducialAnchorProps) => {
   const groupRef = useRef<Group>(null);
-  const { backends } = useXR();
+  const backends = useXRStore((state) => state.backends);
   const visibleRef = useRef(false);
   const initializedRef = useRef(false);
   // biome-ignore lint/suspicious/noExplicitAny: TODO

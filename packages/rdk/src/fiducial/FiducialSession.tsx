@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { useXR } from "engine/XRSessionProvider";
+import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createFiducialBackend } from "fiducial";
 
 import type { PropsWithChildren } from "react";
@@ -17,7 +17,7 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
 const FiducialSession = ({ options, children }: FiducialSessionProps) => {
-  const { registerBackend, unregisterBackend } = useXR();
+  const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<XRBackend | null>(null);
 
@@ -33,7 +33,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
 
         if (cancelled) return;
 
-        registerBackend(backend, "FiducialSession");
+        registerBackend(backend, SESSION_TYPES.FIDUCIAL);
 
         if (!cancelled) {
           backendRef.current = backend;
@@ -48,7 +48,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
     return () => {
       cancelled = true;
       if (backendRef.current) {
-        unregisterBackend(backendRef.current, "FiducialSession");
+        unregisterBackend(backendRef.current, SESSION_TYPES.FIDUCIAL);
 
         backendRef.current = null;
       }

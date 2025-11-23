@@ -2,7 +2,7 @@ import { createPortal, useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Group } from "three";
 
-import { useXR } from "engine/XRSessionProvider";
+import useXRStore from "engine/useXRStore";
 
 import type { LonLat } from "locar";
 import type { PropsWithChildren } from "react";
@@ -68,7 +68,7 @@ const GeolocationAnchor = ({
   onGpsUpdate,
   children,
 }: GeolocationAnchorProps) => {
-  const { backends } = useXR();
+  const backends = useXRStore((state) => state.backends);
   const { camera } = useThree();
 
   const [anchor] = useState(() => new Group()),

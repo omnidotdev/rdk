@@ -1,30 +1,9 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import {
-  createContext,
-  useContext,
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import { useEffect } from "react";
 
-import type { XRBackend, XRContextValue } from "lib/types/xr";
+import useXRStore from "./useXRStore";
 
 import type { PropsWithChildren } from "react";
-
-export const XRContext = createContext<XRContextValue | null>(null);
-
-/**
- * Use `XRSessionProvider` context.
- */
-export const useXR = (): XRContextValue => {
-  const ctx = useContext(XRContext);
-
-  if (!ctx)
-    throw new Error("`useXR` must be used inside `<XRSessionProvider />`");
-
-  return ctx;
-};
 
 interface XRSessionProviderProps extends PropsWithChildren {
   /** Camera source type. */
@@ -39,112 +18,26 @@ const XRSessionProvider = ({
   cameraSource,
   children,
 }: XRSessionProviderProps) => {
-  const [backends, setBackends] = useState<XRBackend[]>([]);
-  const [_sessionTypes, setSessionTypes] = useState<Set<string>>(new Set());
-  const sessionTypesRef = useRef<Set<string>>(new Set());
-
   const { scene, camera: threeCamera, gl } = useThree();
+  const { setCameraSource, setThreeRefs, updateBackends } = useXRStore();
 
-  // register a backend (called by sessions)
-  const registerBackend = useCallback(
-    async (backend: XRBackend, sessionType?: string) => {
-      try {
-        // check for session compatibility before registering
-        if (sessionType) {
-          const newSessionTypes = new Set([
-            ...sessionTypesRef.current,
-            sessionType,
-          ]);
+  // initialize store with Three.js references and camera source
+  useEffect(() => {
+    setThreeRefs({
+      scene,
+      camera: threeCamera,
+      renderer: gl,
+    });
 
-          const hasFiducial = newSessionTypes.has("FiducialSession"),
-            hasGeolocation = newSessionTypes.has("GeolocationSession");
-
-          if (hasFiducial && hasGeolocation) {
-            const errorMessage =
-              "❌ [RDK] INCOMPATIBLE SESSIONS: FiducialSession and GeolocationSession cannot be used together due to camera/video conflicts between AR.js and LocAR.js libraries. Use only one session type per app.";
-
-            console.error(errorMessage);
-
-            throw new Error(errorMessage);
-          }
-
-          sessionTypesRef.current = newSessionTypes;
-          setSessionTypes(newSessionTypes);
-        }
-
-        // initialize backend with shared scene, camera, renderer
-        await backend.init({
-          scene,
-          camera: threeCamera,
-          renderer: gl,
-        });
-
-        setBackends((prev) => [...prev, backend]);
-      } catch (err) {
-        console.error("[XRSessionProvider] Failed to register backend:", err);
-        throw err;
-      }
-    },
-    [scene, threeCamera, gl],
-  );
-
-  // unregister a backend (called by sessions)
-  const unregisterBackend = useCallback(
-    (backend: XRBackend, sessionType?: string) => {
-      if (sessionType) {
-        sessionTypesRef.current.delete(sessionType);
-
-        setSessionTypes((prev) => {
-          const newTypes = new Set(prev);
-
-          newTypes.delete(sessionType);
-
-          return newTypes;
-        });
-      }
-
-      setBackends((prev) => {
-        const newBackends = prev.filter((b) => b !== backend);
-
-        // yeet the backend
-        try {
-          backend.dispose?.();
-        } catch (err) {
-          console.error("[XRSessionProvider] Error disposing backend:", err);
-        }
-
-        return newBackends;
-      });
-    },
-    [],
-  );
+    setCameraSource(cameraSource);
+  }, [scene, threeCamera, gl, cameraSource, setThreeRefs, setCameraSource]);
 
   // update all registered backends per frame
   useFrame(() => {
-    backends.forEach((backend) => {
-      try {
-        backend.update?.();
-      } catch (err) {
-        console.error("[XRSessionProvider] Backend update error:", err);
-      }
-    });
+    updateBackends();
   });
 
-  const value: XRContextValue = useMemo(
-    () => ({
-      // always ready since sessions handle initialization
-      isReady: true,
-      camera: cameraSource,
-      // sessions manage their own video
-      video: null,
-      backends,
-      registerBackend,
-      unregisterBackend,
-    }),
-    [cameraSource, backends, registerBackend, unregisterBackend],
-  );
-
-  return <XRContext.Provider value={value}>{children}</XRContext.Provider>;
+  return <>{children}</>;
 };
 
 export default XRSessionProvider;

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { useXR } from "engine/XRSessionProvider";
+import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createGeolocationBackend } from "geolocation";
 
 import type { PropsWithChildren } from "react";
@@ -17,7 +17,7 @@ export interface GeolocationSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides LocAR.js geolocation capabilities.
  */
 const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
-  const { registerBackend, unregisterBackend } = useXR();
+  const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<XRBackend | null>(null);
 
@@ -33,7 +33,7 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
 
         if (cancelled) return;
 
-        registerBackend(backend, "GeolocationSession");
+        registerBackend(backend, SESSION_TYPES.GEOLOCATION);
 
         if (!cancelled) {
           backendRef.current = backend;
@@ -49,7 +49,7 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
       cancelled = true;
 
       if (backendRef.current) {
-        unregisterBackend(backendRef.current, "GeolocationSession");
+        unregisterBackend(backendRef.current, SESSION_TYPES.GEOLOCATION);
 
         backendRef.current = null;
       }
