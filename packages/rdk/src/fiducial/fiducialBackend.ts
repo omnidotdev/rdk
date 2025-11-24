@@ -4,7 +4,7 @@ import {
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
-import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
+import type { Backend, BackendInitArgs } from "lib/types/engine";
 
 export interface FiducialSessionOptions {
   /** Input source type. */
@@ -28,7 +28,7 @@ export interface FiducialSessionOptions {
 /**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options: unknown): XRBackend => {
+const createFiducialBackend = (options: unknown): Backend => {
   const opts = (options || {}) as FiducialSessionOptions;
 
   // biome-ignore lint/suspicious/noExplicitAny: TODO
@@ -38,7 +38,7 @@ const createFiducialBackend = (options: unknown): XRBackend => {
   let resizeHandler: (() => void) | undefined;
 
   return {
-    async init({ camera, renderer }: XRBackendInitArgs) {
+    async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
         sourceType: opts.sourceType ?? "webcam",

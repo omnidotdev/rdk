@@ -4,7 +4,7 @@ import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
 
 import type { FiducialSessionOptions } from "fiducial";
-import type { XRBackend } from "lib/types/xr";
+import type { Backend } from "lib/types/engine";
 import type { PropsWithChildren } from "react";
 
 export interface FiducialSessionProps extends PropsWithChildren {
@@ -20,7 +20,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
   const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
-  const backendRef = useRef<XRBackend | null>(null);
+  const backendRef = useRef<Backend | null>(null);
 
   useEffect(() => {
     let cancelled = false;

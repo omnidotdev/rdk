@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { XRBackend } from "lib/types/xr";
+import type { Backend, CameraSource } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
 export const SESSION_TYPES = {
@@ -13,11 +13,11 @@ export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
 export interface XRStoreState {
   /** Camera source type; video uses shared `getUserMedia`, `webxr` reserved for future `@react-three/xr` */
-  camera: "video" | "webxr";
+  camera: CameraSource;
   /** Shared video element when using video camera source. */
   video?: HTMLVideoElement | null;
-  /** Active XR backends registered by sessions. */
-  backends: XRBackend[];
+  /** Active spatial backends registered by sessions. */
+  backends: Backend[];
   /** Active session types for compatibility checking. */
   sessionTypes: Set<XRSessionType>;
 }
@@ -25,14 +25,14 @@ export interface XRStoreState {
 export interface XRStoreActions {
   /** Register a backend (called by sessions). */
   registerBackend: (
-    backend: XRBackend,
+    backend: Backend,
     threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
     sessionType?: XRSessionType,
   ) => Promise<void>;
   /** Unregister a backend (called by sessions). */
-  unregisterBackend: (backend: XRBackend, sessionType?: XRSessionType) => void;
+  unregisterBackend: (backend: Backend, sessionType?: XRSessionType) => void;
   /** Set camera source. */
-  setCameraSource: (camera: "video" | "webxr") => void;
+  setCameraSource: (camera: CameraSource) => void;
   /** Set shared video element. */
   setVideo: (video: HTMLVideoElement | null) => void;
   /** Update all registered backends (called per frame). */
@@ -50,7 +50,7 @@ const useXRStore = create<XRStore>()(
     sessionTypes: new Set(),
     // actions
     registerBackend: async (
-      backend: XRBackend,
+      backend: Backend,
       threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
       sessionType?: XRSessionType,
     ) => {
@@ -91,7 +91,7 @@ const useXRStore = create<XRStore>()(
         throw err;
       }
     },
-    unregisterBackend: (backend: XRBackend, sessionType?: XRSessionType) => {
+    unregisterBackend: (backend: Backend, sessionType?: XRSessionType) => {
       set((state) => {
         const newSessionTypes = new Set(state.sessionTypes);
 

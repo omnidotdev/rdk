@@ -1,6 +1,14 @@
 import { act, renderHook } from "@testing-library/react";
 import { PerspectiveCamera, Scene } from "three";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 
 import useXRStore, {
   getXRStore,
@@ -8,8 +16,9 @@ import useXRStore, {
   subscribeToXRStore,
 } from "./useXRStore";
 
-import type { WebGLRenderer } from "three";
-import type { XRBackend } from "../lib/types/xr";
+import type { Camera, WebGLRenderer } from "three";
+import type { Backend, CameraSource } from "../lib/types/engine";
+import type { XRSessionType } from "./useXRStore";
 
 // mock Three.js objects
 const createMockThreeRefs = () => ({
@@ -24,7 +33,7 @@ const createMockThreeRefs = () => ({
 });
 
 // mock XR Backend
-const createMockBackend = (): XRBackend => ({
+const createMockBackend = (): Backend => ({
   init: vi.fn().mockResolvedValue(undefined),
   update: vi.fn(),
   dispose: vi.fn(),
@@ -71,6 +80,63 @@ describe("XR Store API Surface", () => {
       expect(store.setVideo).toBeInstanceOf(Function);
 
       expect(store.updateBackends).toBeInstanceOf(Function);
+    });
+
+    it("maintains type safety for XRStore interface", () => {
+      const {
+        backends,
+        camera,
+        registerBackend,
+        sessionTypes,
+        setCameraSource,
+        setVideo,
+        unregisterBackend,
+        updateBackends,
+        video,
+      } = getXRStore();
+
+      // Validate state property types
+      expectTypeOf({ camera }).toEqualTypeOf<{ camera: CameraSource }>();
+      expectTypeOf({ backends }).toEqualTypeOf<{ backends: Backend[] }>();
+      expectTypeOf({ sessionTypes }).toEqualTypeOf<{
+        sessionTypes: Set<XRSessionType>;
+      }>();
+      expectTypeOf({ video }).toEqualTypeOf<{
+        video: HTMLVideoElement | null | undefined;
+      }>();
+
+      // Validate action method types and signatures
+      expectTypeOf(registerBackend).toBeFunction();
+      expectTypeOf(registerBackend).parameter(0).toEqualTypeOf<Backend>();
+      expectTypeOf(registerBackend).parameter(1).toEqualTypeOf<{
+        scene: Scene;
+        camera: Camera;
+        renderer: WebGLRenderer;
+      }>();
+      expectTypeOf(registerBackend)
+        .parameter(2)
+        .toEqualTypeOf<XRSessionType | undefined>();
+      expectTypeOf(registerBackend).returns.toEqualTypeOf<Promise<void>>();
+
+      expectTypeOf(unregisterBackend).toBeFunction();
+      expectTypeOf(unregisterBackend).parameter(0).toEqualTypeOf<Backend>();
+      expectTypeOf(unregisterBackend)
+        .parameter(1)
+        .toEqualTypeOf<XRSessionType | undefined>();
+      expectTypeOf(unregisterBackend).returns.toEqualTypeOf<void>();
+
+      expectTypeOf(setCameraSource).toBeFunction();
+      expectTypeOf(setCameraSource).parameter(0).toEqualTypeOf<CameraSource>();
+      expectTypeOf(setCameraSource).returns.toEqualTypeOf<void>();
+
+      expectTypeOf(setVideo).toBeFunction();
+      expectTypeOf(setVideo)
+        .parameter(0)
+        .toEqualTypeOf<HTMLVideoElement | null>();
+      expectTypeOf(setVideo).returns.toEqualTypeOf<void>();
+
+      expectTypeOf(updateBackends).toBeFunction();
+      expectTypeOf(updateBackends).returns.toEqualTypeOf<void>();
     });
   });
 
@@ -320,7 +386,7 @@ describe("XR Store API Surface", () => {
   describe("Error Handling", () => {
     it("handles backend initialization errors gracefully", async () => {
       const mockRefs = createMockThreeRefs();
-      const failingBackend: XRBackend = {
+      const failingBackend: Backend = {
         init: vi.fn().mockRejectedValue(new Error("Init failed")),
         update: vi.fn(),
         dispose: vi.fn(),
@@ -342,7 +408,7 @@ describe("XR Store API Surface", () => {
     describe("Error Handling", () => {
       it("handles backend update errors without crashing", async () => {
         const mockRefs = createMockThreeRefs();
-        const flakyBackend: XRBackend = {
+        const flakyBackend: Backend = {
           init: vi.fn().mockResolvedValue(undefined),
           update: vi.fn().mockImplementation(() => {
             throw new Error("Update failed");
@@ -374,7 +440,7 @@ describe("XR Store API Surface", () => {
 
     it("handles backend disposal errors gracefully", async () => {
       const mockRefs = createMockThreeRefs();
-      const flakyBackend: XRBackend = {
+      const flakyBackend: Backend = {
         init: vi.fn().mockResolvedValue(undefined),
         update: vi.fn(),
         dispose: vi.fn().mockImplementation(() => {

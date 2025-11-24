@@ -1,6 +1,6 @@
 import * as LocAR from "locar";
 
-import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
+import type { Backend, BackendInitArgs } from "lib/types/engine";
 import type * as THREE from "three";
 
 /**
@@ -18,7 +18,7 @@ export interface GeolocationSessionOptions {
 /**
  * Create a location-based AR backend.
  */
-const createGeolocationBackend = (options: unknown): XRBackend => {
+const createGeolocationBackend = (options: unknown): Backend => {
   const opts = (options || {}) as GeolocationSessionOptions;
 
   // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
@@ -34,7 +34,7 @@ const createGeolocationBackend = (options: unknown): XRBackend => {
   let rendererRef: THREE.WebGLRenderer | null = null;
 
   return {
-    async init(args: XRBackendInitArgs & { scene?: THREE.Scene }) {
+    async init(args: BackendInitArgs & { scene?: THREE.Scene }) {
       const { camera, renderer, scene } = args;
 
       if (!scene)
