@@ -1,8 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { Scene, PerspectiveCamera, WebGLRenderer } from "three";
+import type { WebGLRenderer } from "three";
+import { Scene, PerspectiveCamera } from "three";
 
-import useXRStore, {
+import type { XRStore, XRSessionType } from "./useXRStore";
+import {
   useXRReady,
   useXRCamera,
   useXRVideo,
@@ -10,8 +12,6 @@ import useXRStore, {
   getXRStore,
   SESSION_TYPES,
   subscribeToXRStore,
-  type XRStore,
-  type XRSessionType,
 } from "./useXRStore";
 
 import type { XRBackend } from "../lib/types/xr";
