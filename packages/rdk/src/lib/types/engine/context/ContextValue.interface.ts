@@ -6,8 +6,6 @@ import type { Backend } from "../backend";
  * Supports session-based architecture with shared camera/video resources.
  */
 export interface ContextValue {
-  /** Whether the system is ready. */
-  isReady: boolean;
   /** Camera source type; video uses shared `getUserMedia`, `webxr` reserved for future `@react-three/xr` */
   camera: CameraSource;
   /** Shared video element when using video camera source. */
