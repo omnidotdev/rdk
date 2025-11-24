@@ -1,11 +1,11 @@
+import { useThree } from "@react-three/fiber";
+import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
+import { createGeolocationBackend } from "geolocation";
 import { useEffect, useRef } from "react";
 
-import { useXR } from "engine/XRSessionProvider";
-import { createGeolocationBackend } from "geolocation";
-
-import type { PropsWithChildren } from "react";
 import type { GeolocationSessionOptions } from "geolocation";
-import type { XRBackend } from "lib/types/xr";
+import type { Backend } from "lib/types/engine";
+import type { PropsWithChildren } from "react";
 
 export interface GeolocationSessionProps extends PropsWithChildren {
   /** Geolocation session options. */
@@ -17,23 +17,28 @@ export interface GeolocationSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides LocAR.js geolocation capabilities.
  */
 const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
-  const { registerBackend, unregisterBackend } = useXR();
+  const { scene, camera, gl } = useThree();
+  const { registerBackend, unregisterBackend } = useXRStore();
 
-  const backendRef = useRef<XRBackend | null>(null);
+  const backendRef = useRef<Backend | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     const initSession = async () => {
       try {
-        // create geolocation backend - disable video if fiducial session is present
+        // create geolocation backend, which creates its own video for LocAR.js
         const backend = createGeolocationBackend({
           ...options,
         });
 
         if (cancelled) return;
 
-        registerBackend(backend, "GeolocationSession");
+        await registerBackend(
+          backend,
+          { scene, camera, renderer: gl },
+          SESSION_TYPES.GEOLOCATION,
+        );
 
         if (!cancelled) {
           backendRef.current = backend;
@@ -49,14 +54,14 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
       cancelled = true;
 
       if (backendRef.current) {
-        unregisterBackend(backendRef.current, "GeolocationSession");
+        unregisterBackend(backendRef.current, SESSION_TYPES.GEOLOCATION);
 
         backendRef.current = null;
       }
     };
-  }, [registerBackend, unregisterBackend, options]);
+  }, [registerBackend, unregisterBackend, options, scene, camera, gl]);
 
-  return <>{children}</>;
+  return children;
 };
 
 // static property to identify session type for compatibility checking

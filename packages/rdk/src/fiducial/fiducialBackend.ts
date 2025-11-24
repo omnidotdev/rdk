@@ -1,9 +1,11 @@
-import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
 import {
   ArToolkitContext,
   ArToolkitSource,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import type { Backend, BackendInitArgs } from "lib/types/engine";
+import type { Camera } from "three";
 
 export interface FiducialSessionOptions {
   /** Input source type. */
@@ -25,19 +27,26 @@ export interface FiducialSessionOptions {
 }
 
 /**
+ * Internal backend extension that includes private fields.
+ */
+interface InternalBackend extends Backend {
+  _arSource?: ArToolkitSource;
+  _arContext?: ArToolkitContext;
+  _camera?: Camera;
+}
+
+/**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options: unknown): XRBackend => {
+const createFiducialBackend = (options: unknown): Backend => {
   const opts = (options || {}) as FiducialSessionOptions;
 
-  // biome-ignore lint/suspicious/noExplicitAny: TODO
-  let arSource: any;
-  // biome-ignore lint/suspicious/noExplicitAny: TODO
-  let arContext: any;
+  let arSource: ArToolkitSource;
+  let arContext: ArToolkitContext;
   let resizeHandler: (() => void) | undefined;
 
-  return {
-    async init({ camera, renderer }: XRBackendInitArgs) {
+  const backend: InternalBackend = {
+    async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
         sourceType: opts.sourceType ?? "webcam",
@@ -118,20 +127,18 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       });
 
       // expose for the anchor component
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      (this as any)._arSource = arSource;
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      (this as any)._arContext = arContext;
+      this._arSource = arSource;
+      this._arContext = arContext;
+      this._camera = camera;
 
       window.addEventListener("resize", doResize);
       resizeHandler = doResize;
     },
 
     update() {
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      const source = (this as any)._arSource;
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      const context = (this as any)._arContext;
+      const source = this._arSource;
+      const context = this._arContext;
+      const camera = this._camera;
 
       if (!source || !context) return;
 
@@ -139,6 +146,10 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       if (source.ready !== false && source.domElement) {
         try {
           context.update(source.domElement);
+
+          // update camera projection matrix each frame to fix positioning
+          if (camera && context.getProjectionMatrix)
+            camera.projectionMatrix.copy(context.getProjectionMatrix());
         } catch (err) {
           console.warn("AR.js update error:", err);
         }
@@ -152,12 +163,12 @@ const createFiducialBackend = (options: unknown): XRBackend => {
       }
 
       // clean up AR.js resources
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      const source = (this as any)._arSource;
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      const context = (this as any)._arContext;
+      const source = this._arSource;
+      const context = this._arContext;
 
+      // @ts-expect-error TODO: figure out type errors here
       if (context && typeof context.dispose === "function") {
+        // @ts-expect-error TODO: figure out type errors here
         context.dispose();
       }
 
@@ -168,21 +179,19 @@ const createFiducialBackend = (options: unknown): XRBackend => {
         }
       }
 
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      (this as any)._arSource = null;
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
-      (this as any)._arContext = null;
+      this._arSource = undefined;
+      this._arContext = undefined;
     },
 
     getInternal() {
       return {
-        // biome-ignore lint/suspicious/noExplicitAny: TODO
-        arSource: (this as any)._arSource,
-        // biome-ignore lint/suspicious/noExplicitAny: TODO
-        arContext: (this as any)._arContext,
+        arSource: this._arSource,
+        arContext: this._arContext,
       };
     },
   };
+
+  return backend;
 };
 
 export default createFiducialBackend;

@@ -1,11 +1,11 @@
+import { useThree } from "@react-three/fiber";
+import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
+import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
 
-import { useXR } from "engine/XRSessionProvider";
-import { createFiducialBackend } from "fiducial";
-
-import type { PropsWithChildren } from "react";
 import type { FiducialSessionOptions } from "fiducial";
-import type { XRBackend } from "lib/types/xr";
+import type { Backend } from "lib/types/engine";
+import type { PropsWithChildren } from "react";
 
 export interface FiducialSessionProps extends PropsWithChildren {
   /** Fiducial session options. */
@@ -17,9 +17,10 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
 const FiducialSession = ({ options, children }: FiducialSessionProps) => {
-  const { registerBackend, unregisterBackend } = useXR();
+  const { scene, camera, gl } = useThree();
+  const { registerBackend, unregisterBackend } = useXRStore();
 
-  const backendRef = useRef<XRBackend | null>(null);
+  const backendRef = useRef<Backend | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,7 +34,11 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
 
         if (cancelled) return;
 
-        registerBackend(backend, "FiducialSession");
+        await registerBackend(
+          backend,
+          { scene, camera, renderer: gl },
+          SESSION_TYPES.FIDUCIAL,
+        );
 
         if (!cancelled) {
           backendRef.current = backend;
@@ -48,14 +53,14 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
     return () => {
       cancelled = true;
       if (backendRef.current) {
-        unregisterBackend(backendRef.current, "FiducialSession");
+        unregisterBackend(backendRef.current, SESSION_TYPES.FIDUCIAL);
 
         backendRef.current = null;
       }
     };
-  }, [registerBackend, unregisterBackend, options]);
+  }, [registerBackend, unregisterBackend, options, scene, camera, gl]);
 
-  return <>{children}</>;
+  return children;
 };
 
 // static property to identify session type for compatibility checking

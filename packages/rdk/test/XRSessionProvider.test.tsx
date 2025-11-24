@@ -1,11 +1,14 @@
-import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { useEffect, useRef, useState } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { ReactNode } from "react";
 import "@testing-library/jest-dom";
+
 import { Canvas } from "@react-three/fiber";
+
 import XRSessionProvider from "../src/engine/XRSessionProvider";
-import { setupGlobalMocks, clearGlobalMocks } from "./mocks/globals.mock";
+import { clearGlobalMocks, setupGlobalMocks } from "./mocks/globals.mock";
 
 vi.mock("../src/fiducial/fiducialBackend", () => ({
   createFiducialBackend: vi.fn().mockReturnValue({

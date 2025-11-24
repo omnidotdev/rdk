@@ -26,7 +26,6 @@
   "dependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
     "@omnidotdev/rdk": "workspace:*",
-    "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

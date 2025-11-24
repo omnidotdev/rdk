@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@omnidotdev/rdk": "workspace:*",
-    "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "locar": "^0.1.4",
     "react": "^19.2.0",

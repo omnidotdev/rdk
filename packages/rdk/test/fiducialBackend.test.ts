@@ -1,5 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import createFiducialBackend from "../src/fiducial/fiducialBackend";
+
 import type { FiducialSessionOptions } from "../src/fiducial/fiducialBackend";
 
 describe("fiducialBackend", () => {

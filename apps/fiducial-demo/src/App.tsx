@@ -1,6 +1,5 @@
-import { XR, FiducialAnchor, FiducialSession } from "@omnidotdev/rdk";
+import { FiducialAnchor, FiducialSession, XR } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
-
 import { Supertorus } from "components";
 
 /**

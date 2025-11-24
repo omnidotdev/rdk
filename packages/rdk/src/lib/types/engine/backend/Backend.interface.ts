@@ -1,19 +1,19 @@
-import type { XRBackendInitArgs } from "./XRBackendInitArgs.interface";
+import type { BackendInitArgs } from "./BackendInitArgs.interface";
 
 /**
- * Extended reality backend interface.
- * Defines the contract for XR backend implementations (fiducial, geolocation, WebXR, etc.).
+ * Backend interface.
+ * Defines the contract for backend implementations (fiducial, geolocation, WebXR, etc.).
  */
-export interface XRBackend {
+export interface Backend {
   /**
-   * Initialize the XR backend with the provided arguments.
+   * Initialize the backend with the provided arguments.
    * @param args initialization arguments containing scene, camera, and renderer
    * @returns promise that resolves when initialization is complete, or void for synchronous init
    */
-  init(args: XRBackendInitArgs): Promise<void> | void;
+  init(args: BackendInitArgs): Promise<void> | void;
 
   /**
-   * Update the XR backend on each frame.
+   * Update the backend on each frame.
    * @param dt delta time since last frame in seconds
    */
   update?(dt?: number): void;

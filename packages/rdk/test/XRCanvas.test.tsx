@@ -1,9 +1,11 @@
-import type React from "react";
-import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Canvas } from "@react-three/fiber";
+import { render } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import XR from "../src/engine/XR";
-import { setupGlobalMocks, clearGlobalMocks } from "./mocks/globals.mock";
+import { clearGlobalMocks, setupGlobalMocks } from "./mocks/globals.mock";
+
+import type { ReactNode } from "react";
 
 beforeEach(() => {
   setupGlobalMocks();
@@ -17,7 +19,7 @@ afterEach(() => {
 });
 
 describe("XR", () => {
-  const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  const TestWrapper = ({ children }: { children: ReactNode }) => (
     <Canvas>
       <XR cameraSource="video">{children}</XR>
     </Canvas>

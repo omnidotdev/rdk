@@ -1,7 +1,6 @@
-import { XR, GeolocationSession, GeolocationAnchor } from "@omnidotdev/rdk";
+import { GeolocationAnchor, GeolocationSession, XR } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
-
-import { GPSPin, Landmark, Compass } from "components";
+import { Compass, GPSPin, Landmark } from "components";
 
 // set these to your preferred location
 const BASE_LATITUDE = 48.68951980519457,

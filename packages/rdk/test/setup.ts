@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
+
 import { createElement } from "react";
+import { vi } from "vitest";
+
 import { setupGlobalMocks } from "./mocks/globals.mock";
 
 // set up all global mocks
