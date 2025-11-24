@@ -13,10 +13,10 @@ Migrated the RDK state manager from React Context to Zustand.
 
 **New Library Exports:**
 
-- `useXRStore` - Main Zustand store hook for full state access
-- `getXRStore` - Non-React access to store state
-- `subscribeToXRStore` - Non-React subscription to store changes
-- `XRStore`, `XRStoreState`, `XRStoreActions` - TypeScript types
+- `useXRStore`: Main Zustand store hook for full state access
+- `getXRStore`: Non-React access to store state
+- `subscribeToXRStore`: Non-React subscription to store changes
+- `XRStore`, `XRStoreState`, `XRStoreActions`: TypeScript types
 
 **New Features:**
 
