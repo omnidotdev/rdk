@@ -26,7 +26,9 @@ export interface FiducialSessionOptions {
     | "4x4_BCH_13_5_5";
 }
 
-// Internal extension that includes private fields
+/**
+ * Internal backend extension that includes private fields.
+ */
 interface InternalBackend extends Backend {
   _arSource?: ArToolkitSource;
   _arContext?: ArToolkitContext;
