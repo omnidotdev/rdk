@@ -33,8 +33,3 @@ Replace `useXR()` with direct store selectors:
 - `useXR().camera` → `useXRStore((state) => state.camera)`
 - `useXR().backends` → `useXRStore((state) => state.backends)`
 - Full store access: `useXRStore()` or `useXRStore(selector)`
-
-Use typed session constants:
-
-- `"FiducialSession"` → `SESSION_TYPES.FIDUCIAL`
-- `"GeolocationSession"` → `SESSION_TYPES.GEOLOCATION`
