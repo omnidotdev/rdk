@@ -1,5 +1,5 @@
 ---
-"@omnidotdev/rdk": major
+"@omnidotdev/rdk": minor
 ---
 
 **Breaking Change:** Renamed and moved XR-specific types to general spatial computing types as RDK evolves into a comprehensive spatial SDK:
