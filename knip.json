@@ -11,12 +11,7 @@
       "ignore": ["build/**", "dist/**", "node_modules/**"]
     }
   },
-  "ignore": [
-    "**/*.test.{ts,tsx}",
-    "**/*.spec.{ts,tsx}",
-    "**/.turbo/**",
-    ".github/**"
-  ],
+  "ignore": ["**/.turbo/**", ".github/**"],
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true
