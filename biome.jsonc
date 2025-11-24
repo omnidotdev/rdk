@@ -5,6 +5,7 @@
     "actions": {
       "source": {
         "organizeImports": {
+          "level": "on",
           "options": {
             "groups": [
               { "type": false, "source": [":BUN:", ":NODE:"] },
@@ -28,16 +29,16 @@
     "includes": [
       "**",
       "!!**/*.gen.*",
-      "!!**/.cache/**",
-      "!!**/build/**",
+      "!!**/.cache",
+      "!!**/build",
       "!!**/bun.lock",
-      "!!**/dist/**",
-      "!!**/generated/**",
-      "!!**/node_modules/**",
-      "!!**/out/**",
-      "!!**/public/**",
-      "!!**/vendor/**",
-      "!!**/certificates/**"
+      "!!**/dist",
+      "!!**/generated",
+      "!!**/node_modules",
+      "!!**/out",
+      "!!**/public",
+      "!!**/vendor",
+      "!!**/certificates"
     ]
   },
   "formatter": {
