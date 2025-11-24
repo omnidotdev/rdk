@@ -8,7 +8,6 @@
 
 - `XRBackend` → `Backend`
 - `XRContextValue` → `ContextValue`
-- `XRBackendInitArgs` → `BackendInitArgs`
 
 **Migration Guide:**
 
