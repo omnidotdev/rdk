@@ -16,7 +16,7 @@ export interface XRStoreState {
   camera: CameraSource;
   /** Shared video element when using video camera source. */
   video?: HTMLVideoElement | null;
-  /** Active spatial backends registered by sessions. */
+  /** Active backends registered by sessions. */
   backends: Backend[];
   /** Active session types for compatibility checking. */
   sessionTypes: Set<XRSessionType>;
