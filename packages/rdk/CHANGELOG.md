@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [#22](https://github.com/omnidotdev/rdk/pull/22) [`95e4a7c`](https://github.com/omnidotdev/rdk/commit/95e4a7c0bc7b528320d6695436d8b098c305aa27) Thanks [@coopbri](https://github.com/coopbri)! - Migrated the RDK state manager from React Context to Zustand for better performance, flexibility, and access outside of React contexts.
+- [#22](https://github.com/omnidotdev/rdk/pull/22) [`95e4a7c`](https://github.com/omnidotdev/rdk/commit/95e4a7c0bc7b528320d6695436d8b098c305aa27) Thanks [@coopbri](https://github.com/coopbri)! - Migrated the RDK state manager from React Context to Zustand for better performance, flexibility, and access outside of React contexts. 🐻
 
   **Breaking Changes:**
 
