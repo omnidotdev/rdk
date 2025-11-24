@@ -1,5 +1,38 @@
 # @omnidotdev/rdk
 
+## 0.3.0
+
+### Minor Changes
+
+- [#22](https://github.com/omnidotdev/rdk/pull/22) [`95e4a7c`](https://github.com/omnidotdev/rdk/commit/95e4a7c0bc7b528320d6695436d8b098c305aa27) Thanks [@coopbri](https://github.com/coopbri)! - Migrated the RDK state manager from React Context to Zustand for better performance, flexibility, and access outside of React contexts.
+
+  **Breaking Changes:**
+
+  - Replaced `XRContext` and `useXR` hook with Zustand store (`useXRStore`)
+  - Renamed types
+    - `XRBackend` → `Backend`
+    - `XRContextValue` → `ContextValue`
+
+  **New Library Exports:**
+
+  - `useXRStore`: Main Zustand store hook for full state access
+  - `getXRStore`: Non-React access to store state
+  - `subscribeToXRStore`: Non-React subscription to store changes
+  - `XRStore`, `XRStoreState`, `XRStoreActions`: TypeScript types
+
+  **Migration Guide:**
+
+  Replace `useXR()` with direct store selectors:
+
+  - `useXR().camera` → `useXRStore((state) => state.camera)`
+  - `useXR().backends` → `useXRStore((state) => state.backends)`
+  - Full store access: `useXRStore()` or `useXRStore(selector)`
+
+  Replace types:
+
+  - `XRBackend` → `Backend`
+  - `XRContextValue` → `ContextValue`
+
 ## 0.2.2
 
 ### Patch Changes
