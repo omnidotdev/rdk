@@ -60,7 +60,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
     };
   }, [registerBackend, unregisterBackend, options, scene, camera, gl]);
 
-  return <>{children}</>;
+  return children;
 };
 
 // static property to identify session type for compatibility checking
