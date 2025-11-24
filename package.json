@@ -15,6 +15,7 @@
     "format": "turbo format",
     "lint": "turbo lint",
     "clean": "turbo clean",
+    "knip": "knip-bun --cache --tags=-knipignore",
     "test": "turbo test",
     "release": "bun run --cwd packages/rdk build && changeset publish",
     "prepare": "husky"
@@ -24,6 +25,7 @@
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.7",
     "husky": "^9.1.7",
+    "knip": "^5.70.2",
     "turbo": "^2.6.1",
     "typescript": "^5.9.3"
   }

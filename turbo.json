@@ -20,7 +20,8 @@
       "cache": false
     },
     "knip": {
-      "cache": false
+      "cache": false,
+      "dependsOn": ["^knip"]
     },
     "test": {
       "cache": false
