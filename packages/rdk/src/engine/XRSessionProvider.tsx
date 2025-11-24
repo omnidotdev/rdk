@@ -31,7 +31,7 @@ const XRSessionProvider = ({
     updateBackends(delta);
   });
 
-  return <>{children}</>;
+  return children;
 };
 
 export default XRSessionProvider;
