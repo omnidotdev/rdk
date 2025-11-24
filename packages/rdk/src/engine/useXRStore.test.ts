@@ -36,7 +36,7 @@ describe("XR Store API Surface", () => {
     // reset store state before each test
     const store = getXRStore();
     act(() => {
-      store.setReady(true);
+      store.setIsReady(true);
       store.setCameraSource("video");
       store.setVideo(null);
 
@@ -81,7 +81,7 @@ describe("XR Store API Surface", () => {
       expect(store.unregisterBackend).toBeInstanceOf(Function);
       expect(store.setThreeRefs).toBeInstanceOf(Function);
       expect(store.setCameraSource).toBeInstanceOf(Function);
-      expect(store.setReady).toBeInstanceOf(Function);
+      expect(store.setIsReady).toBeInstanceOf(Function);
       expect(store.setVideo).toBeInstanceOf(Function);
       expect(store.updateBackends).toBeInstanceOf(Function);
     });
@@ -171,7 +171,7 @@ describe("XR Store API Surface", () => {
 
       act(() => {
         const store = getXRStore();
-        store.setReady(false);
+        store.setIsReady(false);
         store.setCameraSource("webxr");
       });
 
@@ -198,7 +198,7 @@ describe("XR Store API Surface", () => {
       );
 
       act(() => {
-        getXRStore().setReady(false);
+        getXRStore().setIsReady(false);
       });
 
       expect(callback).toHaveBeenCalledWith(false, true);
@@ -217,7 +217,7 @@ describe("XR Store API Surface", () => {
       unsubscribe();
 
       act(() => {
-        getXRStore().setReady(false);
+        getXRStore().setIsReady(false);
       });
 
       expect(callback).not.toHaveBeenCalled();
@@ -396,13 +396,13 @@ describe("XR Store API Surface", () => {
 
     it("updates ready state", () => {
       act(() => {
-        getXRStore().setReady(false);
+        getXRStore().setIsReady(false);
       });
 
       expect(getXRStore().isReady).toBe(false);
 
       act(() => {
-        getXRStore().setReady(true);
+        getXRStore().setIsReady(true);
       });
 
       expect(getXRStore().isReady).toBe(true);

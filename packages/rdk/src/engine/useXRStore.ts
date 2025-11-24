@@ -47,7 +47,7 @@ export interface XRStoreActions {
   /** Set camera source. */
   setCameraSource: (camera: "video" | "webxr") => void;
   /** Set ready state. */
-  setReady: (ready: boolean) => void;
+  setIsReady: (ready: boolean) => void;
   /** Set shared video element. */
   setVideo: (video: HTMLVideoElement | null) => void;
   /** Update all registered backends (called per frame). */
@@ -181,7 +181,7 @@ const useXRStore = create<XRStore>()(
     setCameraSource: (camera) => {
       set({ camera });
     },
-    setReady: (ready) => {
+    setIsReady: (ready) => {
       set({ isReady: ready });
     },
     setVideo: (video) => {
