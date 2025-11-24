@@ -411,12 +411,8 @@ describe("XR Store API Surface", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
-
       await act(async () => {
-        await getXRStore().registerBackend(flakyBackend);
+        await getXRStore().registerBackend(flakyBackend, mockRefs);
       });
 
       // should not throw
