@@ -6,10 +6,6 @@ import useXRStore, {
   getXRStore,
   SESSION_TYPES,
   subscribeToXRStore,
-  useXRBackends,
-  useXRCamera,
-  useXRReady,
-  useXRVideo,
 } from "./useXRStore";
 
 import type { WebGLRenderer } from "three";
@@ -139,10 +135,18 @@ describe("XR Store API Surface", () => {
     });
 
     it("returns correct types", () => {
-      const { result: readyResult } = renderHook(() => useXRReady());
-      const { result: cameraResult } = renderHook(() => useXRCamera());
-      const { result: videoResult } = renderHook(() => useXRVideo());
-      const { result: backendsResult } = renderHook(() => useXRBackends());
+      const { result: readyResult } = renderHook(() =>
+        useXRStore((state) => state.isReady),
+      );
+      const { result: cameraResult } = renderHook(() =>
+        useXRStore((state) => state.camera),
+      );
+      const { result: videoResult } = renderHook(() =>
+        useXRStore((state) => state.video),
+      );
+      const { result: backendsResult } = renderHook(() =>
+        useXRStore((state) => state.backends),
+      );
 
       expect(typeof readyResult.current).toBe("boolean");
 
@@ -155,8 +159,12 @@ describe("XR Store API Surface", () => {
     });
 
     it("updates when state changes", async () => {
-      const { result: readyResult } = renderHook(() => useXRReady());
-      const { result: cameraResult } = renderHook(() => useXRCamera());
+      const { result: readyResult } = renderHook(() =>
+        useXRStore((state) => state.isReady),
+      );
+      const { result: cameraResult } = renderHook(() =>
+        useXRStore((state) => state.camera),
+      );
 
       expect(readyResult.current).toBe(true);
       expect(cameraResult.current).toBe("video");

@@ -201,12 +201,6 @@ const useXRStore = create<XRStore>()(
   })),
 );
 
-// selector hooks for common use cases
-export const useXRReady = () => useXRStore((state) => state.isReady);
-export const useXRCamera = () => useXRStore((state) => state.camera);
-export const useXRVideo = () => useXRStore((state) => state.video);
-export const useXRBackends = () => useXRStore((state) => state.backends);
-
 // non-React access to the store
 export const getXRStore = () => useXRStore.getState();
 export const subscribeToXRStore = useXRStore.subscribe;

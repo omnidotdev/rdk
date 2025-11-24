@@ -14,10 +14,6 @@ Migrated the RDK state manager from React Context to Zustand.
 **New Library Exports:**
 
 - `useXRStore` - Main Zustand store hook for full state access
-- `useXRReady` - Hook for XR system ready state
-- `useXRCamera` - Hook for camera source type
-- `useXRVideo` - Hook for shared video element
-- `useXRBackends` - Hook for active backends array
 - `getXRStore` - Non-React access to store state
 - `subscribeToXRStore` - Non-React subscription to store changes
 - `XRStore`, `XRStoreState`, `XRStoreActions` - TypeScript types
@@ -32,11 +28,11 @@ Migrated the RDK state manager from React Context to Zustand.
 
 **Migration Guide:**
 
-Replace `useXR()` with specific hooks:
+Replace `useXR()` with direct store selectors:
 
-- `useXR().isReady` → `useXRReady()`
-- `useXR().camera` → `useXRCamera()`
-- `useXR().backends` → `useXRBackends()`
+- `useXR().isReady` → `useXRStore((state) => state.isReady)`
+- `useXR().camera` → `useXRStore((state) => state.camera)`
+- `useXR().backends` → `useXRStore((state) => state.backends)`
 - Full store access: `useXRStore()` or `useXRStore(selector)`
 
 Use typed session constants:
