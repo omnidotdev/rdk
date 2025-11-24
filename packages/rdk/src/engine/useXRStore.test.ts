@@ -36,7 +36,6 @@ describe("XR Store API Surface", () => {
     // reset store state before each test
     const store = getXRStore();
     act(() => {
-      store.setIsReady(true);
       store.setCameraSource("video");
       store.setVideo(null);
 
@@ -52,7 +51,6 @@ describe("XR Store API Surface", () => {
       const store = getXRStore();
 
       expect(store).toMatchObject({
-        isReady: expect.any(Boolean),
         camera: expect.stringMatching(/^(video|webxr)$/),
         backends: expect.any(Array),
         sessionTypes: expect.any(Set),
@@ -62,16 +60,6 @@ describe("XR Store API Surface", () => {
       expect(
         store.video === null || store.video instanceof HTMLVideoElement,
       ).toBe(true);
-      expect(store.scene === undefined || typeof store.scene === "object").toBe(
-        true,
-      );
-      expect(
-        store.threeCamera === undefined ||
-          typeof store.threeCamera === "object",
-      ).toBe(true);
-      expect(
-        store.renderer === undefined || typeof store.renderer === "object",
-      ).toBe(true);
     });
 
     it("exposes correct action methods", () => {
@@ -79,10 +67,10 @@ describe("XR Store API Surface", () => {
 
       expect(store.registerBackend).toBeInstanceOf(Function);
       expect(store.unregisterBackend).toBeInstanceOf(Function);
-      expect(store.setThreeRefs).toBeInstanceOf(Function);
+
       expect(store.setCameraSource).toBeInstanceOf(Function);
-      expect(store.setIsReady).toBeInstanceOf(Function);
       expect(store.setVideo).toBeInstanceOf(Function);
+
       expect(store.updateBackends).toBeInstanceOf(Function);
     });
 
@@ -90,13 +78,13 @@ describe("XR Store API Surface", () => {
       const store: XRStore = getXRStore();
 
       // state properties
-      const isReady: boolean = store.isReady;
       const camera: "video" | "webxr" = store.camera;
       const backends: XRBackend[] = store.backends;
 
       // action methods
       const registerBackend: (
         backend: XRBackend,
+        threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
         sessionType?: XRSessionType,
       ) => Promise<void> = store.registerBackend;
       const unregisterBackend: (
@@ -104,7 +92,6 @@ describe("XR Store API Surface", () => {
         sessionType?: XRSessionType,
       ) => void = store.unregisterBackend;
 
-      expect(isReady).toBeDefined();
       expect(camera).toBeDefined();
       expect(backends).toBeDefined();
       expect(registerBackend).toBeDefined();
@@ -117,7 +104,6 @@ describe("XR Store API Surface", () => {
       const { result } = renderHook(() => useXRStore());
 
       expect(result.current).toMatchObject({
-        isReady: expect.any(Boolean),
         camera: expect.stringMatching(/^(video|webxr)$/),
         backends: expect.any(Array),
         registerBackend: expect.any(Function),
@@ -128,16 +114,13 @@ describe("XR Store API Surface", () => {
     it("works correctly with selector", () => {
       const { result } = renderHook(() => {
         // use a stable selector to avoid infinite loops
-        return useXRStore((state) => state.isReady);
+        return useXRStore((state) => state.camera);
       });
 
-      expect(typeof result.current).toBe("boolean");
+      expect(typeof result.current).toBe("string");
     });
 
     it("returns correct types", () => {
-      const { result: readyResult } = renderHook(() =>
-        useXRStore((state) => state.isReady),
-      );
       const { result: cameraResult } = renderHook(() =>
         useXRStore((state) => state.camera),
       );
@@ -148,34 +131,26 @@ describe("XR Store API Surface", () => {
         useXRStore((state) => state.backends),
       );
 
-      expect(typeof readyResult.current).toBe("boolean");
-
       expect(["video", "webxr"]).toContain(cameraResult.current);
 
       // initially null
-      expect(videoResult.current).toBeNull();
+      expect(videoResult.current).toBe(null);
 
       expect(Array.isArray(backendsResult.current)).toBe(true);
     });
 
     it("updates when state changes", async () => {
-      const { result: readyResult } = renderHook(() =>
-        useXRStore((state) => state.isReady),
-      );
       const { result: cameraResult } = renderHook(() =>
         useXRStore((state) => state.camera),
       );
 
-      expect(readyResult.current).toBe(true);
       expect(cameraResult.current).toBe("video");
 
       act(() => {
         const store = getXRStore();
-        store.setIsReady(false);
         store.setCameraSource("webxr");
       });
 
-      expect(readyResult.current).toBe(false);
       expect(cameraResult.current).toBe("webxr");
     });
   });
@@ -184,7 +159,6 @@ describe("XR Store API Surface", () => {
     it("returns current state", () => {
       const store = getXRStore();
 
-      expect(store.isReady).toBe(true);
       expect(store.camera).toBe("video");
       expect(store.backends).toEqual([]);
     });
@@ -192,16 +166,13 @@ describe("XR Store API Surface", () => {
     it("subscribes to state changes", () => {
       const callback = vi.fn();
 
-      const unsubscribe = subscribeToXRStore(
-        (state) => state.isReady,
-        callback,
-      );
+      const unsubscribe = subscribeToXRStore((state) => state.camera, callback);
 
       act(() => {
-        getXRStore().setIsReady(false);
+        getXRStore().setCameraSource("webxr");
       });
 
-      expect(callback).toHaveBeenCalledWith(false, true);
+      expect(callback).toHaveBeenCalledWith("webxr", "video");
 
       unsubscribe();
     });
@@ -209,15 +180,12 @@ describe("XR Store API Surface", () => {
     it("subscription can be cancelled", () => {
       const callback = vi.fn();
 
-      const unsubscribe = subscribeToXRStore(
-        (state) => state.isReady,
-        callback,
-      );
+      const unsubscribe = subscribeToXRStore((state) => state.camera, callback);
 
       unsubscribe();
 
       act(() => {
-        getXRStore().setIsReady(false);
+        getXRStore().setCameraSource("webxr");
       });
 
       expect(callback).not.toHaveBeenCalled();
@@ -229,12 +197,12 @@ describe("XR Store API Surface", () => {
       const mockRefs = createMockThreeRefs();
       const mockBackend = createMockBackend();
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
-
       await act(async () => {
-        await getXRStore().registerBackend(mockBackend, "FiducialSession");
+        await getXRStore().registerBackend(
+          mockBackend,
+          mockRefs,
+          "FiducialSession",
+        );
       });
 
       const store = getXRStore();
@@ -247,12 +215,12 @@ describe("XR Store API Surface", () => {
       const mockRefs = createMockThreeRefs();
       const mockBackend = createMockBackend();
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
-
       await act(async () => {
-        await getXRStore().registerBackend(mockBackend, "FiducialSession");
+        await getXRStore().registerBackend(
+          mockBackend,
+          mockRefs,
+          "FiducialSession",
+        );
       });
 
       act(() => {
@@ -270,13 +238,10 @@ describe("XR Store API Surface", () => {
       const fiducialBackend = createMockBackend();
       const geoBackend = createMockBackend();
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
-
       await act(async () => {
         await getXRStore().registerBackend(
           fiducialBackend,
+          mockRefs,
           SESSION_TYPES.FIDUCIAL,
         );
       });
@@ -285,6 +250,7 @@ describe("XR Store API Surface", () => {
         act(async () => {
           await getXRStore().registerBackend(
             geoBackend,
+            mockRefs,
             SESSION_TYPES.GEOLOCATION,
           );
         }),
@@ -296,13 +262,9 @@ describe("XR Store API Surface", () => {
       const backend1 = createMockBackend();
       const backend2 = createMockBackend();
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
-
       await act(async () => {
-        await getXRStore().registerBackend(backend1);
-        await getXRStore().registerBackend(backend2);
+        await getXRStore().registerBackend(backend1, mockRefs);
+        await getXRStore().registerBackend(backend2, mockRefs);
       });
 
       act(() => {
@@ -315,51 +277,21 @@ describe("XR Store API Surface", () => {
   });
 
   describe("Three.js Integration", () => {
-    it("updates store with Three.js objects", () => {
-      const mockRefs = createMockThreeRefs();
-
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
-
-      const store = getXRStore();
-      expect(store.scene).toBe(mockRefs.scene);
-      expect(store.threeCamera).toBe(mockRefs.camera);
-      expect(store.renderer).toBe(mockRefs.renderer);
-    });
-
-    it("waits for Three.js refs before initializing backends", async () => {
+    it("initializes backends with provided Three.js refs", async () => {
       const mockBackend = createMockBackend();
       const mockRefs = createMockThreeRefs();
 
-      // start backend registration without Three.js refs
-      const registrationPromise = act(async () => {
-        return getXRStore().registerBackend(mockBackend);
+      await act(async () => {
+        await getXRStore().registerBackend(mockBackend, mockRefs);
       });
-
-      // set refs after a delay
-      setTimeout(() => {
-        act(() => {
-          getXRStore().setThreeRefs(mockRefs);
-        });
-      }, 10);
-
-      await registrationPromise;
 
       expect(mockBackend.init).toHaveBeenCalledWith(
         expect.objectContaining({
-          scene: expect.any(Object),
-          camera: expect.any(Object),
-          renderer: expect.any(Object),
+          scene: mockRefs.scene,
+          camera: mockRefs.camera,
+          renderer: mockRefs.renderer,
         }),
       );
-    });
-
-    it("throws error when Three.js refs timeout", async () => {
-      const mockBackend = createMockBackend();
-
-      // skip this test for now as timeout behavior is complex to test
-      expect(mockBackend).toBeDefined();
     });
   });
 
@@ -394,18 +326,19 @@ describe("XR Store API Surface", () => {
       expect(getXRStore().video).toBeNull();
     });
 
-    it("updates ready state", () => {
-      act(() => {
-        getXRStore().setIsReady(false);
+    it("derives readiness from backends", () => {
+      const mockRefs = createMockThreeRefs();
+      const mockBackend = createMockBackend();
+
+      // Initially no backends - not ready
+      expect(getXRStore().backends.length).toBe(0);
+
+      return act(async () => {
+        await getXRStore().registerBackend(mockBackend, mockRefs);
+
+        // With backend - ready (length > 0)
+        expect(getXRStore().backends.length).toBe(1);
       });
-
-      expect(getXRStore().isReady).toBe(false);
-
-      act(() => {
-        getXRStore().setIsReady(true);
-      });
-
-      expect(getXRStore().isReady).toBe(true);
     });
   });
 
@@ -418,13 +351,12 @@ describe("XR Store API Surface", () => {
         dispose: vi.fn(),
       };
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
-      });
+      const errorBackend = createMockBackend();
+      errorBackend.init = vi.fn().mockRejectedValue(new Error("Init failed"));
 
       await expect(
         act(async () => {
-          await getXRStore().registerBackend(failingBackend);
+          return getXRStore().registerBackend(errorBackend, mockRefs);
         }),
       ).rejects.toThrow("Init failed");
 
@@ -432,39 +364,37 @@ describe("XR Store API Surface", () => {
       expect(getXRStore().backends).not.toContain(failingBackend);
     });
 
-    it("handles backend update errors without crashing", async () => {
-      const mockRefs = createMockThreeRefs();
-      const flakyBackend: XRBackend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn().mockImplementation(() => {
-          throw new Error("Update failed");
-        }),
-        dispose: vi.fn(),
-      };
+    describe("Error Handling", () => {
+      it("handles backend update errors without crashing", async () => {
+        const mockRefs = createMockThreeRefs();
+        const flakyBackend: XRBackend = {
+          init: vi.fn().mockResolvedValue(undefined),
+          update: vi.fn().mockImplementation(() => {
+            throw new Error("Update failed");
+          }),
+          dispose: vi.fn(),
+        };
 
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+        const consoleSpy = vi
+          .spyOn(console, "error")
+          .mockImplementation(() => {});
 
-      act(() => {
-        getXRStore().setThreeRefs(mockRefs);
+        await act(async () => {
+          await getXRStore().registerBackend(flakyBackend, mockRefs);
+        });
+
+        // should not throw
+        act(() => {
+          getXRStore().updateBackends();
+        });
+
+        expect(consoleSpy).toHaveBeenCalledWith(
+          "[XRStore] Backend update error:",
+          expect.any(Error),
+        );
+
+        consoleSpy.mockRestore();
       });
-
-      await act(async () => {
-        await getXRStore().registerBackend(flakyBackend);
-      });
-
-      // should not throw
-      act(() => {
-        getXRStore().updateBackends();
-      });
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "[XRStore] Backend update error:",
-        expect.any(Error),
-      );
-
-      consoleSpy.mockRestore();
     });
 
     it("handles backend disposal errors gracefully", async () => {

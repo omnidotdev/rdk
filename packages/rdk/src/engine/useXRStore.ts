@@ -12,8 +12,6 @@ export const SESSION_TYPES = {
 export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
 export interface XRStoreState {
-  /** Whether the XR system is ready. */
-  isReady: boolean;
   /** Camera source type; video uses shared `getUserMedia`, `webxr` reserved for future `@react-three/xr` */
   camera: "video" | "webxr";
   /** Shared video element when using video camera source. */
@@ -22,36 +20,23 @@ export interface XRStoreState {
   backends: XRBackend[];
   /** Active session types for compatibility checking. */
   sessionTypes: Set<XRSessionType>;
-  /** Three.js scene reference. */
-  scene?: Scene;
-  /** Three.js camera reference. */
-  threeCamera?: Camera;
-  /** Three.js renderer reference. */
-  renderer?: WebGLRenderer;
 }
 
 export interface XRStoreActions {
   /** Register a backend (called by sessions). */
   registerBackend: (
     backend: XRBackend,
+    threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
     sessionType?: XRSessionType,
   ) => Promise<void>;
   /** Unregister a backend (called by sessions). */
   unregisterBackend: (backend: XRBackend, sessionType?: XRSessionType) => void;
-  /** Set Three.js references for backend initialization. */
-  setThreeRefs: (refs: {
-    scene: Scene;
-    camera: Camera;
-    renderer: WebGLRenderer;
-  }) => void;
   /** Set camera source. */
   setCameraSource: (camera: "video" | "webxr") => void;
-  /** Set ready state. */
-  setIsReady: (ready: boolean) => void;
   /** Set shared video element. */
   setVideo: (video: HTMLVideoElement | null) => void;
   /** Update all registered backends (called per frame). */
-  updateBackends: () => void;
+  updateBackends: (dt?: number) => void;
 }
 
 export type XRStore = XRStoreState & XRStoreActions;
@@ -59,24 +44,21 @@ export type XRStore = XRStoreState & XRStoreActions;
 const useXRStore = create<XRStore>()(
   subscribeWithSelector((set, get) => ({
     // initial state
-    isReady: true,
     camera: "video",
     video: null,
     backends: [],
     sessionTypes: new Set(),
-    scene: undefined,
-    threeCamera: undefined,
-    renderer: undefined,
     // actions
     registerBackend: async (
       backend: XRBackend,
+      threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
       sessionType?: XRSessionType,
     ) => {
-      const state = get();
-
       try {
         // check for session compatibility before registering
         if (sessionType) {
+          const state = get();
+
           const newSessionTypes = new Set([...state.sessionTypes, sessionType]);
 
           const hasFiducial = newSessionTypes.has(SESSION_TYPES.FIDUCIAL);
@@ -94,52 +76,11 @@ const useXRStore = create<XRStore>()(
           }));
         }
 
-        let currentState = get();
-
-        // wait for Three.js refs to be available before initializing backend
-        if (
-          !currentState.scene ||
-          !currentState.threeCamera ||
-          !currentState.renderer
-        ) {
-          // wait for refs with timeout
-          await new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              reject(new Error("Timeout waiting for Three.js refs"));
-            }, 5000);
-
-            const checkRefs = () => {
-              const state = get();
-
-              if (state.scene && state.threeCamera && state.renderer) {
-                clearTimeout(timeout);
-                resolve();
-              } else {
-                setTimeout(checkRefs, 50);
-              }
-            };
-
-            checkRefs();
-          });
-
-          currentState = get();
-        }
-
-        // initialize backend with Three.js refs
-        if (
-          !currentState.scene ||
-          !currentState.threeCamera ||
-          !currentState.renderer
-        ) {
-          throw new Error(
-            "Three.js refs not available for backend initialization",
-          );
-        }
-
+        // initialize backend with provided Three.js refs
         await backend.init({
-          scene: currentState.scene,
-          camera: currentState.threeCamera,
-          renderer: currentState.renderer,
+          scene: threeRefs.scene,
+          camera: threeRefs.camera,
+          renderer: threeRefs.renderer,
         });
 
         set((state) => ({
@@ -171,28 +112,19 @@ const useXRStore = create<XRStore>()(
         };
       });
     },
-    setThreeRefs: (refs) => {
-      set({
-        scene: refs.scene,
-        threeCamera: refs.camera,
-        renderer: refs.renderer,
-      });
-    },
+
     setCameraSource: (camera) => {
       set({ camera });
-    },
-    setIsReady: (ready) => {
-      set({ isReady: ready });
     },
     setVideo: (video) => {
       set({ video });
     },
-    updateBackends: () => {
+    updateBackends: (dt?: number) => {
       const { backends } = get();
 
       backends.forEach((backend) => {
         try {
-          backend.update?.();
+          backend.update?.(dt);
         } catch (err) {
           console.error("[XRStore] Backend update error:", err);
         }

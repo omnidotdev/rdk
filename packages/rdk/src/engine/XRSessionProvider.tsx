@@ -1,4 +1,4 @@
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useEffect } from "react";
 
 import useXRStore from "./useXRStore";
@@ -13,28 +13,22 @@ interface XRSessionProviderProps extends PropsWithChildren {
 /**
  * Session-based XR provider that manages shared resources and backend registry.
  * Sessions register their backends and get access to shared camera/video resources.
+ * For performance, the provider passes Three.js refs per frame instead of storing them.
  */
 const XRSessionProvider = ({
   cameraSource,
   children,
 }: XRSessionProviderProps) => {
-  const { scene, camera: threeCamera, gl } = useThree();
-  const { setCameraSource, setThreeRefs, updateBackends } = useXRStore();
+  const { setCameraSource, updateBackends } = useXRStore();
 
-  // initialize store with Three.js references and camera source
+  // initialize camera source
   useEffect(() => {
-    setThreeRefs({
-      scene,
-      camera: threeCamera,
-      renderer: gl,
-    });
-
     setCameraSource(cameraSource);
-  }, [scene, threeCamera, gl, cameraSource, setThreeRefs, setCameraSource]);
+  }, [cameraSource, setCameraSource]);
 
-  // update all registered backends per frame
-  useFrame(() => {
-    updateBackends();
+  // update all registered backends per frame with fresh Three.js refs
+  useFrame((_state, delta) => {
+    updateBackends(delta);
   });
 
   return <>{children}</>;

@@ -1,3 +1,4 @@
+import { useThree } from "@react-three/fiber";
 import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createGeolocationBackend } from "geolocation";
 import { useEffect, useRef } from "react";
@@ -16,6 +17,7 @@ export interface GeolocationSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides LocAR.js geolocation capabilities.
  */
 const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
+  const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<XRBackend | null>(null);
@@ -32,7 +34,11 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
 
         if (cancelled) return;
 
-        await registerBackend(backend, SESSION_TYPES.GEOLOCATION);
+        await registerBackend(
+          backend,
+          { scene, camera, renderer: gl },
+          SESSION_TYPES.GEOLOCATION,
+        );
 
         if (!cancelled) {
           backendRef.current = backend;
@@ -53,7 +59,7 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
         backendRef.current = null;
       }
     };
-  }, [registerBackend, unregisterBackend, options]);
+  }, [registerBackend, unregisterBackend, options, scene, camera, gl]);
 
   return <>{children}</>;
 };

@@ -30,7 +30,6 @@ Migrated the RDK state manager from React Context to Zustand.
 
 Replace `useXR()` with direct store selectors:
 
-- `useXR().isReady` → `useXRStore((state) => state.isReady)`
 - `useXR().camera` → `useXRStore((state) => state.camera)`
 - `useXR().backends` → `useXRStore((state) => state.backends)`
 - Full store access: `useXRStore()` or `useXRStore(selector)`

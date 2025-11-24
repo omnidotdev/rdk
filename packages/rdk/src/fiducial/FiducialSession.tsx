@@ -1,3 +1,4 @@
+import { useThree } from "@react-three/fiber";
 import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
@@ -16,6 +17,7 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
 const FiducialSession = ({ options, children }: FiducialSessionProps) => {
+  const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<XRBackend | null>(null);
@@ -32,7 +34,11 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
 
         if (cancelled) return;
 
-        await registerBackend(backend, SESSION_TYPES.FIDUCIAL);
+        await registerBackend(
+          backend,
+          { scene, camera, renderer: gl },
+          SESSION_TYPES.FIDUCIAL,
+        );
 
         if (!cancelled) {
           backendRef.current = backend;
@@ -52,7 +58,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
         backendRef.current = null;
       }
     };
-  }, [registerBackend, unregisterBackend, options]);
+  }, [registerBackend, unregisterBackend, options, scene, camera, gl]);
 
   return <>{children}</>;
 };
