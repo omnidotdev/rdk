@@ -9,7 +9,7 @@ export const SESSION_TYPES = {
   GEOLOCATION: "GeolocationSession",
 } as const;
 
-export type XRSessionType = typeof SESSION_TYPES[keyof typeof SESSION_TYPES];
+export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
 export interface XRStoreState {
   /** Whether the XR system is ready. */
@@ -32,7 +32,10 @@ export interface XRStoreState {
 
 export interface XRStoreActions {
   /** Register a backend (called by sessions). */
-  registerBackend: (backend: XRBackend, sessionType?: XRSessionType) => Promise<void>;
+  registerBackend: (
+    backend: XRBackend,
+    sessionType?: XRSessionType,
+  ) => Promise<void>;
   /** Unregister a backend (called by sessions). */
   unregisterBackend: (backend: XRBackend, sessionType?: XRSessionType) => void;
   /** Set Three.js references for backend initialization. */
@@ -65,7 +68,10 @@ const useXRStore = create<XRStore>()(
     threeCamera: undefined,
     renderer: undefined,
     // actions
-    registerBackend: async (backend: XRBackend, sessionType?: XRSessionType) => {
+    registerBackend: async (
+      backend: XRBackend,
+      sessionType?: XRSessionType,
+    ) => {
       const state = get();
 
       try {
@@ -77,8 +83,7 @@ const useXRStore = create<XRStore>()(
           const hasGeolocation = newSessionTypes.has(SESSION_TYPES.GEOLOCATION);
 
           if (hasFiducial && hasGeolocation) {
-            const errorMessage =
-              `❌ [RDK] INCOMPATIBLE SESSIONS: ${SESSION_TYPES.FIDUCIAL} and ${SESSION_TYPES.GEOLOCATION} cannot be used together due to camera/video conflicts between AR.js and LocAR.js libraries. Use only one session type per app.`;
+            const errorMessage = `❌ [RDK] INCOMPATIBLE SESSIONS: ${SESSION_TYPES.FIDUCIAL} and ${SESSION_TYPES.GEOLOCATION} cannot be used together due to camera/video conflicts between AR.js and LocAR.js libraries. Use only one session type per app.`;
 
             console.error(errorMessage);
             throw new Error(errorMessage);
@@ -149,9 +154,7 @@ const useXRStore = create<XRStore>()(
       set((state) => {
         const newSessionTypes = new Set(state.sessionTypes);
 
-        if (sessionType)
-          newSessionTypes.delete(sessionType);
-
+        if (sessionType) newSessionTypes.delete(sessionType);
 
         const newBackends = state.backends.filter((b) => b !== backend);
 

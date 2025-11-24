@@ -267,12 +267,18 @@ describe("XR Store API Surface", () => {
       });
 
       await act(async () => {
-        await getXRStore().registerBackend(fiducialBackend, SESSION_TYPES.FIDUCIAL);
+        await getXRStore().registerBackend(
+          fiducialBackend,
+          SESSION_TYPES.FIDUCIAL,
+        );
       });
 
       await expect(
         act(async () => {
-          await getXRStore().registerBackend(geoBackend, SESSION_TYPES.GEOLOCATION);
+          await getXRStore().registerBackend(
+            geoBackend,
+            SESSION_TYPES.GEOLOCATION,
+          );
         }),
       ).rejects.toThrow(/INCOMPATIBLE SESSIONS/);
     });
