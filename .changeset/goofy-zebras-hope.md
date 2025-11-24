@@ -10,6 +10,9 @@ Migrated the RDK state manager from React Context to Zustand.
 - `XRSessionProvider` no longer provides context, now only handles Three.js integration
 - Session types are now strictly typed using `XRSessionType` union type
 - `registerBackend` and `unregisterBackend` now accept `XRSessionType` instead of generic `string`
+- Renamed types
+  - `XRBackend` → `Backend`
+  - `XRContextValue` → `ContextValue`
 
 **New Library Exports:**
 
