@@ -38,6 +38,7 @@ bun preview
 
 - **HTTPS Required**: Geolocation API requires a secure context (HTTPS) for production use
 - **Location Permission**: Browser will prompt for location access
+  - Make sure location services are enabled at the device level
 - **GPS Accuracy**: Works best outdoors with clear sky view
 - **Mobile-First**: Optimized for mobile AR experiences
 
