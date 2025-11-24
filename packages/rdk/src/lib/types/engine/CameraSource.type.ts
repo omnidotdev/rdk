@@ -1,5 +1,5 @@
 /**
- * Camera source types for the spatial SDK engine.
+ * Device camera source.
  * - `video`: Uses shared `getUserMedia` for camera access
  * - `webxr`: Reserved for future `@react-three/xr` integration
  */
