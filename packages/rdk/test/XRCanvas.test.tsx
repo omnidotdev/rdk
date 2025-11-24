@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import XR from "../src/engine/XR";
 import { clearGlobalMocks, setupGlobalMocks } from "./mocks/globals.mock";
 
-import type React from "react";
+import type { ReactNode } from "react";
 
 beforeEach(() => {
   setupGlobalMocks();
@@ -19,7 +19,7 @@ afterEach(() => {
 });
 
 describe("XR", () => {
-  const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  const TestWrapper = ({ children }: { children: ReactNode }) => (
     <Canvas>
       <XR cameraSource="video">{children}</XR>
     </Canvas>
