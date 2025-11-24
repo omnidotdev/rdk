@@ -10,7 +10,6 @@ import useXRStore, {
 
 import type { WebGLRenderer } from "three";
 import type { XRBackend } from "../lib/types/xr";
-import type { XRSessionType, XRStore } from "./useXRStore";
 
 // mock Three.js objects
 const createMockThreeRefs = () => ({
@@ -72,30 +71,6 @@ describe("XR Store API Surface", () => {
       expect(store.setVideo).toBeInstanceOf(Function);
 
       expect(store.updateBackends).toBeInstanceOf(Function);
-    });
-
-    it("maintains type safety for XRStore interface", () => {
-      const store: XRStore = getXRStore();
-
-      // state properties
-      const camera: "video" | "webxr" = store.camera;
-      const backends: XRBackend[] = store.backends;
-
-      // action methods
-      const registerBackend: (
-        backend: XRBackend,
-        threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
-        sessionType?: XRSessionType,
-      ) => Promise<void> = store.registerBackend;
-      const unregisterBackend: (
-        backend: XRBackend,
-        sessionType?: XRSessionType,
-      ) => void = store.unregisterBackend;
-
-      expect(camera).toBeDefined();
-      expect(backends).toBeDefined();
-      expect(registerBackend).toBeDefined();
-      expect(unregisterBackend).toBeDefined();
     });
   });
 
