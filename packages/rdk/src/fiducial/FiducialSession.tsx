@@ -33,7 +33,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
 
         if (cancelled) return;
 
-        registerBackend(backend, SESSION_TYPES.FIDUCIAL);
+        await registerBackend(backend, SESSION_TYPES.FIDUCIAL);
 
         if (!cancelled) {
           backendRef.current = backend;

@@ -26,14 +26,14 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
 
     const initSession = async () => {
       try {
-        // create geolocation backend - disable video if fiducial session is present
+        // create geolocation backend, which creates its own video for LocAR.js
         const backend = createGeolocationBackend({
           ...options,
         });
 
         if (cancelled) return;
 
-        registerBackend(backend, SESSION_TYPES.GEOLOCATION);
+        await registerBackend(backend, SESSION_TYPES.GEOLOCATION);
 
         if (!cancelled) {
           backendRef.current = backend;
