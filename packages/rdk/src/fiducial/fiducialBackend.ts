@@ -1,9 +1,10 @@
-import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
 import {
   ArToolkitContext,
   ArToolkitSource,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
 
 export interface FiducialSessionOptions {
   /** Input source type. */

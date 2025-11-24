@@ -1,5 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import createGeolocationBackend from "../src/geolocation/geolocationBackend";
+
 import type { GeolocationSessionOptions } from "../src/geolocation/geolocationBackend";
 
 describe("geolocationBackend", () => {

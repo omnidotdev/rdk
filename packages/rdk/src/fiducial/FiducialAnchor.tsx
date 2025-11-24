@@ -1,9 +1,10 @@
-import { useFrame } from "@react-three/fiber";
-import type { PropsWithChildren } from "react";
-import { useEffect, useRef } from "react";
-import type { Group } from "three";
 import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import { useFrame } from "@react-three/fiber";
 import useXRStore from "engine/useXRStore";
+import { useEffect, useRef } from "react";
+
+import type { PropsWithChildren } from "react";
+import type { Group } from "three";
 
 export interface FiducialAnchorProps extends PropsWithChildren {
   /** Pattern URL. */

@@ -1,5 +1,6 @@
-import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
 import * as LocAR from "locar";
+
+import type { XRBackend, XRBackendInitArgs } from "lib/types/xr";
 import type * as THREE from "three";
 
 /**

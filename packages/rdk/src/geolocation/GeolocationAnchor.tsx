@@ -1,8 +1,7 @@
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
+import useXRStore from "engine/useXRStore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Group } from "three";
-
-import useXRStore from "engine/useXRStore";
 
 import type { LonLat } from "locar";
 import type { PropsWithChildren } from "react";

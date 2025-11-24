@@ -1,19 +1,18 @@
 export {
-  mockTHREEx,
-  mockTHREE,
-  setupGlobalMocks,
   clearGlobalMocks,
+  mockTHREE,
+  mockTHREEx,
   resetGlobalMocks,
+  setupGlobalMocks,
 } from "./globals.mock";
-
 export {
   default as XRSessionProvider,
-  XRSessionProvider as XRSessionProviderNamed,
-  useXR,
   mockXRContext,
   resetXRContext,
   setXRSessionActive,
   setXRSessionError,
+  useXR,
+  XRSessionProvider as XRSessionProviderNamed,
 } from "./XRSessionProvider.mock";
 
 export interface MockXRContext {

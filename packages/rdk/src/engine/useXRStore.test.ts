@@ -1,21 +1,20 @@
 import { act, renderHook } from "@testing-library/react";
-import { Scene, PerspectiveCamera } from "three";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { PerspectiveCamera, Scene } from "three";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import useXRStore, {
-  useXRReady,
-  useXRCamera,
-  useXRVideo,
-  useXRBackends,
   getXRStore,
   SESSION_TYPES,
   subscribeToXRStore,
+  useXRBackends,
+  useXRCamera,
+  useXRReady,
+  useXRVideo,
 } from "./useXRStore";
 
 import type { WebGLRenderer } from "three";
-import type { XRStore, XRSessionType } from "./useXRStore";
-
 import type { XRBackend } from "../lib/types/xr";
+import type { XRSessionType, XRStore } from "./useXRStore";
 
 // mock Three.js objects
 const createMockThreeRefs = () => ({

@@ -1,11 +1,10 @@
-import { useEffect, useRef } from "react";
-
 import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createFiducialBackend } from "fiducial";
+import { useEffect, useRef } from "react";
 
-import type { PropsWithChildren } from "react";
 import type { FiducialSessionOptions } from "fiducial";
 import type { XRBackend } from "lib/types/xr";
+import type { PropsWithChildren } from "react";
 
 export interface FiducialSessionProps extends PropsWithChildren {
   /** Fiducial session options. */

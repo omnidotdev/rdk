@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Camera, Scene, WebGLRenderer } from "three";
 import type { XRBackend } from "lib/types/xr";
+import type { Camera, Scene, WebGLRenderer } from "three";
 
 export const SESSION_TYPES = {
   FIDUCIAL: "FiducialSession",

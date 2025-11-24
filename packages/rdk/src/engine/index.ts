@@ -1,12 +1,12 @@
-export { default as XR } from "./XR";
 export {
   default as useXRStore,
-  useXRReady,
-  useXRCamera,
-  useXRVideo,
-  useXRBackends,
   getXRStore,
   subscribeToXRStore,
+  useXRBackends,
+  useXRCamera,
+  useXRReady,
+  useXRVideo,
 } from "./useXRStore";
+export { default as XR } from "./XR";
 
-export type { XRStore, XRStoreState, XRStoreActions } from "./useXRStore";
+export type { XRStore, XRStoreActions, XRStoreState } from "./useXRStore";

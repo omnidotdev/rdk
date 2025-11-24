@@ -1,11 +1,10 @@
-import { useEffect, useRef } from "react";
-
 import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createGeolocationBackend } from "geolocation";
+import { useEffect, useRef } from "react";
 
-import type { PropsWithChildren } from "react";
 import type { GeolocationSessionOptions } from "geolocation";
 import type { XRBackend } from "lib/types/xr";
+import type { PropsWithChildren } from "react";
 
 export interface GeolocationSessionProps extends PropsWithChildren {
   /** Geolocation session options. */

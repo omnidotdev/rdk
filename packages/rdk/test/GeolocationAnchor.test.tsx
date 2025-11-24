@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { GeolocationAnchor } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
