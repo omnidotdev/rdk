@@ -1,5 +1,4 @@
 export * from "./engine";
-// store
 export {
   getXRStore,
   subscribeToXRStore,
@@ -7,13 +6,11 @@ export {
 export * from "./fiducial";
 export * from "./geolocation";
 
-// store types
 export type {
   XRStore,
   XRStoreActions,
   XRStoreState,
 } from "./engine/useXRStore";
-// core types
 export type {
   XRBackend,
   XRContextValue,

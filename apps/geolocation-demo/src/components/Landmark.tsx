@@ -1,5 +1,6 @@
-import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+
 import type * as THREE from "three";
 
 interface LandmarkProps {
@@ -84,7 +85,6 @@ const Landmark = ({
         </mesh>
       ))}
 
-      {/* biome-ignore lint/suspicious/noArrayIndexKey: convenient */}
       {[...Array(3)].map((_, idx) => (
         <mesh key={idx + 3} position={[0.25, 0.3 + idx * 0.4, 0.31]}>
           <planeGeometry args={[0.15, 0.15]} />
