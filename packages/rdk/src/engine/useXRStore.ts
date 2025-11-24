@@ -12,7 +12,7 @@ export const SESSION_TYPES = {
 export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
 export interface XRStoreState {
-  /** Camera source type; video uses shared `getUserMedia`, `webxr` reserved for future `@react-three/xr` */
+  /** Camera source type; video uses shared `getUserMedia`, `webxr` reserved for future `@react-three/xr`. */
   camera: CameraSource;
   /** Shared video element when using video camera source. */
   video?: HTMLVideoElement | null;
