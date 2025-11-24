@@ -53,25 +53,25 @@
   },
   "devDependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
-    "@biomejs/biome": "^2.3.2",
+    "@biomejs/biome": "^2.3.7",
     "@react-three/fiber": "^9.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^24.9.2",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
     "@types/three": "^0.180.0",
-    "jsdom": "^27.0.1",
+    "jsdom": "^27.2.0",
     "locar": "^0.1.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "three": "^0.180.0",
     "ts-pattern": "^5.9.0",
     "typescript": "^5.9.3",
-    "vite": "^7.1.12",
+    "vite": "^7.2.4",
     "vite-plugin-dts": "^4.5.4",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.5"
+    "vitest": "^4.0.13"
   },
   "dependencies": {
     "zustand": "^5.0.8"
