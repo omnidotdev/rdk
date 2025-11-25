@@ -60,11 +60,11 @@
     },
     "apps/immersive-demo": {
       "name": "rdk-immersive-demo",
-      "version": "0.0.0",
       "dependencies": {
         "@omnidotdev/rdk": "workspace:*",
         "@react-three/drei": "^10.7.7",
         "@react-three/fiber": "^9.4.0",
+        "@react-three/xr": "^6.2.5",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "three": "^0.172.0",
