@@ -1,21 +1,25 @@
-import XRSessionProvider from "./XRSessionProvider";
+import { useFrame } from "@react-three/fiber";
+
+import useXRStore from "./useXRStore";
 
 import type { PropsWithChildren } from "react";
 
-export interface XRProps extends PropsWithChildren {
-  /**
-   * Camera source type; video uses `getUserMedia`, webxr reserved for future `@react-three/xr`.
-   * @default "video"
-   */
-  cameraSource?: "video" | "webxr";
-}
-
 /**
- * XR context for nested architecture inside R3F Canvas.
- * Provides session management for XR sessions.
+ * Extended reality context provider for nested architecture inside R3F Canvas.
+ *
+ * Manages shared resources and backend registry. Sessions register their backends and automatically configure the system based on their requirements.
+ *
+ * For performance, passes Three.js refs per frame instead of storing them.
  */
-const XR = ({ cameraSource = "video", children }: XRProps) => (
-  <XRSessionProvider cameraSource={cameraSource}>{children}</XRSessionProvider>
-);
+const XR = ({ children }: PropsWithChildren) => {
+  const { updateBackends } = useXRStore();
+
+  // update all registered backends per frame with fresh Three.js refs
+  useFrame((_state, delta) => {
+    updateBackends(delta);
+  });
+
+  return children;
+};
 
 export default XR;

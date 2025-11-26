@@ -7,7 +7,7 @@ import "@testing-library/jest-dom";
 
 import { Canvas } from "@react-three/fiber";
 
-import XRSessionProvider from "../src/engine/XRSessionProvider";
+import XR from "../src/engine/XR";
 import { clearGlobalMocks, setupGlobalMocks } from "./mocks/globals.mock";
 
 vi.mock("../src/fiducial/fiducialBackend", () => ({
@@ -40,10 +40,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("XRSessionProvider", () => {
+describe("XR", () => {
   const TestWrapper = ({ children }: { children: ReactNode }) => (
     <Canvas>
-      <XRSessionProvider cameraSource="video">{children}</XRSessionProvider>
+      <XR>{children}</XR>
     </Canvas>
   );
 

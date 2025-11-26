@@ -1,20 +1,19 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Backend, CameraSource } from "lib/types/engine";
+import type { Backend } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
 export const SESSION_TYPES = {
   FIDUCIAL: "FiducialSession",
   GEOLOCATION: "GeolocationSession",
+  IMMERSIVE: "ImmersiveSession",
 } as const;
 
 export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
 export interface XRStoreState {
-  /** Camera source type. */
-  camera: CameraSource;
-  /** Shared video element when using video camera source. */
+  /** Shared video element. */
   video?: HTMLVideoElement | null;
   /** Active backends registered by sessions. */
   backends: Backend[];
@@ -31,8 +30,6 @@ export interface XRStoreActions {
   ) => Promise<void>;
   /** Unregister a backend (called by sessions). */
   unregisterBackend: (backend: Backend, sessionType?: XRSessionType) => void;
-  /** Set camera source. */
-  setCameraSource: (camera: CameraSource) => void;
   /** Set shared video element. */
   setVideo: (video: HTMLVideoElement | null) => void;
   /** Update all registered backends (called per frame). */
@@ -44,7 +41,6 @@ export type XRStore = XRStoreState & XRStoreActions;
 const useXRStore = create<XRStore>()(
   subscribeWithSelector((set, get) => ({
     // initial state
-    camera: "video",
     video: null,
     backends: [],
     sessionTypes: new Set(),
@@ -88,6 +84,7 @@ const useXRStore = create<XRStore>()(
         }));
       } catch (err) {
         console.error("[XRStore] Failed to register backend:", err);
+
         throw err;
       }
     },
@@ -113,9 +110,6 @@ const useXRStore = create<XRStore>()(
       });
     },
 
-    setCameraSource: (camera) => {
-      set({ camera });
-    },
     setVideo: (video) => {
       set({ video });
     },

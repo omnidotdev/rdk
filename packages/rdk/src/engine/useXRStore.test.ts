@@ -337,20 +337,6 @@ describe("XR Store API Surface", () => {
   });
 
   describe("Camera and Video Management", () => {
-    it("updates camera source", () => {
-      act(() => {
-        getXRStore().setCameraSource("webxr");
-      });
-
-      expect(getXRStore().camera).toBe("webxr");
-
-      act(() => {
-        getXRStore().setCameraSource("video");
-      });
-
-      expect(getXRStore().camera).toBe("video");
-    });
-
     it("updates video element", () => {
       const mockVideo = document.createElement("video") as HTMLVideoElement;
 

@@ -52,14 +52,11 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
 
     return () => {
       cancelled = true;
-
       if (backendRef.current) {
         unregisterBackend(backendRef.current, SESSION_TYPES.GEOLOCATION);
-
-        backendRef.current = null;
       }
     };
-  }, [registerBackend, unregisterBackend, options, scene, camera, gl]);
+  }, [scene, camera, gl, registerBackend, unregisterBackend, options]);
 
   return children;
 };

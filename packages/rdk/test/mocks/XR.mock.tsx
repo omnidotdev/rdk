@@ -4,9 +4,9 @@ import { vi } from "vitest";
 import type { ReactNode } from "react";
 
 /**
- * Mock implementation of `XRSessionProvider`.
+ * Mock implementation of `XR`.
  */
-export const mockXRContext = {
+export const mockXRContext: any = {
   mode: "fiducial",
   ready: true,
   backend: {
@@ -69,17 +69,15 @@ export const mockXRContext = {
   error: null,
 };
 
-export const useXR = vi.fn(() => mockXRContext);
+export const useXR: any = vi.fn(() => mockXRContext);
 
 export default vi.fn(({ children }: { children: ReactNode }) =>
   createElement("div", { "data-testid": "xr-session-provider" }, children),
 );
 
-export const XRSessionProvider = vi.fn(
-  ({ children }: { children: ReactNode }) => (
-    <div data-testid="xr-session-provider">{children}</div>
-  ),
-);
+export const XR: any = vi.fn(({ children }: { children: ReactNode }) => (
+  <div data-testid="xr">{children}</div>
+));
 
 /**
  * Reset the XR context mock to default state.
@@ -104,7 +102,6 @@ export function setXRSessionActive(): void {
  * Set XR context to error state.
  */
 export function setXRSessionError(err: string): void {
-  // @ts-expect-error
   mockXRContext.error = err;
   mockXRContext.isSessionActive = false;
   mockXRContext.isTrackingActive = false;
