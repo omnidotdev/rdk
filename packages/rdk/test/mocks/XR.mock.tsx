@@ -2,80 +2,33 @@ import { createElement } from "react";
 import { vi } from "vitest";
 
 import type { ReactNode } from "react";
+import type { XRStore } from "../../src/engine/useXRStore";
 
 /**
  * Mock implementation of `XR`.
  */
-export const mockXRContext: any = {
-  mode: "fiducial",
-  ready: true,
-  backend: {
-    init: vi.fn().mockResolvedValue(undefined),
-    update: vi.fn(),
-    dispose: vi.fn(),
-    getInternal: vi.fn(() => ({
-      arContext: {
-        _arMarkersControls: [],
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        parameters: {},
-        arController: null,
-        dispose: vi.fn(),
-      },
-      arSource: {
-        init: vi.fn().mockResolvedValue(undefined),
-        onReady: vi.fn(),
-        domElement:
-          typeof document !== "undefined"
-            ? document.createElement("video")
-            : {},
-        parameters: {},
-        ready: false,
-        dispose: vi.fn(),
-      },
-      locar: {
-        add: vi.fn(),
-        remove: vi.fn(),
-        startGps: vi.fn().mockReturnValue(true),
-        stopGps: vi.fn().mockReturnValue(true),
-        fakeGps: vi.fn(),
-        on: vi.fn(),
-        off: vi.fn(),
-        emit: vi.fn(),
-      },
-    })),
-  },
-  arToolkitContext: {
-    _arMarkersControls: [],
-    init: vi.fn().mockResolvedValue(undefined),
-    update: vi.fn(),
-    parameters: {},
-    arController: null,
-    dispose: vi.fn(),
-  },
-  arToolkitSource: {
-    init: vi.fn().mockResolvedValue(undefined),
-    onReady: vi.fn(),
-    domElement:
-      typeof document !== "undefined" ? document.createElement("video") : {},
-    parameters: {},
-    ready: false,
-    dispose: vi.fn(),
-  },
-  isSessionActive: false,
-  isTrackingActive: false,
-  startSession: vi.fn(),
-  endSession: vi.fn(),
-  error: null,
+export const mockXRContext: Partial<XRStore> = {
+  video: null,
+  backends: [],
+  sessionTypes: new Set(),
+
+  registerBackend: vi.fn().mockResolvedValue(undefined),
+  unregisterBackend: vi.fn(),
+  setVideo: vi.fn(),
+  updateBackends: vi.fn(),
 };
 
-export const useXR: any = vi.fn(() => mockXRContext);
+export const useXR = vi.fn(() => ({
+  ...mockXRContext,
+  isImmersive: false,
+  webxr: null,
+}));
 
 export default vi.fn(({ children }: { children: ReactNode }) =>
   createElement("div", { "data-testid": "xr-session-provider" }, children),
 );
 
-export const XR: any = vi.fn(({ children }: { children: ReactNode }) => (
+export const XR = vi.fn(({ children }: { children: ReactNode }) => (
   <div data-testid="xr">{children}</div>
 ));
 
@@ -83,26 +36,22 @@ export const XR: any = vi.fn(({ children }: { children: ReactNode }) => (
  * Reset the XR context mock to default state.
  */
 export function resetXRContext(): void {
-  mockXRContext.isSessionActive = false;
-  mockXRContext.isTrackingActive = false;
-  mockXRContext.error = null;
-  mockXRContext.arToolkitContext._arMarkersControls = [];
+  mockXRContext.sessionTypes = new Set();
+  mockXRContext.backends = [];
   vi.clearAllMocks();
 }
 
 /**
  * Set XR context to active session state.
  */
-export function setXRSessionActive(): void {
-  mockXRContext.isSessionActive = true;
-  mockXRContext.isTrackingActive = true;
+export function setXRSessionActive(sessionType: string): void {
+  mockXRContext.sessionTypes?.add(sessionType as any);
 }
 
 /**
  * Set XR context to error state.
  */
 export function setXRSessionError(err: string): void {
-  mockXRContext.error = err;
-  mockXRContext.isSessionActive = false;
-  mockXRContext.isTrackingActive = false;
+  console.error(`Mock XR error: ${err}`);
+  mockXRContext.sessionTypes = new Set();
 }

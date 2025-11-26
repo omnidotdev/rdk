@@ -1,8 +1,30 @@
+import { Canvas } from "@react-three/fiber";
 import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FiducialAnchor } from "../src/fiducial";
 import { clearGlobalMocks } from "./mocks/globals.mock";
+
+// Mock useXRStore specifically for component tests
+vi.mock("engine/useXRStore", () => ({
+  default: vi.fn((selector) => {
+    const mockState = {
+      video: null,
+      backends: [],
+      sessionTypes: new Set(),
+      registerBackend: vi.fn().mockResolvedValue(undefined),
+      unregisterBackend: vi.fn(),
+      setVideo: vi.fn(),
+      updateBackends: vi.fn(),
+      isImmersive: false,
+    };
+
+    if (typeof selector === "function") {
+      return selector(mockState);
+    }
+    return mockState;
+  }),
+}));
 
 beforeEach(() => {
   clearGlobalMocks();
@@ -11,9 +33,11 @@ beforeEach(() => {
 describe("FiducialAnchor", () => {
   it("renders without crashing", () => {
     const { container } = render(
-      <FiducialAnchor patternUrl="test.patt">
-        <mesh />
-      </FiducialAnchor>,
+      <Canvas>
+        <FiducialAnchor patternUrl="test.patt">
+          <mesh />
+        </FiducialAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -28,9 +52,11 @@ describe("FiducialAnchor", () => {
     };
 
     const { container } = render(
-      <FiducialAnchor {...props}>
-        <mesh />
-      </FiducialAnchor>,
+      <Canvas>
+        <FiducialAnchor {...props}>
+          <mesh />
+        </FiducialAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -45,9 +71,11 @@ describe("FiducialAnchor", () => {
     };
 
     const { container } = render(
-      <FiducialAnchor {...props}>
-        <mesh />
-      </FiducialAnchor>,
+      <Canvas>
+        <FiducialAnchor {...props}>
+          <mesh />
+        </FiducialAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -59,9 +87,11 @@ describe("FiducialAnchor", () => {
     };
 
     const { container } = render(
-      <FiducialAnchor {...props}>
-        <mesh />
-      </FiducialAnchor>,
+      <Canvas>
+        <FiducialAnchor {...props}>
+          <mesh />
+        </FiducialAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -69,9 +99,11 @@ describe("FiducialAnchor", () => {
 
   it("renders children", () => {
     const { getByTestId } = render(
-      <FiducialAnchor patternUrl="test.patt">
-        <mesh data-testid="test-child" />
-      </FiducialAnchor>,
+      <Canvas>
+        <FiducialAnchor patternUrl="test.patt">
+          <mesh data-testid="test-child" />
+        </FiducialAnchor>
+      </Canvas>,
     );
 
     expect(getByTestId("test-child")).toBeTruthy();
@@ -85,9 +117,11 @@ describe("FiducialAnchor", () => {
     };
 
     const { container } = render(
-      <FiducialAnchor {...props}>
-        <mesh />
-      </FiducialAnchor>,
+      <Canvas>
+        <FiducialAnchor {...props}>
+          <mesh />
+        </FiducialAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();

@@ -1,3 +1,4 @@
+import { useXRStore as useReactThreeXRStore } from "@react-three/xr";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
@@ -38,7 +39,7 @@ export interface XRStoreActions {
 
 export type XRStore = XRStoreState & XRStoreActions;
 
-const useXRStore = create<XRStore>()(
+const useXRStoreBase = create<XRStore>()(
   subscribeWithSelector((set, get) => ({
     // initial state
     video: null,
@@ -128,7 +129,25 @@ const useXRStore = create<XRStore>()(
 );
 
 // non-React access to the store
-export const getXRStore = () => useXRStore.getState();
-export const subscribeToXRStore = useXRStore.subscribe;
+export const getXRStore = () => useXRStoreBase.getState();
+export const subscribeToXRStore = useXRStoreBase.subscribe;
+
+/**
+ * Unified XR hook that provides orchestrated RDK session state.
+ */
+const useXRStore = () => {
+  const rdkStore = useXRStoreBase();
+  const reactThreeXrStore = useReactThreeXRStore();
+
+  const isImmersive = rdkStore.sessionTypes.has(SESSION_TYPES.IMMERSIVE);
+
+  const immersive = isImmersive ? reactThreeXrStore : null;
+
+  return {
+    ...rdkStore,
+    isImmersive,
+    immersive,
+  };
+};
 
 export default useXRStore;
