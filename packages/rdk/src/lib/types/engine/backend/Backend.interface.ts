@@ -11,18 +11,15 @@ export interface Backend {
    * @returns promise that resolves when initialization is complete, or void for synchronous init
    */
   init(args: BackendInitArgs): Promise<void> | void;
-
   /**
    * Update the backend on each frame.
    * @param dt delta time since last frame in seconds
    */
   update?(dt?: number): void;
-
   /**
    * Clean up resources when the backend is no longer needed.
    */
   dispose?(): void;
-
   /**
    * Get internal SDK objects for advanced use cases.
    * @returns internal objects specific to the backend implementation
