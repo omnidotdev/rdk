@@ -11,8 +11,7 @@
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
-> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js) and location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
-> Native WebXR integration via `@react-three/xr` is coming next.
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js), location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js), and WebXR via [`@react-three/xr`](https://github.com/pmndrs/xr) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
 
 ## Overview
 
@@ -83,7 +82,11 @@ Install RDK and required peer dependencies:
 bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber locar react react-dom three
 ```
 
-See [`apps/fiducial-demo`](./apps/fiducial-demo) for an example of usage. More demos will be added as more use cases beyond fiducial marker-based AR are implemented.
+See the demo applications for examples of usage:
+
+- [`apps/fiducial-demo`](./apps/fiducial-demo): Fiducial marker tracking powered by AR.js
+- [`apps/geolocation-demo`](./apps/geolocation-demo): GPS-based AR powered by LocAR.js
+- [`apps/immersive-demo`](./apps/immersive-demo): WebXR powered by `@react-three/xr`
 
 ## Goals: the "Why"
 
