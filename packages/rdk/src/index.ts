@@ -5,6 +5,7 @@ export {
 } from "./engine/useXRStore";
 export * from "./fiducial";
 export * from "./geolocation";
+export * from "./immersive";
 
 export type {
   XRStore,
