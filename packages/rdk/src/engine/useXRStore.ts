@@ -1,7 +1,7 @@
-import { useXRStore as useReactThreeXRStore } from "@react-three/xr";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import type { XRStore as ReactThreeXRStore } from "@react-three/xr";
 import type { Backend } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
@@ -20,6 +20,8 @@ export interface XRStoreState {
   backends: Backend[];
   /** Active session types for compatibility checking. */
   sessionTypes: Set<XRSessionType>;
+  /** Store instance for immersive sessions. */
+  immersiveStore?: ReactThreeXRStore | null;
 }
 
 export interface XRStoreActions {
@@ -35,6 +37,8 @@ export interface XRStoreActions {
   setVideo: (video: HTMLVideoElement | null) => void;
   /** Update all registered backends (called per frame). */
   updateBackends: (dt?: number) => void;
+  /** Set immersive store instance. */
+  setImmersiveStore: (store: ReactThreeXRStore | null) => void;
 }
 
 export type XRStore = XRStoreState & XRStoreActions;
@@ -45,6 +49,7 @@ const useXRStoreBase = create<XRStore>()(
     video: null,
     backends: [],
     sessionTypes: new Set(),
+    immersiveStore: null,
     // actions
     registerBackend: async (
       backend: Backend,
@@ -125,6 +130,9 @@ const useXRStoreBase = create<XRStore>()(
         }
       });
     },
+    setImmersiveStore: (store) => {
+      set({ immersiveStore: store });
+    },
   })),
 );
 
@@ -137,16 +145,13 @@ export const subscribeToXRStore = useXRStoreBase.subscribe;
  */
 const useXRStore = () => {
   const rdkStore = useXRStoreBase();
-  const reactThreeXrStore = useReactThreeXRStore();
 
   const isImmersive = rdkStore.sessionTypes.has(SESSION_TYPES.IMMERSIVE);
-
-  const immersive = isImmersive ? reactThreeXrStore : null;
 
   return {
     ...rdkStore,
     isImmersive,
-    immersive,
+    immersive: rdkStore.immersiveStore,
   };
 };
 

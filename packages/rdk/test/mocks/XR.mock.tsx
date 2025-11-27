@@ -44,8 +44,10 @@ export function resetXRContext(): void {
 /**
  * Set XR context to active session state.
  */
-export function setXRSessionActive(sessionType: string): void {
-  mockXRContext.sessionTypes?.add(sessionType as any);
+export function setXRSessionActive(
+  sessionType: keyof typeof mockXRContext.sessionTypes,
+): void {
+  mockXRContext.sessionTypes?.add(sessionType);
 }
 
 /**

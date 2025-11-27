@@ -26,15 +26,10 @@ describe("useXRStore", () => {
       // Properly dispose backends before clearing
       const backends = [...store.backends];
       backends.forEach((backend) => {
-        try {
-          if (backend.dispose) {
-            backend.dispose();
-          }
-        } catch (e) {
-          // Ignore disposal errors in tests
-        }
+        backend.dispose?.();
       });
-      // Clear the backends array
+
+      // clear the backends array
       store.backends.length = 0;
     });
 
@@ -102,9 +97,9 @@ describe("useXRStore", () => {
       };
 
       const mockThreeRefs = {
-        scene: { add: vi.fn() } as any,
-        camera: { position: { set: vi.fn() } } as any,
-        renderer: { render: vi.fn() } as any,
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
       };
 
       await act(async () => {
@@ -124,9 +119,9 @@ describe("useXRStore", () => {
       };
 
       const mockThreeRefs = {
-        scene: { add: vi.fn() } as any,
-        camera: { position: { set: vi.fn() } } as any,
-        renderer: { render: vi.fn() } as any,
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
       };
 
       await act(async () => {
@@ -156,9 +151,9 @@ describe("useXRStore", () => {
       };
 
       const mockThreeRefs = {
-        scene: { add: vi.fn() } as any,
-        camera: { position: { set: vi.fn() } } as any,
-        renderer: { render: vi.fn() } as any,
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
       };
 
       await act(async () => {
@@ -188,9 +183,9 @@ describe("useXRStore", () => {
       };
 
       const mockThreeRefs = {
-        scene: { add: vi.fn() } as any,
-        camera: { position: { set: vi.fn() } } as any,
-        renderer: { render: vi.fn() } as any,
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
       };
 
       await act(async () => {
