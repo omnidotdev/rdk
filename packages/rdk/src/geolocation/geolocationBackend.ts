@@ -13,6 +13,8 @@ export interface GeolocationSessionOptions {
   fakeLon?: number;
   /** Custom webcam constraints. */
   webcamConstraints?: MediaStreamConstraints;
+  /** GPS update callback. */
+  onGpsUpdated?: (position: GeolocationPosition, distMoved: number) => void;
 }
 
 /**
@@ -55,6 +57,13 @@ const createGeolocationBackend = (options: unknown): Backend => {
           video: { facingMode: "environment" },
         },
         null,
+      );
+
+      locar.on(
+        "gpsupdate",
+        (data: { position: GeolocationPosition; distMoved: number }) => {
+          opts.onGpsUpdated?.(data.position, data.distMoved);
+        },
       );
 
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
@@ -144,6 +153,8 @@ const createGeolocationBackend = (options: unknown): Backend => {
       const webcamAny = (this as any)._webcam;
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
+
+      if (opts?.onGpsUpdated) locarAny?.off("gpsupdate", opts.onGpsUpdated);
 
       if (locarAny?.stopGps) locarAny.stopGps();
 

@@ -31,13 +31,15 @@ const App = () => (
 
     <XR cameraSource="video">
       <GeolocationSession
-        options={
-          {
-            // enable fake GPS for testing: uncomment and adjust to preferred location
-            // fakeLat: BASE_LATITUDE,
-            // fakeLon: BASE_LONGITUDE,
-          }
-        }
+        options={{
+          // enable fake GPS for testing: uncomment and adjust to preferred location
+          // fakeLat: BASE_LATITUDE,
+          // fakeLon: BASE_LONGITUDE,
+          onGpsUpdated: (
+            position: GeolocationPosition,
+            distMoved: number,
+          ) => {}, // fires when we get a new GPS position
+        }}
       >
         <GeolocationAnchor
           latitude={COORDS.center.lat}
