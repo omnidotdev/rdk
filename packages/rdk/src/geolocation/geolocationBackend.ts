@@ -156,11 +156,10 @@ const createGeolocationBackend = (options: unknown): Backend => {
 
       if (opts?.onGpsUpdated) locar?.off("gpsupdate", opts.onGpsUpdated);
 
-      if (locar?.stopGps) locar.stopGps();
-
-      if (webcam?.stop) webcam.stop();
-
-      if (dev?.dispose) dev.dispose();
+      // clean up
+      locar?.stopGps?.();
+      webcam?.stop?.();
+      dev?.dispose?.();
 
       if (resizeHandler) {
         window.removeEventListener("resize", resizeHandler);
