@@ -38,9 +38,7 @@ interface InternalBackend extends Backend {
 /**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options: unknown): Backend => {
-  const opts = (options || {}) as FiducialSessionOptions;
-
+const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
   let arSource: ArToolkitSource;
   let arContext: ArToolkitContext;
   let resizeHandler: (() => void) | undefined;
@@ -49,7 +47,7 @@ const createFiducialBackend = (options: unknown): Backend => {
     async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
-        sourceType: opts.sourceType ?? "webcam",
+        sourceType: options.sourceType ?? "webcam",
       });
 
       // init source
@@ -80,12 +78,12 @@ const createFiducialBackend = (options: unknown): Backend => {
       // AR.js context
       const arConfig: ArToolkitContextParameters = {
         cameraParametersUrl:
-          opts.cameraParametersUrl ??
+          options.cameraParametersUrl ??
           // default to internal camera parameters
           new URL("../../assets/camera_params.dat", import.meta.url).toString(),
-        detectionMode: opts.detectionMode ?? "mono",
-        patternRatio: opts.patternRatio ?? 0.5,
-        matrixCodeType: opts.matrixCodeType ?? "3x3",
+        detectionMode: options.detectionMode ?? "mono",
+        patternRatio: options.patternRatio ?? 0.5,
+        matrixCodeType: options.matrixCodeType ?? "3x3",
       };
 
       arContext = new ArToolkitContext(arConfig);

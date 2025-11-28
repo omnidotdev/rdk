@@ -7,11 +7,17 @@ export * from "./fiducial";
 export * from "./geolocation";
 export * from "./immersive";
 
+export type { XRStore } from "./engine/useXRStore";
 export type {
-  XRStore,
-  XRStoreActions,
-  XRStoreState,
-} from "./engine/useXRStore";
+  FiducialAnchorProps,
+  FiducialSessionOptions,
+  FiducialSessionProps,
+} from "./fiducial";
+export type {
+  GeolocationAnchorProps,
+  GeolocationSessionOptions,
+  GeolocationSessionProps,
+} from "./geolocation";
 export type {
   Backend,
   ContextValue,

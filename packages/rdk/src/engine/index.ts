@@ -5,4 +5,4 @@ export {
 } from "./useXRStore";
 export { default as XR } from "./XR";
 
-export type { XRStore, XRStoreActions, XRStoreState } from "./useXRStore";
+export type { XRStore } from "./useXRStore";

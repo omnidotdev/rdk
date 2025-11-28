@@ -13,16 +13,21 @@ export interface GeolocationSessionOptions {
   fakeLon?: number;
   /** Custom webcam constraints. */
   webcamConstraints?: MediaStreamConstraints;
-  /** GPS update callback. Fires when a new GPS position is received. */
-  onGpsUpdated?: (position: GeolocationPosition, distMoved: number) => void;
+  /**
+   * GPS update callback. Fires when a new GPS position is received.
+   * @param position Updated GPS position.
+   * @param distanceMoved Distance moved, in meters, since the last update.
+   */
+  // TODO automatically grab type from LocAR.js once it's converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+  onGpsUpdated?: (position: GeolocationPosition, distanceMoved: number) => void;
 }
 
 /**
  * Create a location-based AR backend.
  */
-const createGeolocationBackend = (options: unknown): Backend => {
-  const opts = (options || {}) as GeolocationSessionOptions;
-
+const createGeolocationBackend = (
+  options: GeolocationSessionOptions,
+): Backend => {
   // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
   let locar: any;
   // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
@@ -53,7 +58,7 @@ const createGeolocationBackend = (options: unknown): Backend => {
 
       // video background
       webcam = new LocAR.Webcam(
-        opts.webcamConstraints ?? {
+        options.webcamConstraints ?? {
           video: { facingMode: "environment" },
         },
         null,
@@ -61,8 +66,9 @@ const createGeolocationBackend = (options: unknown): Backend => {
 
       locar.on(
         "gpsupdate",
-        (data: { position: GeolocationPosition; distMoved: number }) => {
-          opts.onGpsUpdated?.(data.position, data.distMoved);
+        // TODO remove explicit type annotation once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
+        (data: { position: GeolocationPosition; distanceMoved: number }) => {
+          options.onGpsUpdated?.(data.position, data.distanceMoved);
         },
       );
 
@@ -102,8 +108,11 @@ const createGeolocationBackend = (options: unknown): Backend => {
       locar.startGps();
 
       // optional boot in fake mode
-      if (typeof opts.fakeLat === "number" && typeof opts.fakeLon === "number")
-        locar.fakeGps(opts.fakeLon, opts.fakeLat);
+      if (
+        typeof options.fakeLat === "number" &&
+        typeof options.fakeLon === "number"
+      )
+        locar.fakeGps(options.fakeLon, options.fakeLat);
 
       // handle resize
       const doResize = () => {
@@ -154,7 +163,7 @@ const createGeolocationBackend = (options: unknown): Backend => {
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
 
-      if (opts?.onGpsUpdated) locar?.off("gpsupdate", opts.onGpsUpdated);
+      if (options?.onGpsUpdated) locar?.off("gpsupdate", options.onGpsUpdated);
 
       // clean up
       locar?.stopGps?.();
