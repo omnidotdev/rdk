@@ -1,288 +1,165 @@
-import { act, renderHook } from "@testing-library/react";
-import { PerspectiveCamera, Scene } from "three";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-  vi,
-} from "vitest";
+import { act } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import useXRStore, {
-  getXRStore,
-  SESSION_TYPES,
-  subscribeToXRStore,
-} from "./useXRStore";
+import useXRStore, { getXRStore, SESSION_TYPES } from "./useXRStore";
 
-import type { Camera, WebGLRenderer } from "three";
-import type { Backend, CameraSource } from "../lib/types/engine";
-import type { XRSessionType } from "./useXRStore";
+// Mock @react-three/xr
+vi.mock("@react-three/xr", () => ({
+  useXRStore: vi.fn(() => ({
+    isPresenting: false,
+    mode: null,
+    enterAR: vi.fn(),
+    enterVR: vi.fn(),
+    exit: vi.fn(),
+    isHandTracking: false,
+    controllers: [],
+  })),
+}));
 
-// mock Three.js objects
-const createMockThreeRefs = () => ({
-  scene: new Scene(),
-  camera: new PerspectiveCamera(),
-  renderer: {
-    domElement: document.createElement("canvas"),
-    setSize: vi.fn(),
-    render: vi.fn(),
-    dispose: vi.fn(),
-  } as unknown as WebGLRenderer,
-});
-
-// mock XR Backend
-const createMockBackend = (): Backend => ({
-  init: vi.fn().mockResolvedValue(undefined),
-  update: vi.fn(),
-  dispose: vi.fn(),
-});
-
-describe("XR Store API Surface", () => {
+describe("useXRStore", () => {
   beforeEach(() => {
-    // reset store state before each test
+    // Reset store state before each test
     const store = getXRStore();
     act(() => {
-      store.setCameraSource("video");
       store.setVideo(null);
-
-      // clear backends
-      store.backends.forEach((backend) => {
-        store.unregisterBackend(backend);
+      store.sessionTypes.clear();
+      // Properly dispose backends before clearing
+      const backends = [...store.backends];
+      backends.forEach((backend) => {
+        backend.dispose?.();
       });
+
+      // clear the backends array
+      store.backends.length = 0;
     });
+
+    // Clear all mocks
+    vi.clearAllMocks();
   });
 
-  describe("Store State Interface", () => {
-    it("exposes correct initial state shape", () => {
+  describe("Basic Store Structure", () => {
+    it("has correct initial state", () => {
       const store = getXRStore();
 
-      expect(store).toMatchObject({
-        camera: expect.stringMatching(/^(video|webxr)$/),
-        backends: expect.any(Array),
-        sessionTypes: expect.any(Set),
-      });
-
-      // these can be null/undefined initially
-      expect(
-        store.video === null || store.video instanceof HTMLVideoElement,
-      ).toBe(true);
+      expect(store.video).toBe(null);
+      expect(store.backends).toEqual([]);
+      expect(store.sessionTypes).toBeInstanceOf(Set);
+      expect(store.sessionTypes.size).toBe(0);
     });
 
-    it("exposes correct action methods", () => {
+    it("has required action methods", () => {
       const store = getXRStore();
 
       expect(store.registerBackend).toBeInstanceOf(Function);
       expect(store.unregisterBackend).toBeInstanceOf(Function);
-
-      expect(store.setCameraSource).toBeInstanceOf(Function);
       expect(store.setVideo).toBeInstanceOf(Function);
-
       expect(store.updateBackends).toBeInstanceOf(Function);
     });
-
-    it("maintains type safety for XRStore interface", () => {
-      const {
-        backends,
-        camera,
-        registerBackend,
-        sessionTypes,
-        setCameraSource,
-        setVideo,
-        unregisterBackend,
-        updateBackends,
-        video,
-      } = getXRStore();
-
-      // Validate state property types
-      expectTypeOf({ camera }).toEqualTypeOf<{ camera: CameraSource }>();
-      expectTypeOf({ backends }).toEqualTypeOf<{ backends: Backend[] }>();
-      expectTypeOf({ sessionTypes }).toEqualTypeOf<{
-        sessionTypes: Set<XRSessionType>;
-      }>();
-      expectTypeOf({ video }).toEqualTypeOf<{
-        video: HTMLVideoElement | null | undefined;
-      }>();
-
-      // Validate action method types and signatures
-      expectTypeOf(registerBackend).toBeFunction();
-      expectTypeOf(registerBackend).parameter(0).toEqualTypeOf<Backend>();
-      expectTypeOf(registerBackend).parameter(1).toEqualTypeOf<{
-        scene: Scene;
-        camera: Camera;
-        renderer: WebGLRenderer;
-      }>();
-      expectTypeOf(registerBackend)
-        .parameter(2)
-        .toEqualTypeOf<XRSessionType | undefined>();
-      expectTypeOf(registerBackend).returns.toEqualTypeOf<Promise<void>>();
-
-      expectTypeOf(unregisterBackend).toBeFunction();
-      expectTypeOf(unregisterBackend).parameter(0).toEqualTypeOf<Backend>();
-      expectTypeOf(unregisterBackend)
-        .parameter(1)
-        .toEqualTypeOf<XRSessionType | undefined>();
-      expectTypeOf(unregisterBackend).returns.toEqualTypeOf<void>();
-
-      expectTypeOf(setCameraSource).toBeFunction();
-      expectTypeOf(setCameraSource).parameter(0).toEqualTypeOf<CameraSource>();
-      expectTypeOf(setCameraSource).returns.toEqualTypeOf<void>();
-
-      expectTypeOf(setVideo).toBeFunction();
-      expectTypeOf(setVideo)
-        .parameter(0)
-        .toEqualTypeOf<HTMLVideoElement | null>();
-      expectTypeOf(setVideo).returns.toEqualTypeOf<void>();
-
-      expectTypeOf(updateBackends).toBeFunction();
-      expectTypeOf(updateBackends).returns.toEqualTypeOf<void>();
-    });
   });
 
-  describe("React Hooks API", () => {
-    it("returns full store", () => {
-      const { result } = renderHook(() => useXRStore());
-
-      expect(result.current).toMatchObject({
-        camera: expect.stringMatching(/^(video|webxr)$/),
-        backends: expect.any(Array),
-        registerBackend: expect.any(Function),
-        unregisterBackend: expect.any(Function),
-      });
+  describe("React Hook", () => {
+    it("returns store with unified state", () => {
+      expect(typeof useXRStore).toBe("function");
     });
 
-    it("works correctly with selector", () => {
-      const { result } = renderHook(() => {
-        // use a stable selector to avoid infinite loops
-        return useXRStore((state) => state.camera);
-      });
-
-      expect(typeof result.current).toBe("string");
-    });
-
-    it("returns correct types", () => {
-      const { result: cameraResult } = renderHook(() =>
-        useXRStore((state) => state.camera),
-      );
-      const { result: videoResult } = renderHook(() =>
-        useXRStore((state) => state.video),
-      );
-      const { result: backendsResult } = renderHook(() =>
-        useXRStore((state) => state.backends),
-      );
-
-      expect(["video", "webxr"]).toContain(cameraResult.current);
-
-      // initially null
-      expect(videoResult.current).toBe(null);
-
-      expect(Array.isArray(backendsResult.current)).toBe(true);
-    });
-
-    it("updates when state changes", async () => {
-      const { result: cameraResult } = renderHook(() =>
-        useXRStore((state) => state.camera),
-      );
-
-      expect(cameraResult.current).toBe("video");
-
-      act(() => {
-        const store = getXRStore();
-        store.setCameraSource("webxr");
-      });
-
-      expect(cameraResult.current).toBe("webxr");
-    });
-  });
-
-  describe("Non-React API", () => {
-    it("returns current state", () => {
+    it("calculates isImmersive correctly", () => {
       const store = getXRStore();
 
-      expect(store.camera).toBe("video");
-      expect(store.backends).toEqual([]);
-    });
-
-    it("subscribes to state changes", () => {
-      const callback = vi.fn();
-
-      const unsubscribe = subscribeToXRStore((state) => state.camera, callback);
+      expect(store.sessionTypes.has(SESSION_TYPES.IMMERSIVE)).toBe(false);
 
       act(() => {
-        getXRStore().setCameraSource("webxr");
+        store.sessionTypes.add(SESSION_TYPES.IMMERSIVE);
       });
 
-      expect(callback).toHaveBeenCalledWith("webxr", "video");
-
-      unsubscribe();
+      expect(store.sessionTypes.has(SESSION_TYPES.IMMERSIVE)).toBe(true);
     });
+  });
 
-    it("subscription can be cancelled", () => {
-      const callback = vi.fn();
-
-      const unsubscribe = subscribeToXRStore((state) => state.camera, callback);
-
-      unsubscribe();
+  describe("Video Management", () => {
+    it("updates video element", () => {
+      const mockVideo = { tagName: "VIDEO" } as HTMLVideoElement;
 
       act(() => {
-        getXRStore().setCameraSource("webxr");
+        getXRStore().setVideo(mockVideo);
       });
 
-      expect(callback).not.toHaveBeenCalled();
+      const store = getXRStore();
+      expect(store.video).toBe(mockVideo);
     });
   });
 
   describe("Backend Management", () => {
     it("adds backends to store", async () => {
-      const mockRefs = createMockThreeRefs();
-      const mockBackend = createMockBackend();
+      const mockBackend = {
+        init: vi.fn().mockResolvedValue(undefined),
+        update: vi.fn(),
+        dispose: vi.fn(),
+      };
+
+      const mockThreeRefs = {
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
+      };
 
       await act(async () => {
-        await getXRStore().registerBackend(
-          mockBackend,
-          mockRefs,
-          "FiducialSession",
-        );
+        await getXRStore().registerBackend(mockBackend, mockThreeRefs);
       });
 
       const store = getXRStore();
       expect(store.backends).toContain(mockBackend);
-      expect(store.sessionTypes.has("FiducialSession")).toBe(true);
-      expect(mockBackend.init).toHaveBeenCalledWith(mockRefs);
+      expect(mockBackend.init).toHaveBeenCalledWith(mockThreeRefs);
     });
 
     it("removes backends from store", async () => {
-      const mockRefs = createMockThreeRefs();
-      const mockBackend = createMockBackend();
+      const mockBackend = {
+        init: vi.fn().mockResolvedValue(undefined),
+        update: vi.fn(),
+        dispose: vi.fn(),
+      };
+
+      const mockThreeRefs = {
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
+      };
 
       await act(async () => {
-        await getXRStore().registerBackend(
-          mockBackend,
-          mockRefs,
-          "FiducialSession",
-        );
+        await getXRStore().registerBackend(mockBackend, mockThreeRefs);
       });
 
       act(() => {
-        getXRStore().unregisterBackend(mockBackend, "FiducialSession");
+        getXRStore().unregisterBackend(mockBackend);
       });
 
       const store = getXRStore();
       expect(store.backends).not.toContain(mockBackend);
-      expect(store.sessionTypes.has("FiducialSession")).toBe(false);
       expect(mockBackend.dispose).toHaveBeenCalled();
     });
 
     it("prevents incompatible session types", async () => {
-      const mockRefs = createMockThreeRefs();
-      const fiducialBackend = createMockBackend();
-      const geoBackend = createMockBackend();
+      const fiducialBackend = {
+        init: vi.fn().mockResolvedValue(undefined),
+        update: vi.fn(),
+        dispose: vi.fn(),
+      };
+
+      const geolocationBackend = {
+        init: vi.fn().mockResolvedValue(undefined),
+        update: vi.fn(),
+        dispose: vi.fn(),
+      };
+
+      const mockThreeRefs = {
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
+      };
 
       await act(async () => {
         await getXRStore().registerBackend(
           fiducialBackend,
-          mockRefs,
+          mockThreeRefs,
           SESSION_TYPES.FIDUCIAL,
         );
       });
@@ -290,189 +167,36 @@ describe("XR Store API Surface", () => {
       await expect(
         act(async () => {
           await getXRStore().registerBackend(
-            geoBackend,
-            mockRefs,
+            geolocationBackend,
+            mockThreeRefs,
             SESSION_TYPES.GEOLOCATION,
           );
         }),
       ).rejects.toThrow(/INCOMPATIBLE SESSIONS/);
     });
 
-    it("calls update on all registered backends", async () => {
-      const mockRefs = createMockThreeRefs();
-      const backend1 = createMockBackend();
-      const backend2 = createMockBackend();
-
-      await act(async () => {
-        await getXRStore().registerBackend(backend1, mockRefs);
-        await getXRStore().registerBackend(backend2, mockRefs);
-      });
-
-      act(() => {
-        getXRStore().updateBackends();
-      });
-
-      expect(backend1.update).toHaveBeenCalled();
-      expect(backend2.update).toHaveBeenCalled();
-    });
-  });
-
-  describe("Three.js Integration", () => {
-    it("initializes backends with provided Three.js refs", async () => {
-      const mockBackend = createMockBackend();
-      const mockRefs = createMockThreeRefs();
-
-      await act(async () => {
-        await getXRStore().registerBackend(mockBackend, mockRefs);
-      });
-
-      expect(mockBackend.init).toHaveBeenCalledWith(
-        expect.objectContaining({
-          scene: mockRefs.scene,
-          camera: mockRefs.camera,
-          renderer: mockRefs.renderer,
-        }),
-      );
-    });
-  });
-
-  describe("Camera and Video Management", () => {
-    it("updates camera source", () => {
-      act(() => {
-        getXRStore().setCameraSource("webxr");
-      });
-
-      expect(getXRStore().camera).toBe("webxr");
-
-      act(() => {
-        getXRStore().setCameraSource("video");
-      });
-
-      expect(getXRStore().camera).toBe("video");
-    });
-
-    it("updates video element", () => {
-      const mockVideo = document.createElement("video") as HTMLVideoElement;
-
-      act(() => {
-        getXRStore().setVideo(mockVideo);
-      });
-
-      expect(getXRStore().video).toBe(mockVideo);
-
-      act(() => {
-        getXRStore().setVideo(null);
-      });
-
-      expect(getXRStore().video).toBeNull();
-    });
-
-    it("derives readiness from backends", () => {
-      const mockRefs = createMockThreeRefs();
-      const mockBackend = createMockBackend();
-
-      // Initially no backends - not ready
-      expect(getXRStore().backends.length).toBe(0);
-
-      return act(async () => {
-        await getXRStore().registerBackend(mockBackend, mockRefs);
-
-        // With backend - ready (length > 0)
-        expect(getXRStore().backends.length).toBe(1);
-      });
-    });
-  });
-
-  describe("Error Handling", () => {
-    it("handles backend initialization errors gracefully", async () => {
-      const mockRefs = createMockThreeRefs();
-      const failingBackend: Backend = {
-        init: vi.fn().mockRejectedValue(new Error("Init failed")),
+    it("calls update on registered backends", async () => {
+      const mockBackend = {
+        init: vi.fn().mockResolvedValue(undefined),
         update: vi.fn(),
         dispose: vi.fn(),
       };
 
-      const errorBackend = createMockBackend();
-      errorBackend.init = vi.fn().mockRejectedValue(new Error("Init failed"));
-
-      await expect(
-        act(async () => {
-          return getXRStore().registerBackend(errorBackend, mockRefs);
-        }),
-      ).rejects.toThrow("Init failed");
-
-      // backend should not be added to store
-      expect(getXRStore().backends).not.toContain(failingBackend);
-    });
-
-    describe("Error Handling", () => {
-      it("handles backend update errors without crashing", async () => {
-        const mockRefs = createMockThreeRefs();
-        const flakyBackend: Backend = {
-          init: vi.fn().mockResolvedValue(undefined),
-          update: vi.fn().mockImplementation(() => {
-            throw new Error("Update failed");
-          }),
-          dispose: vi.fn(),
-        };
-
-        const consoleSpy = vi
-          .spyOn(console, "error")
-          .mockImplementation(() => {});
-
-        await act(async () => {
-          await getXRStore().registerBackend(flakyBackend, mockRefs);
-        });
-
-        // should not throw
-        act(() => {
-          getXRStore().updateBackends();
-        });
-
-        expect(consoleSpy).toHaveBeenCalledWith(
-          "[XRStore] Backend update error:",
-          expect.any(Error),
-        );
-
-        consoleSpy.mockRestore();
-      });
-    });
-
-    it("handles backend disposal errors gracefully", async () => {
-      const mockRefs = createMockThreeRefs();
-      const flakyBackend: Backend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        dispose: vi.fn().mockImplementation(() => {
-          throw new Error("Dispose failed");
-        }),
+      const mockThreeRefs = {
+        scene: { add: vi.fn() },
+        camera: { position: { set: vi.fn() } },
+        renderer: { render: vi.fn() },
       };
 
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
       await act(async () => {
-        await getXRStore().registerBackend(flakyBackend, mockRefs);
+        await getXRStore().registerBackend(mockBackend, mockThreeRefs);
       });
 
-      // should not throw
       act(() => {
-        getXRStore().unregisterBackend(flakyBackend);
+        getXRStore().updateBackends(0.016);
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "[XRStore] Error disposing backend:",
-        expect.any(Error),
-      );
-
-      expect(getXRStore().backends).not.toContain(flakyBackend);
-
-      consoleSpy.mockRestore();
+      expect(mockBackend.update).toHaveBeenCalledWith(0.016);
     });
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 });

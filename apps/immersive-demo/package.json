@@ -1,5 +1,5 @@
 {
-  "name": "rdk-geolocation-demo",
+  "name": "rdk-immersive-demo",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,20 +12,21 @@
     "clean": "rm -rf build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
+    "@biomejs/biome": "2.3.8",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.181.0",
     "@vitejs/plugin-react": "^5.1.1",
-    "typescript": "^5.9.3",
+    "typescript": "~5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-mkcert": "^1.17.9",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
     "@omnidotdev/rdk": "workspace:*",
+    "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
-    "locar": "^0.1.5",
+    "@react-three/xr": "^6.6.28",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "three": "^0.181.2"

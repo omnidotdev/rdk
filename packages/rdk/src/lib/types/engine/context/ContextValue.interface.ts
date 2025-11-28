@@ -1,4 +1,3 @@
-import type { CameraSource } from "..";
 import type { Backend } from "../backend";
 
 /**
@@ -6,9 +5,7 @@ import type { Backend } from "../backend";
  * Supports session-based architecture with shared camera/video resources.
  */
 export interface ContextValue {
-  /** Camera source type. */
-  camera: CameraSource;
-  /** Shared video element when using video camera source. */
+  /** Shared video element. */
   video?: HTMLVideoElement | null;
   /** Active backends registered by sessions. */
   backends: Backend[];

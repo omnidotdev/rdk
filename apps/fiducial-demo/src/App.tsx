@@ -16,7 +16,7 @@ const App = () => (
     <hemisphereLight intensity={0.6} />
     <directionalLight position={[5, 5, 5]} intensity={1} />
 
-    <XR cameraSource="video">
+    <XR>
       <FiducialSession>
         <FiducialAnchor params={{ smooth: true }} patternUrl="/data/rdk.patt">
           <Supertorus
