@@ -64,7 +64,7 @@ const App = () => (
           // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🎯 Main GPS Pin attached!")}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onGpsUpdate={(pos) => console.log("📍 GPS update:", pos)}
+          onGpsUpdate={(pos) => console.log("📍 Anchor GPS update:", pos)}
         >
           <GPSPin isAnimated color="#ff4444" scale={15} />
         </GeolocationAnchor>
