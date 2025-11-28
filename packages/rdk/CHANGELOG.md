@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.4.2
+
+### Patch Changes
+
+- [#31](https://github.com/omnidotdev/rdk/pull/31) [`a0ac723`](https://github.com/omnidotdev/rdk/commit/a0ac7236a187aeceb30ab0bbd9b673df513a6a5b) Thanks [@coopbri](https://github.com/coopbri)! - Fixed a regression where already-registered backends would be reinitialized, causing a render loop
+
 ## 0.4.1
 
 ### Patch Changes
