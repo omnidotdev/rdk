@@ -7,7 +7,6 @@ export * from "./fiducial";
 export * from "./geolocation";
 export * from "./immersive";
 
-export type { XRStore } from "./engine/useXRStore";
 export type {
   Backend,
   ContextValue,
