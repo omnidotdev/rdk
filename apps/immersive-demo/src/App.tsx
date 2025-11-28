@@ -132,7 +132,7 @@ const App = () => (
     <XRControls />
 
     <Canvas>
-      <color attach="background" args={[0, 0, 0]} />
+      <color attach="background" args={[0.1, 0.1, 0.2]} />
 
       {/* lighting */}
       <ambientLight intensity={0.4} />
