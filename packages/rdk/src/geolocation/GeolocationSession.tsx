@@ -16,7 +16,10 @@ export interface GeolocationSessionProps extends PropsWithChildren {
  * Manage the GPS-based AR backend.
  * Registers with the XR session provider and provides LocAR.js geolocation capabilities.
  */
-const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
+const GeolocationSession = ({
+  options = {},
+  children,
+}: GeolocationSessionProps) => {
   const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -28,9 +31,7 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
     const initSession = async () => {
       try {
         // create geolocation backend, which creates its own video for LocAR.js
-        const backend = createGeolocationBackend({
-          ...options,
-        });
+        const backend = createGeolocationBackend(options);
 
         if (cancelled) return;
 

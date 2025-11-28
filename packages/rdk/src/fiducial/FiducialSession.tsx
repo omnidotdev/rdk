@@ -16,7 +16,7 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Manage the fiducial marker detection backend.
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
-const FiducialSession = ({ options, children }: FiducialSessionProps) => {
+const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
   const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -28,9 +28,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
     const initSession = async () => {
       try {
         // create fiducial backend, which creates its own video for AR.js
-        const backend = createFiducialBackend({
-          ...options,
-        });
+        const backend = createFiducialBackend(options);
 
         if (cancelled) return;
 
