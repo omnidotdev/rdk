@@ -1,5 +1,32 @@
 # @omnidotdev/rdk
 
+## 0.4.0
+
+### Minor Changes
+
+- [#26](https://github.com/omnidotdev/rdk/pull/26) [`fa31da4`](https://github.com/omnidotdev/rdk/commit/fa31da44bb86f403dff9d553e5ba792531b7f462) Thanks [@coopbri](https://github.com/coopbri)! - Added native WebXR support, powered by [`@react-three/xr`](https://github.com/pmndrs/xr).
+
+  **BREAKING:** Removed `cameraSource` prop from XR component. Sessions now auto-configure themselves:
+
+  ```tsx
+  // before
+  <XR cameraSource="video">
+    <FiducialSession />
+  </XR>
+
+  // after
+  <XR>
+    {/* auto-configures video mode */}
+    <FiducialSession />
+  </XR>
+  ```
+
+  **New Features:**
+
+  - `ImmersiveSession` component for WebXR AR/VR
+  - Nested `@react-three/xr`'s store nested under `useXRStore`'s `immersive` property
+  - Added `ImmersiveMode` type export, which maps to and from [official WebXR modes](https://www.w3.org/TR/webxr/#xrsessionmode-enum) (`immersive-ar` ↔ `ar`, `immersive-vr` ↔ `vr`, `inline` ↔ `inline`)
+
 ## 0.3.0
 
 ### Minor Changes
