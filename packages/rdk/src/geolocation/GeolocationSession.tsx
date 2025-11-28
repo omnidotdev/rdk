@@ -22,11 +22,15 @@ const GeolocationSession = ({
   children,
 }: GeolocationSessionProps) => {
   const { scene, camera, gl } = useThree();
+
   const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<Backend | null>(null);
 
   useEffect(() => {
+    // already initialized for this component instance
+    if (backendRef.current) return;
+
     let cancelled = false;
 
     const initSession = async () => {
@@ -56,6 +60,7 @@ const GeolocationSession = ({
       cancelled = true;
       if (backendRef.current) {
         unregisterBackend(backendRef.current, SESSION_TYPES.GEOLOCATION);
+        backendRef.current = null;
       }
     };
   }, [scene, camera, gl, registerBackend, unregisterBackend, options]);
