@@ -148,17 +148,17 @@ const createGeolocationBackend = (options: unknown): Backend => {
 
     dispose() {
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-      const locarAny = (this as any)._locar;
+      const locar = (this as any)._locar;
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-      const webcamAny = (this as any)._webcam;
+      const webcam = (this as any)._webcam;
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
 
-      if (opts?.onGpsUpdated) locarAny?.off("gpsupdate", opts.onGpsUpdated);
+      if (opts?.onGpsUpdated) locar?.off("gpsupdate", opts.onGpsUpdated);
 
-      if (locarAny?.stopGps) locarAny.stopGps();
+      if (locar?.stopGps) locar.stopGps();
 
-      if (webcamAny?.stop) webcamAny.stop();
+      if (webcam?.stop) webcam.stop();
 
       if (dev?.dispose) dev.dispose();
 
