@@ -83,7 +83,7 @@
     },
     "packages/rdk": {
       "name": "@omnidotdev/rdk",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "dependencies": {
         "@react-three/xr": "^6.6.28",
         "zustand": "^5.0.8",
@@ -100,7 +100,7 @@
         "@types/three": "^0.181.0",
         "@types/webxr": "^0.5.24",
         "jsdom": "^27.2.0",
-        "locar": "^0.1.4",
+        "locar": "^0.1.5",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "three": "^0.181.2",
@@ -114,7 +114,7 @@
       "peerDependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
         "@react-three/fiber": "^9.4.0",
-        "locar": "0.1.4",
+        "locar": "0.1.5",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "three": "^0.180.0",
@@ -1330,8 +1330,6 @@
 
     "@microsoft/api-extractor/typescript": ["typescript@5.8.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ=="],
 
-    "@omnidotdev/rdk/locar": ["locar@0.1.4", "", { "dependencies": { "three": "^0.175.0" } }, "sha512-99H3vrgXCLC2md6c9OUzlXEnytqXkCMsmDFtFkwsosPo0luLW5I1Y25taxeiYzZINvT48XIYdN+8uvuHJMOLKg=="],
-
     "@omnidotdev/rdk/three": ["three@0.180.0", "", {}, "sha512-o+qycAMZrh+TsE01GqWUxUIKR1AL0S8pq7zDkYOQw8GqfX8b8VoCKYUoHbhiX5j+7hr8XsuHDVU6+gkQJQKg9w=="],
 
     "@pmndrs/handle/zustand": ["zustand@4.5.7", "", { "dependencies": { "use-sync-external-store": "^1.2.2" }, "peerDependencies": { "@types/react": ">=16.8", "immer": ">=9.0.6", "react": ">=16.8" }, "optionalPeers": ["@types/react", "immer", "react"] }, "sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw=="],
@@ -1403,8 +1401,6 @@
     "@babel/helper-compilation-targets/lru-cache/yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
 
     "@microsoft/api-extractor/semver/lru-cache": ["lru-cache@6.0.0", "", { "dependencies": { "yallist": "^4.0.0" } }, "sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA=="],
-
-    "@omnidotdev/rdk/locar/three": ["three@0.175.0", "", {}, "sha512-nNE3pnTHxXN/Phw768u0Grr7W4+rumGg/H6PgeseNJojkJtmeHJfZWi41Gp2mpXl1pg1pf1zjwR4McM1jTqkpg=="],
 
     "@rushstack/node-core-library/fs-extra/jsonfile": ["jsonfile@6.2.0", "", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg=="],
 

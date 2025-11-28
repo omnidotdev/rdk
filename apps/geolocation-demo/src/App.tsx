@@ -36,6 +36,13 @@ const App = () => (
             // enable fake GPS for testing: uncomment and adjust to preferred location
             // fakeLat: BASE_LATITUDE,
             // fakeLon: BASE_LONGITUDE,
+            // handle GPS position updates
+            // onGpsUpdated: (position: GeolocationPosition, distMoved: number) => {
+            //   console.group("GPS Update");
+            //   console.log("Position:", position);
+            //   console.log("Distance Moved:", distMoved);
+            //   console.groupEnd();
+            // },
           }
         }
       >
@@ -57,7 +64,7 @@ const App = () => (
           // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🎯 Main GPS Pin attached!")}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onGpsUpdate={(pos) => console.log("📍 GPS update:", pos)}
+          onGpsUpdate={(pos) => console.log("📍 Anchor GPS update:", pos)}
         >
           <GPSPin isAnimated color="#ff4444" scale={15} />
         </GeolocationAnchor>

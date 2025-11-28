@@ -13,6 +13,8 @@ export interface GeolocationSessionOptions {
   fakeLon?: number;
   /** Custom webcam constraints. */
   webcamConstraints?: MediaStreamConstraints;
+  /** GPS update callback. Fires when a new GPS position is received. */
+  onGpsUpdated?: (position: GeolocationPosition, distMoved: number) => void;
 }
 
 /**
@@ -55,6 +57,13 @@ const createGeolocationBackend = (options: unknown): Backend => {
           video: { facingMode: "environment" },
         },
         null,
+      );
+
+      locar.on(
+        "gpsupdate",
+        (data: { position: GeolocationPosition; distMoved: number }) => {
+          opts.onGpsUpdated?.(data.position, data.distMoved);
+        },
       );
 
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
@@ -139,17 +148,18 @@ const createGeolocationBackend = (options: unknown): Backend => {
 
     dispose() {
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-      const locarAny = (this as any)._locar;
+      const locar = (this as any)._locar;
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-      const webcamAny = (this as any)._webcam;
+      const webcam = (this as any)._webcam;
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
 
-      if (locarAny?.stopGps) locarAny.stopGps();
+      if (opts?.onGpsUpdated) locar?.off("gpsupdate", opts.onGpsUpdated);
 
-      if (webcamAny?.stop) webcamAny.stop();
-
-      if (dev?.dispose) dev.dispose();
+      // clean up
+      locar?.stopGps?.();
+      webcam?.stop?.();
+      dev?.dispose?.();
 
       if (resizeHandler) {
         window.removeEventListener("resize", resizeHandler);
