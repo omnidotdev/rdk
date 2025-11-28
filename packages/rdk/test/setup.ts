@@ -24,29 +24,29 @@ vi.mock("@react-three/fiber", () => {
     })),
     createPortal: vi.fn((children) => children),
     Canvas: vi.fn(({ children, ...props }) => {
-      // Mock Canvas that properly handles Three.js elements
       return createElement(
         "div",
         { "data-testid": "xr-canvas", ...props },
         children,
       );
     }),
-    // Mock Three.js primitives to prevent DOM rendering warnings
     extend: vi.fn(),
   };
 });
 
-// Suppress React warnings about unknown DOM properties in tests
+// suppress React warnings about unknown DOM properties in tests
 const originalConsoleError = console.error;
 console.error = (...args) => {
   const message = args[0];
+
+  // suppress Three.js related warnings
   if (
     typeof message === "string" &&
     (message.includes("unrecognized in this browser") ||
       message.includes("non-boolean attribute") ||
       message.includes("visible"))
   ) {
-    return; // Suppress Three.js related warnings
+    return;
   }
   originalConsoleError.apply(console, args);
 };

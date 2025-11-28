@@ -4,9 +4,6 @@ import { vi } from "vitest";
 import type { ReactNode } from "react";
 import type { XRStore } from "../../src/engine/useXRStore";
 
-/**
- * Mock implementation of `XR`.
- */
 export const mockXRContext: Partial<XRStore> = {
   video: null,
   backends: [],

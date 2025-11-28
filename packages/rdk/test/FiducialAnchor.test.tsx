@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FiducialAnchor } from "../src/fiducial";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
-// Mock useXRStore specifically for component tests
 vi.mock("engine/useXRStore", () => ({
   default: vi.fn((selector) => {
     const mockState = {
