@@ -13,7 +13,7 @@ export interface GeolocationSessionOptions {
   fakeLon?: number;
   /** Custom webcam constraints. */
   webcamConstraints?: MediaStreamConstraints;
-  /** GPS update callback. */
+  /** GPS update callback. Fires when a new GPS position is received. */
   onGpsUpdated?: (position: GeolocationPosition, distMoved: number) => void;
 }
 
