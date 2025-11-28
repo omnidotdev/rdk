@@ -5,6 +5,8 @@ import { getXRStore, SESSION_TYPES } from "../engine/useXRStore";
 
 import type { PropsWithChildren } from "react";
 
+// TODO implement iOS fallback. iOS does not currently support WebXR (https://caniuse.com/webxr), but a magic window fallback mode can be implemented as a stopgap
+
 /**
  * Immersive session component for WebXR AR/VR experiences, powered by `@react-three/xr`.
  */
