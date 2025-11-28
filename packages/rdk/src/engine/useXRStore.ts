@@ -13,7 +13,7 @@ export const SESSION_TYPES = {
 
 export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
-export interface XRStoreState {
+interface BaseXRStoreState {
   /** Shared video element. */
   video?: HTMLVideoElement | null;
   /** Active backends registered by sessions. */
@@ -24,7 +24,7 @@ export interface XRStoreState {
   immersiveStore?: ReactThreeXRStore | null;
 }
 
-export interface XRStoreActions {
+interface BaseXRStoreActions {
   /** Register a backend (called by sessions). */
   registerBackend: (
     backend: Backend,
@@ -41,9 +41,14 @@ export interface XRStoreActions {
   setImmersiveStore: (store: ReactThreeXRStore | null) => void;
 }
 
-export type XRStore = XRStoreState & XRStoreActions;
+type BaseXRStore = BaseXRStoreState & BaseXRStoreActions;
 
-const useXRStoreBase = create<XRStore>()(
+export type XRStore = BaseXRStore & {
+  isImmersive: boolean;
+  immersive: ReactThreeXRStore | null;
+};
+
+const useXRStoreBase = create<BaseXRStore>()(
   subscribeWithSelector((set, get) => ({
     // initial state
     video: null,
@@ -115,7 +120,6 @@ const useXRStoreBase = create<XRStore>()(
         };
       });
     },
-
     setVideo: (video) => {
       set({ video });
     },
@@ -143,16 +147,19 @@ export const subscribeToXRStore = useXRStoreBase.subscribe;
 /**
  * Unified XR hook that provides orchestrated RDK session state.
  */
-const useXRStore = () => {
+const useXRStore = <S = XRStore>(selector?: (state: XRStore) => S) => {
   const rdkStore = useXRStoreBase();
 
-  const isImmersive = rdkStore.sessionTypes.has(SESSION_TYPES.IMMERSIVE);
-
-  return {
+  const state = {
     ...rdkStore,
-    isImmersive,
-    immersive: rdkStore.immersiveStore,
+    isImmersive: rdkStore.sessionTypes.has(SESSION_TYPES.IMMERSIVE),
+    immersive: rdkStore.immersiveStore || null,
   };
+
+  // support both selector pattern used by components (e.g. `useXRStore(state => state.backends))` and direct usage by consumers that need the full unified state (e.g. `const { immersive } = useXRStore()`)
+  if (selector) return selector(state);
+
+  return state as S;
 };
 
 export default useXRStore;
