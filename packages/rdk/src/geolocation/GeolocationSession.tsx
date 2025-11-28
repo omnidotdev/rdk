@@ -3,9 +3,10 @@ import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createGeolocationBackend } from "geolocation";
 import { useEffect, useRef } from "react";
 
-import type { GeolocationSessionOptions } from "geolocation";
 import type { Backend } from "lib/types/engine";
 import type { PropsWithChildren } from "react";
+// NB: relative type import path resolves downstream type issues
+import type { GeolocationSessionOptions } from "./geolocationBackend";
 
 export interface GeolocationSessionProps extends PropsWithChildren {
   /** Geolocation session options. */

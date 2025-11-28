@@ -3,9 +3,10 @@ import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
 
-import type { FiducialSessionOptions } from "fiducial";
 import type { Backend } from "lib/types/engine";
 import type { PropsWithChildren } from "react";
+// NB: relative type import path resolves downstream type issues
+import type { FiducialSessionOptions } from "./fiducialBackend";
 
 export interface FiducialSessionProps extends PropsWithChildren {
   /** Fiducial session options. */
