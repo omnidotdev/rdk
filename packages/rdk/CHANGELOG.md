@@ -1,5 +1,15 @@
 # @omnidotdev/rdk
 
+## 0.4.1
+
+### Patch Changes
+
+- [#27](https://github.com/omnidotdev/rdk/pull/27) [`d808716`](https://github.com/omnidotdev/rdk/commit/d808716960b1268387cf7cd9d8d7814e8f473223) Thanks [@nickw1](https://github.com/nickw1)! - Add `onGpsUpdated` callback to geolocation backend
+
+- [#30](https://github.com/omnidotdev/rdk/pull/30) [`4027439`](https://github.com/omnidotdev/rdk/commit/40274394940e35b4e8401b61bfee8621adc68863) Thanks [@coopbri](https://github.com/coopbri)! - - Removed `XRStoreActions` and `XRStoreState` library exports
+  - Added `FiducialAnchorProps` and `GeolocationAnchorProps` library exports
+  - Fixed `GeolocationSession` and `FiducialSession` `options` prop being typed to `any`
+
 ## 0.4.0
 
 ### Minor Changes
