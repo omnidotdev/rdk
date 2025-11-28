@@ -31,20 +31,22 @@ const App = () => (
 
     <XR>
       <GeolocationSession
-        options={
-          {
-            // enable fake GPS for testing: uncomment and adjust to preferred location
-            // fakeLat: BASE_LATITUDE,
-            // fakeLon: BASE_LONGITUDE,
-            // handle GPS position updates
-            // onGpsUpdated: (position: GeolocationPosition, distMoved: number) => {
-            //   console.group("GPS Update");
-            //   console.log("Position:", position);
-            //   console.log("Distance Moved:", distMoved);
-            //   console.groupEnd();
-            // },
-          }
-        }
+        options={{
+          // enable fake GPS for testing: uncomment and adjust to preferred location
+          // fakeLat: BASE_LATITUDE,
+          // fakeLon: BASE_LONGITUDE,
+          // handle GPS position updates
+          onGpsUpdated: (pos, distMoved) => {
+            // biome-ignore lint/suspicious/noConsole: demo app
+            console.group("GPS Update");
+            // biome-ignore lint/suspicious/noConsole: demo app
+            console.log(`Position: ${pos}`);
+            // biome-ignore lint/suspicious/noConsole: demo app
+            console.log(`Distance Moved: ${distMoved}`);
+            // biome-ignore lint/suspicious/noConsole: demo app
+            console.groupEnd();
+          },
+        }}
       >
         <GeolocationAnchor
           latitude={COORDS.center.lat}
@@ -64,7 +66,7 @@ const App = () => (
           // biome-ignore lint/suspicious/noConsole: demo app
           onAttached={() => console.log("🎯 Main GPS Pin attached!")}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onGpsUpdate={(pos) => console.log("📍 Anchor GPS update:", pos)}
+          onGpsUpdate={(pos) => console.log(`📍 Anchor GPS update: ${pos}`)}
         >
           <GPSPin isAnimated color="#ff4444" scale={15} />
         </GeolocationAnchor>
