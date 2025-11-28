@@ -1,7 +1,5 @@
-// React
 export { default as GeolocationAnchor } from "./GeolocationAnchor";
 export { default as GeolocationSession } from "./GeolocationSession";
-// engine
 export { default as createGeolocationBackend } from "./geolocationBackend";
 
 export type { GeolocationAnchorProps } from "./GeolocationAnchor";

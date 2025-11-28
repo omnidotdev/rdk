@@ -9,16 +9,6 @@ export * from "./immersive";
 
 export type { XRStore } from "./engine/useXRStore";
 export type {
-  FiducialAnchorProps,
-  FiducialSessionOptions,
-  FiducialSessionProps,
-} from "./fiducial";
-export type {
-  GeolocationAnchorProps,
-  GeolocationSessionOptions,
-  GeolocationSessionProps,
-} from "./geolocation";
-export type {
   Backend,
   ContextValue,
 } from "./lib/types/engine";
