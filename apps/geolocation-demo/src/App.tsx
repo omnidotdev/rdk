@@ -31,15 +31,20 @@ const App = () => (
 
     <XR>
       <GeolocationSession
-        options={{
-          // enable fake GPS for testing: uncomment and adjust to preferred location
-          // fakeLat: BASE_LATITUDE,
-          // fakeLon: BASE_LONGITUDE,
-          onGpsUpdated: (
-            position: GeolocationPosition,
-            distMoved: number,
-          ) => {}, // fires when we get a new GPS position
-        }}
+        options={
+          {
+            // enable fake GPS for testing: uncomment and adjust to preferred location
+            // fakeLat: BASE_LATITUDE,
+            // fakeLon: BASE_LONGITUDE,
+            // handle GPS position updates
+            // onGpsUpdated: (position: GeolocationPosition, distMoved: number) => {
+            //   console.group("GPS Update");
+            //   console.log("Position:", position);
+            //   console.log("Distance Moved:", distMoved);
+            //   console.groupEnd();
+            // },
+          }
+        }
       >
         <GeolocationAnchor
           latitude={COORDS.center.lat}
