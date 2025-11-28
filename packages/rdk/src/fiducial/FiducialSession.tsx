@@ -43,9 +43,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
           SESSION_TYPES.FIDUCIAL,
         );
 
-        if (!cancelled) {
-          backendRef.current = backend;
-        }
+        backendRef.current = backend;
       } catch (err) {
         console.error("[FiducialSession] Failed to initialize:", err);
       }
@@ -58,6 +56,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
 
       if (backendRef.current) {
         unregisterBackend(backendRef.current, SESSION_TYPES.FIDUCIAL);
+
         backendRef.current = null;
       }
     };

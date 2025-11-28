@@ -46,9 +46,7 @@ const GeolocationSession = ({
           SESSION_TYPES.GEOLOCATION,
         );
 
-        if (!cancelled) {
-          backendRef.current = backend;
-        }
+        backendRef.current = backend;
       } catch (err) {
         console.error("[GeolocationSession] Failed to initialize:", err);
       }
@@ -58,8 +56,10 @@ const GeolocationSession = ({
 
     return () => {
       cancelled = true;
+
       if (backendRef.current) {
         unregisterBackend(backendRef.current, SESSION_TYPES.GEOLOCATION);
+
         backendRef.current = null;
       }
     };
