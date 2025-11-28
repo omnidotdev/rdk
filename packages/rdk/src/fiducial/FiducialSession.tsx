@@ -3,9 +3,10 @@ import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
 
-import type { FiducialSessionOptions } from "fiducial";
 import type { Backend } from "lib/types/engine";
 import type { PropsWithChildren } from "react";
+// NB: relative type import path resolves downstream type issues
+import type { FiducialSessionOptions } from "./fiducialBackend";
 
 export interface FiducialSessionProps extends PropsWithChildren {
   /** Fiducial session options. */
@@ -16,7 +17,7 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Manage the fiducial marker detection backend.
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
-const FiducialSession = ({ options, children }: FiducialSessionProps) => {
+const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
   const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -28,9 +29,7 @@ const FiducialSession = ({ options, children }: FiducialSessionProps) => {
     const initSession = async () => {
       try {
         // create fiducial backend, which creates its own video for AR.js
-        const backend = createFiducialBackend({
-          ...options,
-        });
+        const backend = createFiducialBackend(options);
 
         if (cancelled) return;
 

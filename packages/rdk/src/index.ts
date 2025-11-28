@@ -8,11 +8,6 @@ export * from "./geolocation";
 export * from "./immersive";
 
 export type {
-  XRStore,
-  XRStoreActions,
-  XRStoreState,
-} from "./engine/useXRStore";
-export type {
   Backend,
   ContextValue,
 } from "./lib/types/engine";

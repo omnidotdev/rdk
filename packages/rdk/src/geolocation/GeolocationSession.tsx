@@ -3,9 +3,10 @@ import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
 import { createGeolocationBackend } from "geolocation";
 import { useEffect, useRef } from "react";
 
-import type { GeolocationSessionOptions } from "geolocation";
 import type { Backend } from "lib/types/engine";
 import type { PropsWithChildren } from "react";
+// NB: relative type import path resolves downstream type issues
+import type { GeolocationSessionOptions } from "./geolocationBackend";
 
 export interface GeolocationSessionProps extends PropsWithChildren {
   /** Geolocation session options. */
@@ -16,7 +17,10 @@ export interface GeolocationSessionProps extends PropsWithChildren {
  * Manage the GPS-based AR backend.
  * Registers with the XR session provider and provides LocAR.js geolocation capabilities.
  */
-const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
+const GeolocationSession = ({
+  options = {},
+  children,
+}: GeolocationSessionProps) => {
   const { scene, camera, gl } = useThree();
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -28,9 +32,7 @@ const GeolocationSession = ({ options, children }: GeolocationSessionProps) => {
     const initSession = async () => {
       try {
         // create geolocation backend, which creates its own video for LocAR.js
-        const backend = createGeolocationBackend({
-          ...options,
-        });
+        const backend = createGeolocationBackend(options);
 
         if (cancelled) return;
 
