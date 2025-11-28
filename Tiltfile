@@ -23,6 +23,14 @@ local_resource(
 )
 
 local_resource(
+  "dev-demo-immersive",
+  serve_cmd="bun dev --filter rdk-immersive-demo",
+  auto_init=False,
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  labels=["demo-immersive"]
+)
+
+local_resource(
   "build",
   "bun run build",
   auto_init=False,

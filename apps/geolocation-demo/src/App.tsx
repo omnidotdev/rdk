@@ -29,7 +29,7 @@ const App = () => (
     <directionalLight position={[10, 10, 10]} intensity={2} castShadow />
     <directionalLight position={[-10, 10, -10]} intensity={1} />
 
-    <XR cameraSource="video">
+    <XR>
       <GeolocationSession
         options={
           {

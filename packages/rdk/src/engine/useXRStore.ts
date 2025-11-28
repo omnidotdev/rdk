@@ -1,28 +1,30 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Backend, CameraSource } from "lib/types/engine";
+import type { XRStore as ReactThreeXRStore } from "@react-three/xr";
+import type { Backend } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
 export const SESSION_TYPES = {
   FIDUCIAL: "FiducialSession",
   GEOLOCATION: "GeolocationSession",
+  IMMERSIVE: "ImmersiveSession",
 } as const;
 
 export type XRSessionType = (typeof SESSION_TYPES)[keyof typeof SESSION_TYPES];
 
-export interface XRStoreState {
-  /** Camera source type. */
-  camera: CameraSource;
-  /** Shared video element when using video camera source. */
+interface BaseXRStoreState {
+  /** Shared video element. */
   video?: HTMLVideoElement | null;
   /** Active backends registered by sessions. */
   backends: Backend[];
   /** Active session types for compatibility checking. */
   sessionTypes: Set<XRSessionType>;
+  /** Store instance for immersive sessions. */
+  immersiveStore?: ReactThreeXRStore | null;
 }
 
-export interface XRStoreActions {
+interface BaseXRStoreActions {
   /** Register a backend (called by sessions). */
   registerBackend: (
     backend: Backend,
@@ -31,23 +33,28 @@ export interface XRStoreActions {
   ) => Promise<void>;
   /** Unregister a backend (called by sessions). */
   unregisterBackend: (backend: Backend, sessionType?: XRSessionType) => void;
-  /** Set camera source. */
-  setCameraSource: (camera: CameraSource) => void;
   /** Set shared video element. */
   setVideo: (video: HTMLVideoElement | null) => void;
   /** Update all registered backends (called per frame). */
   updateBackends: (dt?: number) => void;
+  /** Set immersive store instance. */
+  setImmersiveStore: (store: ReactThreeXRStore | null) => void;
 }
 
-export type XRStore = XRStoreState & XRStoreActions;
+type BaseXRStore = BaseXRStoreState & BaseXRStoreActions;
 
-const useXRStore = create<XRStore>()(
+export type XRStore = BaseXRStore & {
+  isImmersive: boolean;
+  immersive: ReactThreeXRStore | null;
+};
+
+const useXRStoreBase = create<BaseXRStore>()(
   subscribeWithSelector((set, get) => ({
     // initial state
-    camera: "video",
     video: null,
     backends: [],
     sessionTypes: new Set(),
+    immersiveStore: null,
     // actions
     registerBackend: async (
       backend: Backend,
@@ -88,6 +95,7 @@ const useXRStore = create<XRStore>()(
         }));
       } catch (err) {
         console.error("[XRStore] Failed to register backend:", err);
+
         throw err;
       }
     },
@@ -112,10 +120,6 @@ const useXRStore = create<XRStore>()(
         };
       });
     },
-
-    setCameraSource: (camera) => {
-      set({ camera });
-    },
     setVideo: (video) => {
       set({ video });
     },
@@ -130,11 +134,32 @@ const useXRStore = create<XRStore>()(
         }
       });
     },
+    setImmersiveStore: (store) => {
+      set({ immersiveStore: store });
+    },
   })),
 );
 
 // non-React access to the store
-export const getXRStore = () => useXRStore.getState();
-export const subscribeToXRStore = useXRStore.subscribe;
+export const getXRStore = () => useXRStoreBase.getState();
+export const subscribeToXRStore = useXRStoreBase.subscribe;
+
+/**
+ * Unified XR hook that provides orchestrated RDK session state.
+ */
+const useXRStore = <S = XRStore>(selector?: (state: XRStore) => S) => {
+  const rdkStore = useXRStoreBase();
+
+  const state = {
+    ...rdkStore,
+    isImmersive: rdkStore.sessionTypes.has(SESSION_TYPES.IMMERSIVE),
+    immersive: rdkStore.immersiveStore || null,
+  };
+
+  // support both selector pattern used by components (e.g. `useXRStore(state => state.backends))` and direct usage by consumers that need the full unified state (e.g. `const { immersive } = useXRStore()`)
+  if (selector) return selector(state);
+
+  return state as S;
+};
 
 export default useXRStore;

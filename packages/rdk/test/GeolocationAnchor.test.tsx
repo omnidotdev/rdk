@@ -1,8 +1,29 @@
+import { Canvas } from "@react-three/fiber";
 import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeolocationAnchor } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
+
+vi.mock("engine/useXRStore", () => ({
+  default: vi.fn((selector) => {
+    const mockState = {
+      video: null,
+      backends: [],
+      sessionTypes: new Set(),
+      registerBackend: vi.fn().mockResolvedValue(undefined),
+      unregisterBackend: vi.fn(),
+      setVideo: vi.fn(),
+      updateBackends: vi.fn(),
+      isImmersive: false,
+    };
+
+    if (typeof selector === "function") {
+      return selector(mockState);
+    }
+    return mockState;
+  }),
+}));
 
 const GOING_TO_THE_SUN_MONTAIN_COORDINATES = {
     latitude: 48.68951980519457,
@@ -20,12 +41,14 @@ beforeEach(() => {
 describe("GeolocationAnchor", () => {
   it("renders without crashing", () => {
     const { container } = render(
-      <GeolocationAnchor
-        latitude={GOING_TO_THE_SUN_MONTAIN_COORDINATES.latitude}
-        longitude={GOING_TO_THE_SUN_MONTAIN_COORDINATES.longitude}
-      >
-        <mesh />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor
+          latitude={GOING_TO_THE_SUN_MONTAIN_COORDINATES.latitude}
+          longitude={GOING_TO_THE_SUN_MONTAIN_COORDINATES.longitude}
+        >
+          <mesh />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -38,9 +61,11 @@ describe("GeolocationAnchor", () => {
     };
 
     const { container } = render(
-      <GeolocationAnchor {...props}>
-        <mesh />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor {...props}>
+          <mesh />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -54,9 +79,11 @@ describe("GeolocationAnchor", () => {
     };
 
     const { container } = render(
-      <GeolocationAnchor {...props}>
-        <mesh />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor {...props}>
+          <mesh />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -70,9 +97,11 @@ describe("GeolocationAnchor", () => {
     };
 
     const { container } = render(
-      <GeolocationAnchor {...props}>
-        <mesh />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor {...props}>
+          <mesh />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -89,9 +118,11 @@ describe("GeolocationAnchor", () => {
     };
 
     const { container } = render(
-      <GeolocationAnchor {...props}>
-        <mesh />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor {...props}>
+          <mesh />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -99,9 +130,11 @@ describe("GeolocationAnchor", () => {
 
   it("renders children", () => {
     const { getByTestId } = render(
-      <GeolocationAnchor latitude={0} longitude={0}>
-        <mesh data-testid="test-child" />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor latitude={0} longitude={0}>
+          <mesh data-testid="test-child" />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(getByTestId("test-child")).toBeTruthy();
@@ -114,9 +147,11 @@ describe("GeolocationAnchor", () => {
     };
 
     const { container } = render(
-      <GeolocationAnchor {...props}>
-        <mesh />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor {...props}>
+          <mesh />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
@@ -135,9 +170,11 @@ describe("GeolocationAnchor", () => {
     };
 
     const { container } = render(
-      <GeolocationAnchor {...props}>
-        <mesh data-testid="full-test" />
-      </GeolocationAnchor>,
+      <Canvas>
+        <GeolocationAnchor {...props}>
+          <mesh data-testid="full-test" />
+        </GeolocationAnchor>
+      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
