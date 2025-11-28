@@ -1,4 +1,8 @@
 export * from "./engine";
+export {
+  getXRStore,
+  subscribeToXRStore,
+} from "./engine/useXRStore";
 export * from "./fiducial";
 export * from "./geolocation";
 export * from "./immersive";
