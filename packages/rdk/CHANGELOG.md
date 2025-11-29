@@ -1,5 +1,15 @@
 # @omnidotdev/rdk
 
+## 0.5.0
+
+### Minor Changes
+
+- [#35](https://github.com/omnidotdev/rdk/pull/35) [`c66a582`](https://github.com/omnidotdev/rdk/commit/c66a582cec4f261b9947b12643ec525283ae0e9f) Thanks [@coopbri](https://github.com/coopbri)! - **BREAKING:** Changed geolocation module callback prop names: `onAttached` to `onAttach` and `onGpsUpdated` to `onGpsUpdate`. This normalizes the callbacks to present tense, following the React convention.
+
+### Patch Changes
+
+- [#33](https://github.com/omnidotdev/rdk/pull/33) [`826cdb5`](https://github.com/omnidotdev/rdk/commit/826cdb581c8833b4448310ea65031002f56abf2a) Thanks [@coopbri](https://github.com/coopbri)! - Reduced bundle size by properly externalizing dependencies
+
 ## 0.4.2
 
 ### Patch Changes
