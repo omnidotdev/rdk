@@ -36,11 +36,13 @@ const App = () => (
           // fakeLat: BASE_LATITUDE,
           // fakeLon: BASE_LONGITUDE,
           // handle GPS position updates
-          onGpsUpdated: (pos, distMoved) => {
+          onGpsUpdate: (pos, distMoved) => {
             // biome-ignore lint/suspicious/noConsole: demo app
             console.group("GPS Update");
             // biome-ignore lint/suspicious/noConsole: demo app
-            console.log(`Position: ${pos}`);
+            console.log(
+              `Position: ${pos.coords.latitude}, ${pos.coords.longitude}`,
+            );
             // biome-ignore lint/suspicious/noConsole: demo app
             console.log(`Distance Moved: ${distMoved}`);
             // biome-ignore lint/suspicious/noConsole: demo app
@@ -52,7 +54,7 @@ const App = () => (
           latitude={COORDS.center.lat}
           longitude={COORDS.center.lon}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🟠 Orange box attached!")}
+          onAttach={() => console.log("🟠 Orange box attached!")}
         >
           <mesh scale={3}>
             <boxGeometry args={[0.4, 0.4, 0.4]} />
@@ -64,9 +66,13 @@ const App = () => (
           latitude={COORDS.north.lat}
           longitude={COORDS.north.lon}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🎯 Main GPS Pin attached!")}
-          // biome-ignore lint/suspicious/noConsole: demo app
-          onGpsUpdate={(pos) => console.log(`📍 Anchor GPS update: ${pos}`)}
+          onAttach={() => console.log("🎯 Main GPS Pin attached!")}
+          onGpsUpdate={(pos) =>
+            // biome-ignore lint/suspicious/noConsole: demo app
+            console.log(
+              `📍 Anchor GPS update: ${pos.coords.latitude}, ${pos.coords.longitude}`,
+            )
+          }
         >
           <GPSPin isAnimated color="#ff4444" scale={15} />
         </GeolocationAnchor>
@@ -76,7 +82,7 @@ const App = () => (
           longitude={COORDS.south.lon}
           altitude={10}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🔴 Large red cube attached!")}
+          onAttach={() => console.log("🔴 Large red cube attached!")}
         >
           <mesh scale={1}>
             <boxGeometry args={[20, 20, 20]} />
@@ -93,7 +99,7 @@ const App = () => (
           latitude={COORDS.east.lat}
           longitude={COORDS.east.lon}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🗼 Tower attached!")}
+          onAttach={() => console.log("🗼 Tower attached!")}
         >
           <Landmark isAnimated type="tower" color="#4a90e2" scale={10} />
         </GeolocationAnchor>
@@ -102,7 +108,7 @@ const App = () => (
           latitude={COORDS.west.lat}
           longitude={COORDS.west.lon}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🧭 Compass attached!")}
+          onAttach={() => console.log("🧭 Compass attached!")}
         >
           <Compass isAnimated scale={1.2} />
         </GeolocationAnchor>
@@ -112,7 +118,7 @@ const App = () => (
           latitude={COORDS.northeast.lat}
           longitude={COORDS.northeast.lon}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🏢 Building attached!")}
+          onAttach={() => console.log("🏢 Building attached!")}
         >
           <Landmark type="building" color="#27ae60" scale={8} />
         </GeolocationAnchor>
@@ -121,7 +127,7 @@ const App = () => (
           latitude={COORDS.center.lat}
           longitude={COORDS.center.lon + 0.0003}
           // biome-ignore lint/suspicious/noConsole: demo app
-          onAttached={() => console.log("🏛️ Monument attached!")}
+          onAttach={() => console.log("🏛️ Monument attached!")}
         >
           <Landmark isAnimated type="monument" color="#8e44ad" scale={0.8} />
         </GeolocationAnchor>

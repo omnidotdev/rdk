@@ -3,10 +3,14 @@ import useXRStore from "engine/useXRStore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Group } from "three";
 
-import type { LonLat } from "locar";
 import type { PropsWithChildren } from "react";
+import type { GeolocationSessionOptions } from "./geolocationBackend";
 
-interface Anchor {
+type GpsUpdateParams = Parameters<
+  NonNullable<GeolocationSessionOptions["onGpsUpdate"]>
+>;
+
+interface Anchor extends Pick<GeolocationSessionOptions, "onGpsUpdate"> {
   /** Anchor group. */
   anchor: Group;
   /** Whether the anchor is attached to the real world. */
@@ -18,22 +22,21 @@ interface Anchor {
   /** Physical altitude. */
   altitude: number;
   /** Callback triggered when the anchor is attached to the real world. */
-  onAttached?: () => void;
-  /** Callback triggered when the anchor's GPS position is updated. */
-  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-  onGpsUpdate?: (pos: any) => void;
+  onAttach?: () => void;
 }
 
 // global registry to track all anchors and prevent interference
 const anchorRegistry = new Map<string, Anchor>();
 
 let gpsInitialized = false;
-let lastLocation: LonLat | null = null;
+let lastPosition: GeolocationPosition | null = null;
 
 // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
 let globalGpsHandler: ((evt: any) => void) | null = null;
 
-export interface GeolocationAnchorProps extends PropsWithChildren {
+export interface GeolocationAnchorProps
+  extends Pick<GeolocationSessionOptions, "onGpsUpdate">,
+    PropsWithChildren {
   /** Physical target latitude (where you want the AR object placed in the real world). */
   latitude: number;
   /** Physical target longitude (where you want the AR object placed in the real world). */
@@ -49,10 +52,7 @@ export interface GeolocationAnchorProps extends PropsWithChildren {
    */
   isBillboard?: boolean;
   /** Called once actually attached to LocAR (after first `gpsupdate`). */
-  onAttached?: () => void;
-  /** Forward raw GPS updates. */
-  // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-  onGpsUpdate?: (pos: any) => void;
+  onAttach?: () => void;
 }
 
 /**
@@ -63,8 +63,8 @@ const GeolocationAnchor = ({
   longitude,
   altitude = 0,
   isBillboard = true,
-  onAttached,
-  onGpsUpdate,
+  onAttach: _onAttach,
+  onGpsUpdate: _onGpsUpdate,
   children,
 }: GeolocationAnchorProps) => {
   const backends = useXRStore((state) => state.backends);
@@ -75,16 +75,15 @@ const GeolocationAnchor = ({
 
   const hasAttachedRef = useRef(false);
 
-  const stableOnAttached = useCallback(() => {
-    onAttached?.();
-  }, [onAttached]);
+  const onAttach = useCallback(() => {
+    _onAttach?.();
+  }, [_onAttach]);
 
-  const stableOnGpsUpdate = useCallback(
-    // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-    (pos: any) => {
-      onGpsUpdate?.(pos);
+  const onGpsUpdate = useCallback(
+    (pos: GeolocationPosition, distMoved: number) => {
+      _onGpsUpdate?.(pos, distMoved);
     },
-    [onGpsUpdate],
+    [_onGpsUpdate],
   );
 
   useEffect(() => {
@@ -123,7 +122,7 @@ const GeolocationAnchor = ({
 
             anchor.isAttached = true;
 
-            anchor.onAttached?.();
+            anchor.onAttach?.();
           } catch (err) {
             console.error("❌ Failed to attach anchor:", err);
           }
@@ -135,8 +134,8 @@ const GeolocationAnchor = ({
           latitude,
           longitude,
           altitude: altitude || 0,
-          onAttached: stableOnAttached,
-          onGpsUpdate: stableOnGpsUpdate,
+          onAttach,
+          onGpsUpdate,
         };
 
         // register this anchor with its coordinates
@@ -144,23 +143,27 @@ const GeolocationAnchor = ({
 
         // set up global GPS handler once
         if (!gpsInitialized) {
-          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-          globalGpsHandler = (evt: any) => {
-            const pos = evt.position ?? evt;
+          globalGpsHandler = ({
+            position: pos,
+            distMoved,
+          }: {
+            position: GpsUpdateParams[0];
+            distMoved: GpsUpdateParams[1];
+          }) => {
+            // store the last known position for new anchors
+            lastPosition = pos;
 
             // process all registered anchors
             anchorRegistry.forEach((entry) => {
               if (!entry.isAttached) addAnchor(entry);
 
               // call GPS update callback for all anchors
-              entry.onGpsUpdate?.(pos);
+              entry.onGpsUpdate?.(pos, distMoved);
             });
           };
 
-          lastLocation = locar.getLastKnownLocation();
-
-          if (lastLocation !== null && !curAnchor.isAttached)
-            // add anchor in case it's not already attached after receiving a GPS position
+          // add anchor if there is already a GPS position
+          if (lastPosition !== null && !curAnchor.isAttached)
             addAnchor(curAnchor);
 
           locar.on?.("gpsupdate", globalGpsHandler);
@@ -168,11 +171,11 @@ const GeolocationAnchor = ({
           gpsInitialized = true;
         }
 
-        if (lastLocation !== null) {
+        if (lastPosition !== null) {
           // add anchor if not already attached
           if (!curAnchor.isAttached) addAnchor(curAnchor);
 
-          curAnchor.onGpsUpdate?.({ position: lastLocation });
+          curAnchor.onGpsUpdate?.(lastPosition, 0);
         }
 
         // mark this anchor as needing attachment tracking
@@ -245,8 +248,8 @@ const GeolocationAnchor = ({
     latitude,
     longitude,
     altitude,
-    stableOnAttached,
-    stableOnGpsUpdate,
+    onAttach,
+    onGpsUpdate,
   ]);
 
   // billboard after LocAR owns the object
