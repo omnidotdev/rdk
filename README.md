@@ -76,10 +76,23 @@ See the `fiducial/` and `geolocation/` modules for reference implementations.
 
 ### Installation
 
-Install RDK and required peer dependencies:
+Install RDK and core dependencies:
 
 ```bash
-bun add @omnidotdev/rdk @ar-js-org/ar.js @react-three/fiber locar react react-dom three
+bun add @omnidotdev/rdk @react-three/fiber react react-dom three
+```
+
+Then install the extra dependencies you need based on your use case:
+
+```bash
+# for fiducial marker AR
+bun add @ar-js-org/ar.js
+
+# for location-based AR
+bun add locar
+
+# for WebXR immersive AR/VR
+bun add @react-three/xr
 ```
 
 See the demo applications for examples of usage:

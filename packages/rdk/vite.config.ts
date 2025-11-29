@@ -28,13 +28,16 @@ const viteConfig = defineConfig(({ mode }) => ({
     },
     minify: mode === "production",
     rollupOptions: {
-      external: [
-        "react",
-        "react-dom",
-        "three",
-        "@react-three/fiber",
-        "@ar-js-org/ar.js",
-      ],
+      external: (id) =>
+        [
+          "react",
+          "react-dom",
+          "three",
+          "@ar-js-org/ar.js",
+          "locar",
+          "@react-three/fiber",
+          "@react-three/xr",
+        ].some((ext) => id === ext || id.startsWith(`${ext}/`)),
       output: {
         globals: {
           react: "React",
@@ -42,6 +45,8 @@ const viteConfig = defineConfig(({ mode }) => ({
           three: "THREE",
           "@react-three/fiber": "ReactThreeFiber",
           "@ar-js-org/ar.js": "ARjs",
+          "@react-three/xr": "ReactThreeXR",
+          locar: "LocAR",
         },
       },
     },
