@@ -19,7 +19,7 @@ export interface GeolocationSessionOptions {
    * @param distanceMoved Distance moved, in meters, since the last update.
    */
   // TODO automatically grab type from LocAR.js once it's converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-  onGpsUpdated?: (position: GeolocationPosition, distanceMoved: number) => void;
+  onGpsUpdate?: (position: GeolocationPosition, distanceMoved: number) => void;
 }
 
 /**
@@ -67,8 +67,8 @@ const createGeolocationBackend = (
       locar.on(
         "gpsupdate",
         // TODO remove explicit type annotation once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-        (data: { position: GeolocationPosition; distanceMoved: number }) => {
-          options.onGpsUpdated?.(data.position, data.distanceMoved);
+        (data: { position: GeolocationPosition; distMoved: number }) => {
+          options.onGpsUpdate?.(data.position, data.distMoved);
         },
       );
 
@@ -163,7 +163,7 @@ const createGeolocationBackend = (
       // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
       const dev = (this as any)._deviceOrientation;
 
-      if (options?.onGpsUpdated) locar?.off("gpsupdate", options.onGpsUpdated);
+      if (options?.onGpsUpdate) locar?.off("gpsupdate", options.onGpsUpdate);
 
       // clean up
       locar?.stopGps?.();

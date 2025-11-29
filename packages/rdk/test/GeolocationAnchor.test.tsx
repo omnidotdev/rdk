@@ -108,12 +108,12 @@ describe("GeolocationAnchor", () => {
   });
 
   it("accepts GPS event callbacks", () => {
-    const mockOnAttached = vi.fn();
+    const mockOnAttach = vi.fn();
     const mockOnGpsUpdate = vi.fn();
     const props = {
       latitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.latitude,
       longitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.longitude,
-      onAttached: mockOnAttached,
+      onAttach: mockOnAttach,
       onGpsUpdate: mockOnGpsUpdate,
     };
 
@@ -158,14 +158,14 @@ describe("GeolocationAnchor", () => {
   });
 
   it("accepts all optional props together", () => {
-    const mockOnAttached = vi.fn();
+    const mockOnAttach = vi.fn();
     const mockOnGpsUpdate = vi.fn();
     const props = {
       latitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.latitude,
       longitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.longitude,
       altitude: 50,
       isBillboard: true,
-      onAttached: mockOnAttached,
+      onAttach: mockOnAttach,
       onGpsUpdate: mockOnGpsUpdate,
     };
 
