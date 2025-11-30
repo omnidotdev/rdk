@@ -23,6 +23,8 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
   const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<Backend | null>(null);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   useEffect(() => {
     // already initialized for this component instance
@@ -33,7 +35,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
     const initSession = async () => {
       try {
         // create fiducial backend, which creates its own video for AR.js
-        const backend = createFiducialBackend(options);
+        const backend = createFiducialBackend(optionsRef.current);
 
         if (cancelled) return;
 
@@ -60,7 +62,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
         backendRef.current = null;
       }
     };
-  }, [scene, camera, gl, registerBackend, unregisterBackend, options]);
+  }, [scene, camera, gl, registerBackend, unregisterBackend]);
 
   return children;
 };
