@@ -6,12 +6,7 @@ import { Supertorus } from "components";
  * Fiducial marker-based AR demo application.
  */
 const App = () => (
-  <Canvas
-    gl={{
-      antialias: false,
-      powerPreference: "default",
-    }}
-  >
+  <Canvas>
     {/* lighting */}
     <hemisphereLight intensity={0.6} />
     <directionalLight position={[5, 5, 5]} intensity={1} />

@@ -17,12 +17,7 @@ const COORDS = {
 };
 
 const App = () => (
-  <Canvas
-    gl={{
-      antialias: false,
-      powerPreference: "default",
-    }}
-  >
+  <Canvas>
     {/* lighting */}
     <ambientLight intensity={1.0} />
     <hemisphereLight intensity={0.8} />
