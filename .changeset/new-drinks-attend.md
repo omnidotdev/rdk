@@ -2,4 +2,4 @@
 "@omnidotdev/rdk": patch
 ---
 
-Fix `GeolocationSession` and `FiducialSession` requiring `options` prop to be set to prevent an infinite render loop
+Stabilized `options` in `GeolocationSession` and `FiducialSession` to prevent an infinite render loop when it was not provided as props
