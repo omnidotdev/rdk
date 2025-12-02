@@ -162,6 +162,15 @@ const GeolocationAnchor = ({
             });
           };
 
+          const lastLocation = locar.getLastKnownLocation();
+          if (lastLocation !== null) {
+            lastPosition = {
+              coords: lastLocation,
+              timestamp: Date.now(),
+              toJSON: () => lastLocation,
+            };
+          }
+
           // add anchor if there is already a GPS position
           if (lastPosition !== null && !curAnchor.isAttached)
             addAnchor(curAnchor);
