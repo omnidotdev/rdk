@@ -165,7 +165,7 @@ const GeolocationAnchor = ({
           const lastLocation = locar.getLastKnownLocation();
           if (lastLocation !== null) {
             lastPosition = {
-              coords: locar.getLastKnownLocation(),
+              coords: lastLocation,
               timestamp: Date.now(),
               toJSON: () => lastLocation,
             };
