@@ -1,5 +1,13 @@
 # @omnidotdev/rdk
 
+## 0.5.1
+
+### Patch Changes
+
+- [#37](https://github.com/omnidotdev/rdk/pull/37) [`5afc4b2`](https://github.com/omnidotdev/rdk/commit/5afc4b204fac397ba8aec24f6f42176a927b63fc) Thanks [@coopbri](https://github.com/coopbri)! - Stabilized `options` in `GeolocationSession` and `FiducialSession` to prevent an infinite render loop when it was not provided as props
+
+- [#39](https://github.com/omnidotdev/rdk/pull/39) [`319f2d0`](https://github.com/omnidotdev/rdk/commit/319f2d094d70b2689a8c8dd18003238da92f82e6) Thanks [@nickw1](https://github.com/nickw1)! - Restored missing `locar.getLastKnownLocation()` invocation in `GeolocationAnchor`
+
 ## 0.5.0
 
 ### Minor Changes
