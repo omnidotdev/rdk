@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
 import type { XRStore as ReactThreeXRStore } from "@react-three/xr";
 import type { Backend } from "lib/types/engine";
@@ -148,18 +149,20 @@ export const subscribeToXRStore = useXRStoreBase.subscribe;
  * Unified XR hook that provides orchestrated RDK session state.
  */
 const useXRStore = <S = XRStore>(selector?: (state: XRStore) => S) => {
-  const rdkStore = useXRStoreBase();
+  const rdkStore = useXRStoreBase(
+    useShallow((state) => {
+      const unifiedState = {
+        ...state,
+        isImmersive: state.sessionTypes.has(SESSION_TYPES.IMMERSIVE),
+        immersive: state.immersiveStore || null,
+      };
 
-  const state = {
-    ...rdkStore,
-    isImmersive: rdkStore.sessionTypes.has(SESSION_TYPES.IMMERSIVE),
-    immersive: rdkStore.immersiveStore || null,
-  };
+      // support both selector pattern used by components (e.g. `useXRStore(state => state.backends))` and direct usage by consumers that need the full unified state (e.g. `const { immersive } = useXRStore()`)
+      return selector ? selector(unifiedState) : unifiedState;
+    }),
+  );
 
-  // support both selector pattern used by components (e.g. `useXRStore(state => state.backends))` and direct usage by consumers that need the full unified state (e.g. `const { immersive } = useXRStore()`)
-  if (selector) return selector(state);
-
-  return state as S;
+  return rdkStore as S;
 };
 
 export default useXRStore;

@@ -26,6 +26,8 @@ const GeolocationSession = ({
   const { registerBackend, unregisterBackend } = useXRStore();
 
   const backendRef = useRef<Backend | null>(null);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   useEffect(() => {
     // already initialized for this component instance
@@ -36,7 +38,7 @@ const GeolocationSession = ({
     const initSession = async () => {
       try {
         // create geolocation backend, which creates its own video for LocAR.js
-        const backend = createGeolocationBackend(options);
+        const backend = createGeolocationBackend(optionsRef.current);
 
         if (cancelled) return;
 
@@ -63,7 +65,7 @@ const GeolocationSession = ({
         backendRef.current = null;
       }
     };
-  }, [scene, camera, gl, registerBackend, unregisterBackend, options]);
+  }, [scene, camera, gl, registerBackend, unregisterBackend]);
 
   return children;
 };
