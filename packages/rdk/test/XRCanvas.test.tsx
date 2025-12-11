@@ -21,7 +21,7 @@ afterEach(() => {
 describe("XR", () => {
   const TestWrapper = ({ children }: { children: ReactNode }) => (
     <Canvas>
-      <XR cameraSource="video">{children}</XR>
+      <XR>{children}</XR>
     </Canvas>
   );
 
@@ -40,18 +40,6 @@ describe("XR", () => {
       <TestWrapper>
         <mesh data-testid="test-mesh" />
       </TestWrapper>,
-    );
-
-    expect(container.firstChild).toBeTruthy();
-  });
-
-  it("accepts cameraSource prop", () => {
-    const { container } = render(
-      <Canvas>
-        <XR cameraSource="webxr">
-          <mesh />
-        </XR>
-      </Canvas>,
     );
 
     expect(container.firstChild).toBeTruthy();
