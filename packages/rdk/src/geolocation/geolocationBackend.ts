@@ -56,7 +56,6 @@ const createGeolocationBackend = (
   let deviceOrientation: DeviceOrientationControls | null = null;
   let resizeHandler: (() => void) | undefined;
 
-  // for cleanup of gps handler
   let gpsUpdateHandler: ((data: GpsUpdateEvent) => void) | null = null;
 
   // exposed so the React anchor can billboard to camera
