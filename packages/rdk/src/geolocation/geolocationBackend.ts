@@ -8,6 +8,26 @@ import type { Backend, BackendInitArgs } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
 /**
+ * Geolocation backend.
+ */
+export interface GeolocationBackend {
+  locar: LocAR | null;
+  webcam: Webcam | null;
+  deviceOrientation: DeviceOrientationControls | null;
+  scene: Scene | null;
+  camera: Camera | null;
+}
+
+/**
+ * GPS update event structure emitted by LocAR.
+ */
+// TODO grab type from LocAR.js once it's exported in TS
+export interface GpsUpdateEvent {
+  position: GeolocationPosition;
+  distMoved: number;
+}
+
+/**
  * Options for the geolocation backend.
  */
 export interface GeolocationSessionOptions {
@@ -22,7 +42,6 @@ export interface GeolocationSessionOptions {
    * @param position Updated GPS position.
    * @param distanceMoved Distance moved, in meters, since the last update.
    */
-  // TODO automatically grab type from LocAR.js once it's exported in TS
   onGpsUpdate?: (position: GeolocationPosition, distanceMoved: number) => void;
 }
 
@@ -38,9 +57,7 @@ const createGeolocationBackend = (
   let resizeHandler: (() => void) | undefined;
 
   // for cleanup of gps handler
-  let gpsUpdateHandler:
-    | ((data: { position: GeolocationPosition; distMoved: number }) => void)
-    | null = null;
+  let gpsUpdateHandler: ((data: GpsUpdateEvent) => void) | null = null;
 
   // exposed so the React anchor can billboard to camera
   let cameraRef: Camera | null = null;
@@ -71,10 +88,7 @@ const createGeolocationBackend = (
         }) as any,
       );
 
-      gpsUpdateHandler = (data: {
-        position: GeolocationPosition;
-        distMoved: number;
-      }) => {
+      gpsUpdateHandler = (data: GpsUpdateEvent) => {
         options?.onGpsUpdate?.(data.position, data.distMoved);
       };
 
@@ -167,15 +181,13 @@ const createGeolocationBackend = (
       gpsUpdateHandler = null;
     },
 
-    getInternal() {
-      return {
-        locar,
-        webcam,
-        deviceOrientation,
-        scene: sceneRef,
-        camera: cameraRef,
-      };
-    },
+    getInternal: (): GeolocationBackend => ({
+      locar,
+      webcam,
+      deviceOrientation,
+      scene: sceneRef,
+      camera: cameraRef,
+    }),
   };
 };
 
