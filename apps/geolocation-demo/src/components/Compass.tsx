@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 
-import type * as THREE from "three";
+import type { Group } from "three";
 
 interface CompassProps {
   /**
@@ -23,8 +23,8 @@ const Compass = ({
   color = "#c0392b",
   scale = 1,
 }: CompassProps) => {
-  const groupRef = useRef<THREE.Group>(null),
-    needleRef = useRef<THREE.Group>(null);
+  const groupRef = useRef<Group>(null),
+    needleRef = useRef<Group>(null);
 
   // gentle floating and needle rotation animation
   useFrame((state) => {

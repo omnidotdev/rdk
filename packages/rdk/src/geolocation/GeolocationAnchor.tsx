@@ -4,11 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Group } from "three";
 
 import type { PropsWithChildren } from "react";
-import type { GeolocationSessionOptions } from "./geolocationBackend";
-
-type GpsUpdateParams = Parameters<
-  NonNullable<GeolocationSessionOptions["onGpsUpdate"]>
->;
+import type {
+  GeolocationBackend,
+  GeolocationSessionOptions,
+  GpsUpdateEvent,
+} from "./geolocationBackend";
 
 interface Anchor extends Pick<GeolocationSessionOptions, "onGpsUpdate"> {
   /** Anchor group. */
@@ -31,8 +31,7 @@ const anchorRegistry = new Map<string, Anchor>();
 let gpsInitialized = false;
 let lastPosition: GeolocationPosition | null = null;
 
-// biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-let globalGpsHandler: ((evt: any) => void) | null = null;
+let globalGpsHandler: ((evt: GpsUpdateEvent) => void) | null = null;
 
 export interface GeolocationAnchorProps
   extends Pick<GeolocationSessionOptions, "onGpsUpdate">,
@@ -92,16 +91,15 @@ const GeolocationAnchor = ({
     const initializeAnchor = async () => {
       try {
         const geolocationBackend = backends.find((backend) => {
-          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-          const internal = backend.getInternal?.() as any;
+          const internal = backend.getInternal?.() as GeolocationBackend;
 
           return internal?.locar;
         });
 
         if (!geolocationBackend || cancelled) return;
 
-        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-        const internal = geolocationBackend.getInternal?.() as any;
+        const internal =
+          geolocationBackend.getInternal?.() as GeolocationBackend;
 
         const locar = internal?.locar;
 
@@ -143,13 +141,7 @@ const GeolocationAnchor = ({
 
         // set up global GPS handler once
         if (!gpsInitialized) {
-          globalGpsHandler = ({
-            position: pos,
-            distMoved,
-          }: {
-            position: GpsUpdateParams[0];
-            distMoved: GpsUpdateParams[1];
-          }) => {
+          globalGpsHandler = ({ position: pos, distMoved }: GpsUpdateEvent) => {
             // store the last known position for new anchors
             lastPosition = pos;
 
@@ -165,7 +157,16 @@ const GeolocationAnchor = ({
           const lastLocation = locar.getLastKnownLocation();
           if (lastLocation !== null) {
             lastPosition = {
-              coords: lastLocation,
+              coords: {
+                longitude: lastLocation.longitude,
+                latitude: lastLocation.latitude,
+                accuracy: 0,
+                altitude: null,
+                altitudeAccuracy: null,
+                heading: null,
+                speed: null,
+                toJSON: () => lastLocation,
+              },
               timestamp: Date.now(),
               toJSON: () => lastLocation,
             };
@@ -204,23 +205,7 @@ const GeolocationAnchor = ({
 
       if (entry?.isAttached) {
         try {
-          const geolocationBackend = backends.find((backend) => {
-            // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-            const internal = backend.getInternal?.() as any;
-
-            return internal?.locar;
-          });
-
-          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-          const internal = geolocationBackend?.getInternal?.() as any;
-
-          const locar = internal?.locar;
-
-          if (typeof locar?.remove === "function") {
-            locar.remove(anchor);
-          } else {
-            anchor.removeFromParent();
-          }
+          anchor.removeFromParent();
         } catch (err) {
           console.error(`⚠️ Error removing anchor ${anchorId}:`, err);
         }
@@ -232,14 +217,13 @@ const GeolocationAnchor = ({
       // clean up global handler if no more anchors
       if (anchorRegistry.size === 0 && globalGpsHandler) {
         const geolocationBackend = backends.find((backend) => {
-          // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-          const internal = backend.getInternal?.() as any;
+          const internal = backend.getInternal?.() as GeolocationBackend;
 
           return internal?.locar;
         });
 
-        // biome-ignore lint/suspicious/noExplicitAny: TODO solve once LocAR.js converted to TS (https://github.com/AR-js-org/locar.js/pull/27#issuecomment-3487422995)
-        const internal = geolocationBackend?.getInternal?.() as any;
+        const internal =
+          geolocationBackend?.getInternal?.() as GeolocationBackend;
 
         const locar = internal?.locar;
 

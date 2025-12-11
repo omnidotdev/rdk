@@ -27,27 +27,19 @@ export interface FiducialSessionOptions {
 }
 
 /**
- * Internal backend extension that includes private fields.
- */
-interface InternalBackend extends Backend {
-  _arSource?: ArToolkitSource;
-  _arContext?: ArToolkitContext;
-  _camera?: Camera;
-}
-
-/**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
-  let arSource: ArToolkitSource;
-  let arContext: ArToolkitContext;
+const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
+  let arSource: ArToolkitSource | null = null;
+  let arContext: ArToolkitContext | null = null;
+  let cameraRef: Camera | null = null;
   let resizeHandler: (() => void) | undefined;
 
-  const backend: InternalBackend = {
+  return {
     async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
-        sourceType: options.sourceType ?? "webcam",
+        sourceType: options?.sourceType ?? "webcam",
       });
 
       // init source
@@ -56,9 +48,9 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
           reject(new Error("AR source initialization timeout"));
         }, 10000);
 
-        arSource.init(() => {
+        arSource!.init(() => {
           clearTimeout(timeoutId);
-          const el = arSource.domElement as HTMLElement;
+          const el = arSource!.domElement as HTMLElement;
           if (el) {
             el.style.position = "fixed";
             el.style.top = "0";
@@ -78,32 +70,31 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
       // AR.js context
       const arConfig: ArToolkitContextParameters = {
         cameraParametersUrl:
-          options.cameraParametersUrl ??
+          options?.cameraParametersUrl ??
           // default to internal camera parameters
           new URL("../../assets/camera_params.dat", import.meta.url).toString(),
-        detectionMode: options.detectionMode ?? "mono",
-        patternRatio: options.patternRatio ?? 0.5,
-        matrixCodeType: options.matrixCodeType ?? "3x3",
+        detectionMode: options?.detectionMode ?? "mono",
+        patternRatio: options?.patternRatio ?? 0.5,
+        matrixCodeType: options?.matrixCodeType ?? "3x3",
       };
 
       arContext = new ArToolkitContext(arConfig);
+      cameraRef = camera;
 
       const doResize = () => {
         // let AR.js figure out its internal element size first
-        arSource.onResizeElement();
+        arSource!.onResizeElement();
 
-        // use viewport dimensions to match the fullscreen video background
+        // match fullscreen video background
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
-        // set THREE renderer to match viewport (same as video background)
         renderer.setSize(vw, vh, false);
 
-        // sync AR.js' canvas and the renderer dom element
-        arSource.copyElementSizeTo(renderer.domElement);
+        arSource!.copyElementSizeTo(renderer.domElement);
 
         if (arContext?.arController) {
-          arSource.copyElementSizeTo(arContext.arController.canvas);
+          arSource!.copyElementSizeTo(arContext.arController.canvas);
         }
       };
 
@@ -112,10 +103,10 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
           reject(new Error("AR context initialization timeout"));
         }, 10000);
 
-        arContext.init(() => {
+        arContext!.init(() => {
           clearTimeout(timeoutId);
           try {
-            camera.projectionMatrix.copy(arContext.getProjectionMatrix());
+            camera.projectionMatrix.copy(arContext!.getProjectionMatrix());
             doResize();
             resolve();
           } catch (err) {
@@ -124,33 +115,24 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
         });
       });
 
-      // expose for the anchor component
-      this._arSource = arSource;
-      this._arContext = arContext;
-      this._camera = camera;
-
       window.addEventListener("resize", doResize);
       resizeHandler = doResize;
     },
 
     update() {
-      const source = this._arSource;
-      const context = this._arContext;
-      const camera = this._camera;
+      if (!arSource || !arContext) return;
 
-      if (!source || !context) return;
+      if (!arSource.ready || !arSource.domElement) return;
 
-      // only update if source is ready and has a valid `domElement`
-      if (source.ready !== false && source.domElement) {
-        try {
-          context.update(source.domElement);
+      try {
+        arContext.update(arSource.domElement);
 
-          // update camera projection matrix each frame to fix positioning
-          if (camera && context.getProjectionMatrix)
-            camera.projectionMatrix.copy(context.getProjectionMatrix());
-        } catch (err) {
-          console.warn("AR.js update error:", err);
+        // update camera projection matrix each frame to fix positioning
+        if (cameraRef && arContext.getProjectionMatrix) {
+          cameraRef.projectionMatrix.copy(arContext.getProjectionMatrix());
         }
+      } catch (err) {
+        console.warn("AR.js update error:", err);
       }
     },
 
@@ -161,35 +143,27 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
       }
 
       // clean up AR.js resources
-      const source = this._arSource;
-      const context = this._arContext;
+      if (arContext && typeof (arContext as any).dispose === "function")
+        (arContext as any).dispose();
 
-      // @ts-expect-error TODO: figure out type errors here
-      if (context && typeof context.dispose === "function") {
-        // @ts-expect-error TODO: figure out type errors here
-        context.dispose();
+      if (arSource?.domElement) {
+        const parent = arSource.domElement.parentNode;
+
+        if (parent) parent.removeChild(arSource.domElement);
       }
 
-      if (source?.domElement) {
-        const parent = source.domElement.parentNode;
-        if (parent) {
-          parent.removeChild(source.domElement);
-        }
-      }
-
-      this._arSource = undefined;
-      this._arContext = undefined;
+      arSource = null;
+      arContext = null;
+      cameraRef = null;
     },
 
     getInternal() {
       return {
-        arSource: this._arSource,
-        arContext: this._arContext,
+        arSource,
+        arContext,
       };
     },
   };
-
-  return backend;
 };
 
 export default createFiducialBackend;

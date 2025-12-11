@@ -31,12 +31,7 @@ describe("geolocationBackend", () => {
   });
 
   it("handles empty options", () => {
-    const backend = createGeolocationBackend(undefined);
-    expect(backend).toBeTruthy();
-  });
-
-  it("handles null options", () => {
-    const backend = createGeolocationBackend(null);
+    const backend = createGeolocationBackend();
     expect(backend).toBeTruthy();
   });
 
@@ -50,9 +45,9 @@ describe("geolocationBackend", () => {
 
     // check method arity
     expect(backend.init.length).toBe(1);
-    expect(backend.update.length).toBe(0);
-    expect(backend.dispose.length).toBe(0);
-    expect(backend.getInternal.length).toBe(0);
+    expect(backend.update?.length).toBe(0);
+    expect(backend.dispose?.length).toBe(0);
+    expect(backend.getInternal?.length).toBe(0);
   });
 
   it("validates session options interface", () => {

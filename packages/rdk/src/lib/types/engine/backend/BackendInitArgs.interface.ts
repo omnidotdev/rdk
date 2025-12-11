@@ -1,4 +1,4 @@
-import type * as THREE from "three";
+import type { Camera, Scene, WebGLRenderer } from "three";
 
 /**
  * Initialization arguments for backends.
@@ -6,9 +6,9 @@ import type * as THREE from "three";
  */
 export interface BackendInitArgs {
   /** The Three.js scene to render content into. */
-  scene: THREE.Scene;
+  scene: Scene;
   /** The Three.js camera used for rendering. */
-  camera: THREE.Camera;
+  camera: Camera;
   /** The WebGL renderer instance. */
-  renderer: THREE.WebGLRenderer;
+  renderer: WebGLRenderer;
 }
