@@ -3,7 +3,7 @@ import { Box, Center, Sphere, Text, Torus } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 
-import type * as THREE from "three";
+import type { Mesh } from "three";
 
 const BUTTON_STYLES = {
   padding: "12px 24px",
@@ -16,7 +16,7 @@ const BUTTON_STYLES = {
 };
 
 const RotatingTorus = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -39,7 +39,7 @@ const RotatingTorus = () => {
 };
 
 const FloatingSphere = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -62,7 +62,7 @@ const FloatingSphere = () => {
 };
 
 const PulsatingBox = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
 
   useFrame((state) => {
     if (meshRef.current) {

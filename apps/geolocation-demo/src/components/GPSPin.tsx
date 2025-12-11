@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 
-import type * as THREE from "three";
+import type { Group } from "three";
 
 interface GPSPinProps {
   /**
@@ -23,7 +23,7 @@ const GPSPin = ({
   color = "#ff4444",
   scale = 1,
 }: GPSPinProps) => {
-  const groupRef = useRef<THREE.Group>(null);
+  const groupRef = useRef<Group>(null);
 
   // gentle floating animation
   useFrame((state) => {

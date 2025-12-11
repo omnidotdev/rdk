@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 
-import type * as THREE from "three";
+import type { Group } from "three";
 
 interface LandmarkProps {
   /**
@@ -26,7 +26,7 @@ const Landmark = ({
   color = "#4a90e2",
   scale = 1,
 }: LandmarkProps) => {
-  const groupRef = useRef<THREE.Group>(null);
+  const groupRef = useRef<Group>(null);
 
   // subtle rotation animation
   useFrame((state) => {
@@ -86,6 +86,7 @@ const Landmark = ({
       ))}
 
       {[...Array(3)].map((_, idx) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length, static
         <mesh key={idx + 3} position={[0.25, 0.3 + idx * 0.4, 0.31]}>
           <planeGeometry args={[0.15, 0.15]} />
           <meshStandardMaterial color="#87ceeb" />
