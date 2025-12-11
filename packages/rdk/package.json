@@ -50,7 +50,7 @@
     "locar": "0.1.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "three": "^0.180.0"
+    "three": "^0.182.0"
   },
   "peerDependenciesMeta": {
     "@ar-js-org/ar.js": {
@@ -69,18 +69,18 @@
     "@react-three/fiber": "^9.4.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@types/three": "^0.181.0",
+    "@types/three": "^0.182.0",
     "@types/webxr": "^0.5.24",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.3.0",
     "locar": "^0.1.7",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "three": "^0.181.2",
+    "three": "^0.182.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6",
+    "vite": "^7.2.7",
     "vite-plugin-dts": "^4.5.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.15"
