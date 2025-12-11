@@ -30,7 +30,7 @@ export interface GeolocationSessionOptions {
  * Create a location-based AR backend.
  */
 const createGeolocationBackend = (
-  options: GeolocationSessionOptions,
+  options?: GeolocationSessionOptions,
 ): Backend => {
   let locar: LocAR | null = null;
   let webcam: Webcam | null = null;
@@ -65,7 +65,7 @@ const createGeolocationBackend = (
 
       // video background
       webcam = new Webcam(
-        (options.webcamConstraints ?? {
+        (options?.webcamConstraints ?? {
           video: { facingMode: "environment" },
           // TODO remove `as any` once fixed upstream (LocAR.js)
         }) as any,
@@ -75,7 +75,7 @@ const createGeolocationBackend = (
         position: GeolocationPosition;
         distMoved: number;
       }) => {
-        options.onGpsUpdate?.(data.position, data.distMoved);
+        options?.onGpsUpdate?.(data.position, data.distMoved);
       };
 
       locar.on("gpsupdate", gpsUpdateHandler);
@@ -112,8 +112,8 @@ const createGeolocationBackend = (
 
       // optional boot in fake mode
       if (
-        typeof options.fakeLat === "number" &&
-        typeof options.fakeLon === "number"
+        typeof options?.fakeLat === "number" &&
+        typeof options?.fakeLon === "number"
       )
         locar.fakeGps(options.fakeLon, options.fakeLat);
 

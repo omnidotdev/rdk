@@ -7,7 +7,7 @@ import { vi } from "vitest";
 /**
  * Mock implementation of AR.js THREEx global object.
  */
-export const mockTHREEx = {
+export const mockTHREEx: Record<string, unknown> = {
   ArToolkitSource: vi.fn().mockImplementation(function ArToolkitSource() {
     return {
       init: vi.fn().mockResolvedValue(undefined),
@@ -48,7 +48,7 @@ export const mockTHREEx = {
 /**
  * Mock implementation of LocAR.js global object.
  */
-export const mockLocAR = {
+export const mockLocAR: Record<string, unknown> = {
   LocationBased: vi.fn().mockImplementation(function LocationBased() {
     return {
       scene: null,
@@ -89,7 +89,7 @@ export const mockLocAR = {
 /**
  * Mock implementation of Three.js THREE global object.
  */
-export const mockTHREE = {
+export const mockTHREE: Record<string, unknown> = {
   Group: vi.fn().mockImplementation(function Group() {
     return {
       add: vi.fn(),
@@ -140,7 +140,6 @@ export function setupGlobalMocks(): void {
   global.LocAR = mockLocAR;
 
   // suppress console warnings in tests
-  // @ts-expect-error
   global.console.warn = vi.fn();
 }
 

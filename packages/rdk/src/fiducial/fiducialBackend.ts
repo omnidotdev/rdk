@@ -29,7 +29,7 @@ export interface FiducialSessionOptions {
 /**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
+const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
   let arSource: ArToolkitSource | null = null;
   let arContext: ArToolkitContext | null = null;
   let cameraRef: Camera | null = null;
@@ -39,7 +39,7 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
     async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
-        sourceType: options.sourceType ?? "webcam",
+        sourceType: options?.sourceType ?? "webcam",
       });
 
       // init source
@@ -70,12 +70,12 @@ const createFiducialBackend = (options: FiducialSessionOptions): Backend => {
       // AR.js context
       const arConfig: ArToolkitContextParameters = {
         cameraParametersUrl:
-          options.cameraParametersUrl ??
+          options?.cameraParametersUrl ??
           // default to internal camera parameters
           new URL("../../assets/camera_params.dat", import.meta.url).toString(),
-        detectionMode: options.detectionMode ?? "mono",
-        patternRatio: options.patternRatio ?? 0.5,
-        matrixCodeType: options.matrixCodeType ?? "3x3",
+        detectionMode: options?.detectionMode ?? "mono",
+        patternRatio: options?.patternRatio ?? 0.5,
+        matrixCodeType: options?.matrixCodeType ?? "3x3",
       };
 
       arContext = new ArToolkitContext(arConfig);

@@ -5,15 +5,6 @@ export {
   resetGlobalMocks,
   setupGlobalMocks,
 } from "./globals.mock";
-export {
-  default as XRSessionProvider,
-  mockXRContext,
-  resetXRContext,
-  setXRSessionActive,
-  setXRSessionError,
-  useXR,
-  XRSessionProvider as XRSessionProviderNamed,
-} from "./XRSessionProvider.mock";
 
 export interface MockXRContext {
   arToolkitContext: {
