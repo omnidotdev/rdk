@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.5.2
+
+### Patch Changes
+
+- [#41](https://github.com/omnidotdev/rdk/pull/41) [`e4db1be`](https://github.com/omnidotdev/rdk/commit/e4db1be2302a0c38a2a3be273d903daa61b89833) Thanks [@coopbri](https://github.com/coopbri)! - Improve geolocation module types
+
 ## 0.5.1
 
 ### Patch Changes
