@@ -20,7 +20,7 @@
     "typescript": "^5.9.3",
     "vite": "^7.2.7",
     "vite-plugin-mkcert": "^1.17.9",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^6.0.0"
   },
   "dependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
