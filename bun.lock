@@ -33,7 +33,7 @@
         "typescript": "^5.9.3",
         "vite": "^7.2.7",
         "vite-plugin-mkcert": "^1.17.9",
-        "vite-tsconfig-paths": "^5.1.4",
+        "vite-tsconfig-paths": "^6.0.0",
       },
     },
     "apps/geolocation-demo": {
@@ -55,7 +55,7 @@
         "typescript": "^5.9.3",
         "vite": "^7.2.7",
         "vite-plugin-mkcert": "^1.17.9",
-        "vite-tsconfig-paths": "^5.1.4",
+        "vite-tsconfig-paths": "^6.0.0",
       },
     },
     "apps/immersive-demo": {
@@ -78,7 +78,7 @@
         "typescript": "~5.9.3",
         "vite": "^7.2.7",
         "vite-plugin-mkcert": "^1.17.9",
-        "vite-tsconfig-paths": "^5.1.4",
+        "vite-tsconfig-paths": "^6.0.0",
       },
     },
     "packages/rdk": {
@@ -107,7 +107,7 @@
         "typescript": "^5.9.3",
         "vite": "^7.2.7",
         "vite-plugin-dts": "^4.5.4",
-        "vite-tsconfig-paths": "^5.1.4",
+        "vite-tsconfig-paths": "^6.0.0",
         "vitest": "^4.0.15",
       },
       "peerDependencies": {
@@ -1251,7 +1251,7 @@
 
     "vite-plugin-mkcert": ["vite-plugin-mkcert@1.17.9", "", { "dependencies": { "axios": "^1.12.2", "debug": "^4.4.3", "picocolors": "^1.1.1" }, "peerDependencies": { "vite": ">=3" } }, "sha512-SwI7yqp2Cq4r2XItarnHRCj2uzHPqevbxFNMLpyN+LDXd5w1vmZeM4l5X/wCZoP4mjPQYN+9+4kmE6e3nPO5fg=="],
 
-    "vite-tsconfig-paths": ["vite-tsconfig-paths@5.1.4", "", { "dependencies": { "debug": "^4.1.1", "globrex": "^0.1.2", "tsconfck": "^3.0.3" }, "peerDependencies": { "vite": "*" }, "optionalPeers": ["vite"] }, "sha512-cYj0LRuLV2c2sMqhqhGpaO3LretdtMn/BVX4cPLanIZuwwrkVl+lK84E/miEXkCHWXuq65rhNN4rXsBcOB3S4w=="],
+    "vite-tsconfig-paths": ["vite-tsconfig-paths@6.0.1", "", { "dependencies": { "debug": "^4.1.1", "globrex": "^0.1.2", "tsconfck": "^3.0.3" }, "peerDependencies": { "vite": "*" }, "optionalPeers": ["vite"] }, "sha512-OQuYkfCQhc2T+n//0N7/oogTosgiSyZQ7dydrpUlH5SbnFTtplpekdY4GMi6jDwEpiwWlqeUJMyPfC2ePM1+2A=="],
 
     "vitest": ["vitest@4.0.15", "", { "dependencies": { "@vitest/expect": "4.0.15", "@vitest/mocker": "4.0.15", "@vitest/pretty-format": "4.0.15", "@vitest/runner": "4.0.15", "@vitest/snapshot": "4.0.15", "@vitest/spy": "4.0.15", "@vitest/utils": "4.0.15", "es-module-lexer": "^1.7.0", "expect-type": "^1.2.2", "magic-string": "^0.30.21", "obug": "^2.1.1", "pathe": "^2.0.3", "picomatch": "^4.0.3", "std-env": "^3.10.0", "tinybench": "^2.9.0", "tinyexec": "^1.0.2", "tinyglobby": "^0.2.15", "tinyrainbow": "^3.0.3", "vite": "^6.0.0 || ^7.0.0", "why-is-node-running": "^2.3.0" }, "peerDependencies": { "@edge-runtime/vm": "*", "@opentelemetry/api": "^1.9.0", "@types/node": "^20.0.0 || ^22.0.0 || >=24.0.0", "@vitest/browser-playwright": "4.0.15", "@vitest/browser-preview": "4.0.15", "@vitest/browser-webdriverio": "4.0.15", "@vitest/ui": "4.0.15", "happy-dom": "*", "jsdom": "*" }, "optionalPeers": ["@edge-runtime/vm", "@opentelemetry/api", "@types/node", "@vitest/browser-playwright", "@vitest/browser-preview", "@vitest/browser-webdriverio", "@vitest/ui", "happy-dom", "jsdom"], "bin": { "vitest": "vitest.mjs" } }, "sha512-n1RxDp8UJm6N0IbJLQo+yzLZ2sQCDyl1o0LeugbPWf8+8Fttp29GghsQBjYJVmWq3gBFfe9Hs1spR44vovn2wA=="],
 
