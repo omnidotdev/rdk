@@ -61,9 +61,10 @@ const createFiducialBackend = (
           reject(new Error("AR source initialization timeout"));
         }, 10000);
 
-        arSource!.init(() => {
+        arSource?.init(() => {
           clearTimeout(timeoutId);
-          const el = arSource!.domElement as HTMLElement;
+          const el = arSource?.domElement as HTMLElement;
+
           if (el) {
             el.style.position = "fixed";
             el.style.top = "0";
@@ -76,6 +77,7 @@ const createFiducialBackend = (
             // don't block UI
             el.style.pointerEvents = "none";
           }
+
           resolve();
         });
       });
@@ -96,7 +98,7 @@ const createFiducialBackend = (
 
       const doResize = () => {
         // let AR.js figure out its internal element size first
-        arSource!.onResizeElement();
+        arSource?.onResizeElement();
 
         // match fullscreen video background
         const vw = window.innerWidth;
@@ -104,10 +106,10 @@ const createFiducialBackend = (
 
         renderer.setSize(vw, vh, false);
 
-        arSource!.copyElementSizeTo(renderer.domElement);
+        arSource?.copyElementSizeTo(renderer.domElement);
 
         if (arContext?.arController) {
-          arSource!.copyElementSizeTo(arContext.arController.canvas);
+          arSource?.copyElementSizeTo(arContext.arController.canvas);
         }
       };
 
@@ -116,11 +118,16 @@ const createFiducialBackend = (
           reject(new Error("AR context initialization timeout"));
         }, 10000);
 
-        arContext!.init(() => {
+        arContext?.init(() => {
           clearTimeout(timeoutId);
+
           try {
-            camera.projectionMatrix.copy(arContext!.getProjectionMatrix());
+            const projMatrix = arContext?.getProjectionMatrix();
+
+            if (projMatrix) camera.projectionMatrix.copy(projMatrix);
+
             doResize();
+
             resolve();
           } catch (err) {
             reject(err);
@@ -141,9 +148,10 @@ const createFiducialBackend = (
         arContext.update(arSource.domElement);
 
         // update camera projection matrix each frame to fix positioning
-        if (cameraRef && arContext.getProjectionMatrix) {
-          cameraRef.projectionMatrix.copy(arContext.getProjectionMatrix());
-        }
+        const projMatrix = arContext.getProjectionMatrix?.();
+
+        if (cameraRef && projMatrix)
+          cameraRef.projectionMatrix.copy(projMatrix);
       } catch (err) {
         console.warn("AR.js update error:", err);
       }
