@@ -73,7 +73,6 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.182.0",
-    "@types/webxr": "^0.5.24",
     "jsdom": "^27.3.0",
     "locar": "^0.1.7",
     "react": "^19.2.1",
@@ -86,7 +85,6 @@
     "vitest": "^4.0.15"
   },
   "dependencies": {
-    "ts-pattern": "^5.9.0",
     "zustand": "^5.0.9"
   }
 }
