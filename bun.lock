@@ -85,7 +85,6 @@
       "name": "@omnidotdev/rdk",
       "version": "0.5.2",
       "dependencies": {
-        "ts-pattern": "^5.9.0",
         "zustand": "^5.0.9",
       },
       "devDependencies": {
@@ -98,7 +97,6 @@
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
         "@types/three": "^0.182.0",
-        "@types/webxr": "^0.5.24",
         "jsdom": "^27.3.0",
         "locar": "^0.1.7",
         "react": "^19.2.1",
@@ -1198,8 +1196,6 @@
     "troika-three-utils": ["troika-three-utils@0.52.4", "", { "peerDependencies": { "three": ">=0.125.0" } }, "sha512-NORAStSVa/BDiG52Mfudk4j1FG4jC4ILutB3foPnfGbOeIs9+G5vZLa0pnmnaftZUGm4UwSoqEpWdqvC7zms3A=="],
 
     "troika-worker-utils": ["troika-worker-utils@0.52.0", "", {}, "sha512-W1CpvTHykaPH5brv5VHLfQo9D1OYuo0cSBEUQFFT/nBUzM8iD6Lq2/tgG/f1OelbAS1WtaTPQzE5uM49egnngw=="],
-
-    "ts-pattern": ["ts-pattern@5.9.0", "", {}, "sha512-6s5V71mX8qBUmlgbrfL33xDUwO0fq48rxAu2LBE11WBeGdpCPOsXksQbZJHvHwhrd3QjUusd3mAOM5Gg0mFBLg=="],
 
     "ts-poet": ["ts-poet@6.12.0", "", { "dependencies": { "dprint-node": "^1.0.8" } }, "sha512-xo+iRNMWqyvXpFTaOAvLPA5QAWO6TZrSUs5s4Odaya3epqofBu/fMLHEWl8jPmjhA0s9sgj9sNvF1BmaQlmQkA=="],
 
