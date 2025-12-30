@@ -6,10 +6,11 @@ export {
 export * from "./fiducial";
 export * from "./geolocation";
 export * from "./immersive";
+export { BACKEND_TYPES } from "./lib/types/engine";
 
 export type {
   Backend,
-  ContextValue,
+  BackendType,
 } from "./lib/types/engine";
 export type { ImmersiveMode } from "./lib/types/immersive";
 

@@ -2,10 +2,19 @@ import {
   ArToolkitContext,
   ArToolkitSource,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import { BACKEND_TYPES } from "lib/types/engine";
 
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import type { Backend, BackendInitArgs } from "lib/types/engine";
 import type { Camera } from "three";
+
+/**
+ * Internal state exposed by the fiducial backend.
+ */
+export interface FiducialInternal {
+  arSource: ArToolkitSource | null;
+  arContext: ArToolkitContext | null;
+}
 
 export interface FiducialSessionOptions {
   /** Input source type. */
@@ -29,13 +38,17 @@ export interface FiducialSessionOptions {
 /**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
+const createFiducialBackend = (
+  options?: FiducialSessionOptions,
+): Backend<FiducialInternal> => {
   let arSource: ArToolkitSource | null = null;
   let arContext: ArToolkitContext | null = null;
   let cameraRef: Camera | null = null;
   let resizeHandler: (() => void) | undefined;
 
   return {
+    type: BACKEND_TYPES.FIDUCIAL,
+
     async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
@@ -157,12 +170,10 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
       cameraRef = null;
     },
 
-    getInternal() {
-      return {
-        arSource,
-        arContext,
-      };
-    },
+    getInternal: (): FiducialInternal => ({
+      arSource,
+      arContext,
+    }),
   };
 };
 

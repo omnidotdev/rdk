@@ -1,7 +1,8 @@
 import { ArMarkerControls } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import { useFrame } from "@react-three/fiber";
-import useXRStore from "engine/useXRStore";
 import { useEffect, useRef } from "react";
+
+import useFiducialBackend from "./useFiducialBackend";
 
 import type { PropsWithChildren } from "react";
 import type { Group } from "three";
@@ -31,34 +32,23 @@ const FiducialAnchor = ({
   children,
 }: FiducialAnchorProps) => {
   const groupRef = useRef<Group>(null);
-  const backends = useXRStore((state) => state.backends);
+  const fiducial = useFiducialBackend();
   const visibleRef = useRef(false);
   const initializedRef = useRef(false);
-  // biome-ignore lint/suspicious/noExplicitAny: TODO
+  // biome-ignore lint/suspicious/noExplicitAny: TODO (AR.js type patch)
   const arControlsRef = useRef<any>(null);
 
   useEffect(() => {
+    if (!fiducial) return;
+
     let cancelled = false;
 
-    const initializeAnchor = async () => {
+    const initializeAnchor = () => {
       try {
-        const fiducialBackend = backends.find((backend) => {
-          // biome-ignore lint/suspicious/noExplicitAny: TODO
-          const internal = backend.getInternal?.() as any;
-
-          return internal?.arContext;
-        });
-
-        if (!fiducialBackend || cancelled) return;
-
-        // biome-ignore lint/suspicious/noExplicitAny: TODO
-        const internal = fiducialBackend.getInternal?.() as any;
-
-        const arContext = internal?.arContext;
-
+        const { arContext } = fiducial;
         const group = groupRef.current;
 
-        if (!arContext || !group) return;
+        if (!arContext || !group || cancelled) return;
 
         // hide by default; AR.js will set `visible=true` when marker is found
         group.visible = false;
@@ -67,25 +57,27 @@ const FiducialAnchor = ({
         // AR.js sometimes doesn't have `arController` immediately
         if (!arContext.arController) {
           requestAnimationFrame(() => {
-            if (!groupRef.current || cancelled) return;
+            if (
+              !groupRef.current ||
+              cancelled ||
+              !fiducial.arContext?.arController
+            )
+              return;
 
-            // biome-ignore lint/suspicious/noExplicitAny: TODO
-            const again = fiducialBackend.getInternal?.() as any;
-
-            const ctx = again?.arContext;
-
-            if (!ctx?.arController) return;
-
-            const controls = new ArMarkerControls(ctx, groupRef.current, {
-              type: patternUrl
-                ? "pattern"
-                : barcodeValue
-                  ? "barcode"
-                  : "unknown",
-              patternUrl,
-              barcodeValue,
-              ...params,
-            });
+            const controls = new ArMarkerControls(
+              fiducial.arContext,
+              groupRef.current,
+              {
+                type: patternUrl
+                  ? "pattern"
+                  : barcodeValue
+                    ? "barcode"
+                    : "unknown",
+                patternUrl,
+                barcodeValue,
+                ...params,
+              },
+            );
 
             arControlsRef.current = controls;
             initializedRef.current = true;
@@ -102,10 +94,9 @@ const FiducialAnchor = ({
         });
 
         arControlsRef.current = controls;
-
         initializedRef.current = true;
       } catch (err) {
-        console.error("Failed to initialize fiducial backend:", err);
+        console.error("Failed to initialize fiducial anchor:", err);
       }
     };
 
@@ -113,7 +104,7 @@ const FiducialAnchor = ({
 
     return () => {
       cancelled = true;
-      // biome-ignore lint/suspicious/noExplicitAny: TODO
+      // biome-ignore lint/suspicious/noExplicitAny: TODO (AR.js type patch)
       const anyControls = arControlsRef.current as any;
       /**
        * @note AR.js's `ArMarkerControls` has no official TypeScript types and does not formally declare a `.dispose()` method. Some community builds or future versions may implement one, but it's not guaranteed.
@@ -123,7 +114,7 @@ const FiducialAnchor = ({
       if (typeof anyControls?.dispose === "function") anyControls.dispose();
       initializedRef.current = false;
     };
-  }, [backends, patternUrl, barcodeValue, params]);
+  }, [fiducial, patternUrl, barcodeValue, params]);
 
   // watch visibility
   useFrame(() => {
