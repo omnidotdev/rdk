@@ -63,7 +63,7 @@ const useXRStoreBase = create<BaseXRStore>()(
             backend.type === BACKEND_TYPES.GEOLOCATION;
 
         if (hasFiducial && hasGeolocation) {
-          const errorMessage = `❌ [RDK] INCOMPATIBLE SESSIONS: Fiducial and Geolocation backends cannot be used together due to camera/video conflicts between AR.js and LocAR.js libraries. Use only one session type per app.`;
+          const errorMessage = `❌ [RDK] INCOMPATIBLE SESSIONS: fiducial and geolocation backends cannot be used together due to camera/video conflicts between AR.js and LocAR.js libraries. Use only one session type per app.`;
 
           console.error(errorMessage);
 
