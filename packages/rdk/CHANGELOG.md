@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.6.0
+
+### Minor Changes
+
+- [#52](https://github.com/omnidotdev/rdk/pull/52) [`bdb98ff`](https://github.com/omnidotdev/rdk/commit/bdb98ff56b01d3adb0b30d66c35ce0cad4f2ba27) Thanks [@coopbri](https://github.com/coopbri)! - Refactor backend registry from array to Map for O(1) type-based lookup. Add `type` discriminator to Backend interface and new `useFiducialBackend`/`useGeolocationBackend` hooks for type-safe backend access. Move anchor registry into geolocation backend.
+
 ## 0.5.2
 
 ### Patch Changes
