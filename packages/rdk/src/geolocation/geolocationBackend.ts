@@ -1,3 +1,4 @@
+import { BACKEND_TYPES } from "lib/types/engine";
 import {
   DeviceOrientationControls,
   LocationBased as LocAR,
@@ -5,18 +6,7 @@ import {
 } from "locar";
 
 import type { Backend, BackendInitArgs } from "lib/types/engine";
-import type { Camera, Scene, WebGLRenderer } from "three";
-
-/**
- * Geolocation backend.
- */
-export interface GeolocationBackend {
-  locar: LocAR | null;
-  webcam: Webcam | null;
-  deviceOrientation: DeviceOrientationControls | null;
-  scene: Scene | null;
-  camera: Camera | null;
-}
+import type { Camera, Group, Scene, WebGLRenderer } from "three";
 
 /**
  * GPS update event structure emitted by LocAR.
@@ -25,6 +15,38 @@ export interface GeolocationBackend {
 export interface GpsUpdateEvent {
   position: GeolocationPosition;
   distMoved: number;
+}
+
+/**
+ * Anchor registration for tracking in the geolocation backend.
+ */
+export interface AnchorEntry {
+  anchor: Group;
+  isAttached: boolean;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  onAttach?: () => void;
+  onGpsUpdate?: (position: GeolocationPosition, distMoved: number) => void;
+}
+
+/**
+ * Internal state exposed by the geolocation backend.
+ */
+export interface GeolocationInternal {
+  locar: LocAR | null;
+  webcam: Webcam | null;
+  deviceOrientation: DeviceOrientationControls | null;
+  scene: Scene | null;
+  camera: Camera | null;
+  /** Last known GPS position. */
+  lastPosition: GeolocationPosition | null;
+  /** Register an anchor with the backend. */
+  registerAnchor: (id: string, entry: AnchorEntry) => void;
+  /** Unregister an anchor from the backend. */
+  unregisterAnchor: (id: string) => void;
+  /** Get an anchor entry by ID. */
+  getAnchor: (id: string) => AnchorEntry | undefined;
 }
 
 /**
@@ -50,7 +72,7 @@ export interface GeolocationSessionOptions {
  */
 const createGeolocationBackend = (
   options?: GeolocationSessionOptions,
-): Backend => {
+): Backend<GeolocationInternal> => {
   let locar: LocAR | null = null;
   let webcam: Webcam | null = null;
   let deviceOrientation: DeviceOrientationControls | null = null;
@@ -63,7 +85,28 @@ const createGeolocationBackend = (
   let rendererRef: WebGLRenderer | null = null;
   let sceneRef: Scene | null = null;
 
+  // anchor registry - moved from module-level globals in GeolocationAnchor
+  const anchorRegistry = new Map<string, AnchorEntry>();
+  let lastPosition: GeolocationPosition | null = null;
+
+  /**
+   * Add an anchor to the LocAR scene.
+   */
+  const attachAnchor = (entry: AnchorEntry) => {
+    if (!locar || entry.isAttached) return;
+
+    try {
+      locar.add(entry.anchor, entry.longitude, entry.latitude, entry.altitude);
+      entry.isAttached = true;
+      entry.onAttach?.();
+    } catch (err) {
+      console.error("❌ Failed to attach anchor:", err);
+    }
+  };
+
   return {
+    type: BACKEND_TYPES.GEOLOCATION,
+
     async init(args: BackendInitArgs & { scene?: Scene }) {
       const { camera, renderer, scene } = args;
 
@@ -88,6 +131,16 @@ const createGeolocationBackend = (
       );
 
       gpsUpdateHandler = (data: GpsUpdateEvent) => {
+        // store the last known position for new anchors
+        lastPosition = data.position;
+
+        // process all registered anchors
+        for (const entry of anchorRegistry.values()) {
+          if (!entry.isAttached) attachAnchor(entry);
+          entry.onGpsUpdate?.(data.position, data.distMoved);
+        }
+
+        // call session-level callback
         options?.onGpsUpdate?.(data.position, data.distMoved);
       };
 
@@ -130,6 +183,25 @@ const createGeolocationBackend = (
       )
         locar.fakeGps(options.fakeLon, options.fakeLat);
 
+      // check for existing GPS position from LocAR
+      const lastLocation = locar.getLastKnownLocation();
+      if (lastLocation !== null) {
+        lastPosition = {
+          coords: {
+            longitude: lastLocation.longitude,
+            latitude: lastLocation.latitude,
+            accuracy: 0,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+            toJSON: () => lastLocation,
+          },
+          timestamp: Date.now(),
+          toJSON: () => lastLocation,
+        };
+      }
+
       // handle resize
       const doResize = () => {
         if (!rendererRef || !cameraRef) return;
@@ -171,6 +243,18 @@ const createGeolocationBackend = (
         resizeHandler = undefined;
       }
 
+      // clean up all anchors
+      for (const entry of anchorRegistry.values()) {
+        if (entry.isAttached) {
+          try {
+            entry.anchor.removeFromParent();
+          } catch (err) {
+            console.error("⚠️ Error removing anchor:", err);
+          }
+        }
+      }
+      anchorRegistry.clear();
+
       locar = null;
       webcam = null;
       deviceOrientation = null;
@@ -178,14 +262,37 @@ const createGeolocationBackend = (
       rendererRef = null;
       sceneRef = null;
       gpsUpdateHandler = null;
+      lastPosition = null;
     },
 
-    getInternal: (): GeolocationBackend => ({
+    getInternal: (): GeolocationInternal => ({
       locar,
       webcam,
       deviceOrientation,
       scene: sceneRef,
       camera: cameraRef,
+      lastPosition,
+      registerAnchor: (id: string, entry: AnchorEntry) => {
+        anchorRegistry.set(id, entry);
+
+        // if already a GPS position, attach immediately
+        if (lastPosition !== null && !entry.isAttached) {
+          attachAnchor(entry);
+          entry.onGpsUpdate?.(lastPosition, 0);
+        }
+      },
+      unregisterAnchor: (id: string) => {
+        const entry = anchorRegistry.get(id);
+        if (entry?.isAttached) {
+          try {
+            entry.anchor.removeFromParent();
+          } catch (err) {
+            console.error(`⚠️ Error removing anchor ${id}:`, err);
+          }
+        }
+        anchorRegistry.delete(id);
+      },
+      getAnchor: (id: string) => anchorRegistry.get(id),
     }),
   };
 };

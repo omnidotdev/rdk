@@ -1,7 +1,11 @@
 import { act } from "@testing-library/react";
+import { BACKEND_TYPES } from "lib/types/engine";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import useXRStore, { getXRStore, SESSION_TYPES } from "./useXRStore";
+import useXRStore, { getXRStore } from "./useXRStore";
+
+import type { Backend, BackendType } from "lib/types/engine";
+import type { Camera, Scene, WebGLRenderer } from "three";
 
 // Mock @react-three/xr
 vi.mock("@react-three/xr", () => ({
@@ -16,21 +20,31 @@ vi.mock("@react-three/xr", () => ({
   })),
 }));
 
+const createMockBackend = (type: BackendType): Backend => ({
+  type,
+  init: vi.fn().mockResolvedValue(undefined),
+  update: vi.fn(),
+  dispose: vi.fn(),
+  getInternal: vi.fn(() => ({})),
+});
+
+const createMockThreeRefs = () => ({
+  scene: {} as Scene,
+  camera: {} as Camera,
+  renderer: {} as WebGLRenderer,
+});
+
 describe("useXRStore", () => {
   beforeEach(() => {
     // Reset store state before each test
     const store = getXRStore();
     act(() => {
       store.setVideo(null);
-      store.sessionTypes.clear();
       // Properly dispose backends before clearing
-      const backends = [...store.backends];
-      backends.forEach((backend) => {
+      for (const backend of store.backends.values()) {
         backend.dispose?.();
-      });
-
-      // clear the backends array
-      store.backends.length = 0;
+      }
+      store.backends.clear();
     });
 
     // Clear all mocks
@@ -42,9 +56,8 @@ describe("useXRStore", () => {
       const store = getXRStore();
 
       expect(store.video).toBe(null);
-      expect(store.backends).toEqual([]);
-      expect(store.sessionTypes).toBeInstanceOf(Set);
-      expect(store.sessionTypes.size).toBe(0);
+      expect(store.backends).toBeInstanceOf(Map);
+      expect(store.backends.size).toBe(0);
     });
 
     it("has required action methods", () => {
@@ -65,13 +78,16 @@ describe("useXRStore", () => {
     it("calculates isImmersive correctly", () => {
       const store = getXRStore();
 
-      expect(store.sessionTypes.has(SESSION_TYPES.IMMERSIVE)).toBe(false);
+      expect(store.backends.has(BACKEND_TYPES.IMMERSIVE)).toBe(false);
 
       act(() => {
-        store.sessionTypes.add(SESSION_TYPES.IMMERSIVE);
+        store.backends.set(
+          BACKEND_TYPES.IMMERSIVE,
+          createMockBackend(BACKEND_TYPES.IMMERSIVE),
+        );
       });
 
-      expect(store.sessionTypes.has(SESSION_TYPES.IMMERSIVE)).toBe(true);
+      expect(store.backends.has(BACKEND_TYPES.IMMERSIVE)).toBe(true);
     });
   });
 
@@ -89,40 +105,22 @@ describe("useXRStore", () => {
   });
 
   describe("Backend Management", () => {
-    it("adds backends to store", async () => {
-      const mockBackend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        dispose: vi.fn(),
-      };
-
-      const mockThreeRefs = {
-        scene: { add: vi.fn() },
-        camera: { position: { set: vi.fn() } },
-        renderer: { render: vi.fn() },
-      };
+    it("adds backends to store by type", async () => {
+      const mockBackend = createMockBackend(BACKEND_TYPES.GEOLOCATION);
+      const mockThreeRefs = createMockThreeRefs();
 
       await act(async () => {
         await getXRStore().registerBackend(mockBackend, mockThreeRefs);
       });
 
       const store = getXRStore();
-      expect(store.backends).toContain(mockBackend);
+      expect(store.backends.get(BACKEND_TYPES.GEOLOCATION)).toBe(mockBackend);
       expect(mockBackend.init).toHaveBeenCalledWith(mockThreeRefs);
     });
 
-    it("removes backends from store", async () => {
-      const mockBackend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        dispose: vi.fn(),
-      };
-
-      const mockThreeRefs = {
-        scene: { add: vi.fn() },
-        camera: { position: { set: vi.fn() } },
-        renderer: { render: vi.fn() },
-      };
+    it("removes backends from store by type", async () => {
+      const mockBackend = createMockBackend(BACKEND_TYPES.FIDUCIAL);
+      const mockThreeRefs = createMockThreeRefs();
 
       await act(async () => {
         await getXRStore().registerBackend(mockBackend, mockThreeRefs);
@@ -133,60 +131,29 @@ describe("useXRStore", () => {
       });
 
       const store = getXRStore();
-      expect(store.backends).not.toContain(mockBackend);
+      expect(store.backends.has(BACKEND_TYPES.FIDUCIAL)).toBe(false);
       expect(mockBackend.dispose).toHaveBeenCalled();
     });
 
-    it("prevents incompatible session types", async () => {
-      const fiducialBackend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        dispose: vi.fn(),
-      };
-
-      const geolocationBackend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        dispose: vi.fn(),
-      };
-
-      const mockThreeRefs = {
-        scene: { add: vi.fn() },
-        camera: { position: { set: vi.fn() } },
-        renderer: { render: vi.fn() },
-      };
+    it("prevents incompatible backend types", async () => {
+      const fiducialBackend = createMockBackend(BACKEND_TYPES.FIDUCIAL);
+      const geolocationBackend = createMockBackend(BACKEND_TYPES.GEOLOCATION);
+      const mockThreeRefs = createMockThreeRefs();
 
       await act(async () => {
-        await getXRStore().registerBackend(
-          fiducialBackend,
-          mockThreeRefs,
-          SESSION_TYPES.FIDUCIAL,
-        );
+        await getXRStore().registerBackend(fiducialBackend, mockThreeRefs);
       });
 
       await expect(
         act(async () => {
-          await getXRStore().registerBackend(
-            geolocationBackend,
-            mockThreeRefs,
-            SESSION_TYPES.GEOLOCATION,
-          );
+          await getXRStore().registerBackend(geolocationBackend, mockThreeRefs);
         }),
       ).rejects.toThrow(/INCOMPATIBLE SESSIONS/);
     });
 
     it("calls update on registered backends", async () => {
-      const mockBackend = {
-        init: vi.fn().mockResolvedValue(undefined),
-        update: vi.fn(),
-        dispose: vi.fn(),
-      };
-
-      const mockThreeRefs = {
-        scene: { add: vi.fn() },
-        camera: { position: { set: vi.fn() } },
-        renderer: { render: vi.fn() },
-      };
+      const mockBackend = createMockBackend(BACKEND_TYPES.GEOLOCATION);
+      const mockThreeRefs = createMockThreeRefs();
 
       await act(async () => {
         await getXRStore().registerBackend(mockBackend, mockThreeRefs);
@@ -197,6 +164,27 @@ describe("useXRStore", () => {
       });
 
       expect(mockBackend.update).toHaveBeenCalledWith(0.016);
+    });
+
+    it("provides O(1) backend lookup by type", async () => {
+      const geoBackend = createMockBackend(BACKEND_TYPES.GEOLOCATION);
+      const immersiveBackend = createMockBackend(BACKEND_TYPES.IMMERSIVE);
+      const mockThreeRefs = createMockThreeRefs();
+
+      await act(async () => {
+        await getXRStore().registerBackend(geoBackend, mockThreeRefs);
+      });
+
+      await act(async () => {
+        await getXRStore().registerBackend(immersiveBackend, mockThreeRefs);
+      });
+
+      const store = getXRStore();
+      expect(store.backends.get(BACKEND_TYPES.GEOLOCATION)).toBe(geoBackend);
+      expect(store.backends.get(BACKEND_TYPES.IMMERSIVE)).toBe(
+        immersiveBackend,
+      );
+      expect(store.backends.get(BACKEND_TYPES.FIDUCIAL)).toBeUndefined();
     });
   });
 });

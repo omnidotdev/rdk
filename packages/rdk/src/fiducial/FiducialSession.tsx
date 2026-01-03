@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
+import useXRStore from "engine/useXRStore";
 import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
 
@@ -39,11 +39,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
 
         if (cancelled) return;
 
-        await registerBackend(
-          backend,
-          { scene, camera, renderer: gl },
-          SESSION_TYPES.FIDUCIAL,
-        );
+        await registerBackend(backend, { scene, camera, renderer: gl });
 
         backendRef.current = backend;
       } catch (err) {
@@ -57,7 +53,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
       cancelled = true;
 
       if (backendRef.current) {
-        unregisterBackend(backendRef.current, SESSION_TYPES.FIDUCIAL);
+        unregisterBackend(backendRef.current);
 
         backendRef.current = null;
       }
@@ -66,8 +62,5 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
 
   return children;
 };
-
-// static property to identify session type for compatibility checking
-FiducialSession.sessionType = "FiducialSession";
 
 export default FiducialSession;

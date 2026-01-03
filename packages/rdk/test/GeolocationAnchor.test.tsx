@@ -5,24 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GeolocationAnchor } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
-vi.mock("engine/useXRStore", () => ({
-  default: vi.fn((selector) => {
-    const mockState = {
-      video: null,
-      backends: [],
-      sessionTypes: new Set(),
-      registerBackend: vi.fn().mockResolvedValue(undefined),
-      unregisterBackend: vi.fn(),
-      setVideo: vi.fn(),
-      updateBackends: vi.fn(),
-      isImmersive: false,
-    };
-
-    if (typeof selector === "function") {
-      return selector(mockState);
-    }
-    return mockState;
-  }),
+vi.mock("../src/geolocation/useGeolocationBackend", () => ({
+  default: vi.fn(() => null),
 }));
 
 const GOING_TO_THE_SUN_MONTAIN_COORDINATES = {

@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import useXRStore, { SESSION_TYPES } from "engine/useXRStore";
+import useXRStore from "engine/useXRStore";
 import { createGeolocationBackend } from "geolocation";
 import { useEffect, useRef } from "react";
 
@@ -42,11 +42,7 @@ const GeolocationSession = ({
 
         if (cancelled) return;
 
-        await registerBackend(
-          backend,
-          { scene, camera, renderer: gl },
-          SESSION_TYPES.GEOLOCATION,
-        );
+        await registerBackend(backend, { scene, camera, renderer: gl });
 
         backendRef.current = backend;
       } catch (err) {
@@ -60,7 +56,7 @@ const GeolocationSession = ({
       cancelled = true;
 
       if (backendRef.current) {
-        unregisterBackend(backendRef.current, SESSION_TYPES.GEOLOCATION);
+        unregisterBackend(backendRef.current);
 
         backendRef.current = null;
       }
@@ -69,8 +65,5 @@ const GeolocationSession = ({
 
   return children;
 };
-
-// static property to identify session type for compatibility checking
-GeolocationSession.sessionType = "GeolocationSession";
 
 export default GeolocationSession;

@@ -3,11 +3,11 @@ import { vi } from "vitest";
 
 import type { ReactNode } from "react";
 import type { XRStore } from "../../src/engine/useXRStore";
+import type { Backend, BackendType } from "../../src/lib/types/engine";
 
 export const mockXRContext: Partial<XRStore> = {
   video: null,
-  backends: [],
-  sessionTypes: new Set(),
+  backends: new Map<BackendType, Backend>(),
 
   registerBackend: vi.fn().mockResolvedValue(undefined),
   unregisterBackend: vi.fn(),
@@ -33,24 +33,6 @@ export const XR = vi.fn(({ children }: { children: ReactNode }) => (
  * Reset the XR context mock to default state.
  */
 export function resetXRContext(): void {
-  mockXRContext.sessionTypes = new Set();
-  mockXRContext.backends = [];
+  mockXRContext.backends = new Map();
   vi.clearAllMocks();
-}
-
-/**
- * Set XR context to active session state.
- */
-export function setXRSessionActive(
-  sessionType: keyof typeof mockXRContext.sessionTypes,
-): void {
-  mockXRContext.sessionTypes?.add(sessionType);
-}
-
-/**
- * Set XR context to error state.
- */
-export function setXRSessionError(err: string): void {
-  console.error(`Mock XR error: ${err}`);
-  mockXRContext.sessionTypes = new Set();
 }

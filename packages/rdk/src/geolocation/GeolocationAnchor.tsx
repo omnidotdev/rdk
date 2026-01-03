@@ -1,37 +1,11 @@
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import useXRStore from "engine/useXRStore";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Group } from "three";
 
+import useGeolocationBackend from "./useGeolocationBackend";
+
 import type { PropsWithChildren } from "react";
-import type {
-  GeolocationBackend,
-  GeolocationSessionOptions,
-  GpsUpdateEvent,
-} from "./geolocationBackend";
-
-interface Anchor extends Pick<GeolocationSessionOptions, "onGpsUpdate"> {
-  /** Anchor group. */
-  anchor: Group;
-  /** Whether the anchor is attached to the real world. */
-  isAttached: boolean;
-  /** Physical target latitude. */
-  latitude: number;
-  /** Physical target longitude. */
-  longitude: number;
-  /** Physical altitude. */
-  altitude: number;
-  /** Callback triggered when the anchor is attached to the real world. */
-  onAttach?: () => void;
-}
-
-// global registry to track all anchors and prevent interference
-const anchorRegistry = new Map<string, Anchor>();
-
-let gpsInitialized = false;
-let lastPosition: GeolocationPosition | null = null;
-
-let globalGpsHandler: ((evt: GpsUpdateEvent) => void) | null = null;
+import type { GeolocationSessionOptions } from "./geolocationBackend";
 
 export interface GeolocationAnchorProps
   extends Pick<GeolocationSessionOptions, "onGpsUpdate">,
@@ -66,13 +40,11 @@ const GeolocationAnchor = ({
   onGpsUpdate: _onGpsUpdate,
   children,
 }: GeolocationAnchorProps) => {
-  const backends = useXRStore((state) => state.backends);
+  const geo = useGeolocationBackend();
   const { camera } = useThree();
 
-  const [anchor] = useState(() => new Group()),
-    [anchorId] = useState(() => Math.random().toString(36).slice(2, 11));
-
-  const hasAttachedRef = useRef(false);
+  const [anchor] = useState(() => new Group());
+  const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
 
   const onAttach = useCallback(() => {
     _onAttach?.();
@@ -86,156 +58,24 @@ const GeolocationAnchor = ({
   );
 
   useEffect(() => {
-    let cancelled = false;
+    if (!geo) return;
 
-    const initializeAnchor = async () => {
-      try {
-        const geolocationBackend = backends.find((backend) => {
-          const internal = backend.getInternal?.() as GeolocationBackend;
-
-          return internal?.locar;
-        });
-
-        if (!geolocationBackend || cancelled) return;
-
-        const internal =
-          geolocationBackend.getInternal?.() as GeolocationBackend;
-
-        const locar = internal?.locar;
-
-        if (!locar) return;
-
-        /**
-         * Add an anchor to the scene.
-         * @param anchor Anchor to add
-         */
-        const addAnchor = (anchor: Anchor) => {
-          try {
-            locar.add(
-              anchor.anchor,
-              anchor.longitude,
-              anchor.latitude,
-              anchor.altitude,
-            );
-
-            anchor.isAttached = true;
-
-            anchor.onAttach?.();
-          } catch (err) {
-            console.error("❌ Failed to attach anchor:", err);
-          }
-        };
-
-        const curAnchor = {
-          anchor,
-          isAttached: false,
-          latitude,
-          longitude,
-          altitude: altitude || 0,
-          onAttach,
-          onGpsUpdate,
-        };
-
-        // register this anchor with its coordinates
-        anchorRegistry.set(anchorId, curAnchor);
-
-        // set up global GPS handler once
-        if (!gpsInitialized) {
-          globalGpsHandler = ({ position: pos, distMoved }: GpsUpdateEvent) => {
-            // store the last known position for new anchors
-            lastPosition = pos;
-
-            // process all registered anchors
-            anchorRegistry.forEach((entry) => {
-              if (!entry.isAttached) addAnchor(entry);
-
-              // call GPS update callback for all anchors
-              entry.onGpsUpdate?.(pos, distMoved);
-            });
-          };
-
-          const lastLocation = locar.getLastKnownLocation();
-          if (lastLocation !== null) {
-            lastPosition = {
-              coords: {
-                longitude: lastLocation.longitude,
-                latitude: lastLocation.latitude,
-                accuracy: 0,
-                altitude: null,
-                altitudeAccuracy: null,
-                heading: null,
-                speed: null,
-                toJSON: () => lastLocation,
-              },
-              timestamp: Date.now(),
-              toJSON: () => lastLocation,
-            };
-          }
-
-          // add anchor if there is already a GPS position
-          if (lastPosition !== null && !curAnchor.isAttached)
-            addAnchor(curAnchor);
-
-          locar.on?.("gpsupdate", globalGpsHandler);
-
-          gpsInitialized = true;
-        }
-
-        if (lastPosition !== null) {
-          // add anchor if not already attached
-          if (!curAnchor.isAttached) addAnchor(curAnchor);
-
-          curAnchor.onGpsUpdate?.(lastPosition, 0);
-        }
-
-        // mark this anchor as needing attachment tracking
-        hasAttachedRef.current = false;
-      } catch (err) {
-        console.error("Failed to initialize geolocation backend:", err);
-      }
-    };
-
-    initializeAnchor();
+    // register anchor with the backend
+    geo.registerAnchor(anchorId, {
+      anchor,
+      isAttached: false,
+      latitude,
+      longitude,
+      altitude,
+      onAttach,
+      onGpsUpdate,
+    });
 
     return () => {
-      cancelled = true;
-
-      // clean up anchor
-      const entry = anchorRegistry.get(anchorId);
-
-      if (entry?.isAttached) {
-        try {
-          anchor.removeFromParent();
-        } catch (err) {
-          console.error(`⚠️ Error removing anchor ${anchorId}:`, err);
-        }
-      }
-
-      // remove anchor from registry
-      anchorRegistry.delete(anchorId);
-
-      // clean up global handler if no more anchors
-      if (anchorRegistry.size === 0 && globalGpsHandler) {
-        const geolocationBackend = backends.find((backend) => {
-          const internal = backend.getInternal?.() as GeolocationBackend;
-
-          return internal?.locar;
-        });
-
-        const internal =
-          geolocationBackend?.getInternal?.() as GeolocationBackend;
-
-        const locar = internal?.locar;
-
-        locar?.off?.("gpsupdate", globalGpsHandler);
-
-        globalGpsHandler = null;
-
-        gpsInitialized = false;
-      }
+      geo.unregisterAnchor(anchorId);
     };
   }, [
-    backends,
+    geo,
     anchor,
     anchorId,
     latitude,
@@ -247,11 +87,9 @@ const GeolocationAnchor = ({
 
   // billboard after LocAR owns the object
   useFrame(() => {
-    if (!isBillboard) return;
-    if (!camera) return;
+    if (!isBillboard || !camera || !geo) return;
 
-    // check if anchor is attached in registry
-    const entry = anchorRegistry.get(anchorId);
+    const entry = geo.getAnchor(anchorId);
     if (!entry?.isAttached) return;
 
     anchor.lookAt(camera.position);

@@ -1,10 +1,28 @@
 import type { BackendInitArgs } from "./BackendInitArgs.interface";
 
 /**
- * Backend interface.
- * Defines the contract for backend implementations (fiducial, geolocation, WebXR, etc.).
+ * Backend type constants.
  */
-export interface Backend {
+export const BACKEND_TYPES = {
+  FIDUCIAL: "fiducial",
+  GEOLOCATION: "geolocation",
+  IMMERSIVE: "immersive",
+} as const;
+
+/**
+ * Backend type discriminator.
+ */
+export type BackendType = (typeof BACKEND_TYPES)[keyof typeof BACKEND_TYPES];
+
+/**
+ * Backend interface that defines the contract for backend implementations (fiducial, geolocation, WebXR, etc.).
+ * @template T type returned by `getInternal()``
+ */
+export interface Backend<T = unknown> {
+  /**
+   * Backend type discriminator for type-safe discovery.
+   */
+  readonly type: BackendType;
   /**
    * Initialize the backend with the provided arguments.
    * @param args initialization arguments containing scene, camera, and renderer
@@ -24,5 +42,5 @@ export interface Backend {
    * Get internal SDK objects for advanced use cases.
    * @returns internal objects specific to the backend implementation
    */
-  getInternal?(): unknown;
+  getInternal(): T;
 }

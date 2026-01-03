@@ -12,22 +12,22 @@
     "clean": "rm -rf build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
+    "@biomejs/biome": "^2.3.10",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.182.0",
     "@vitejs/plugin-react": "^5.1.2",
     "typescript": "^5.9.3",
-    "vite": "^7.2.7",
+    "vite": "^7.3.0",
     "vite-plugin-mkcert": "^1.17.9",
-    "vite-tsconfig-paths": "^6.0.0"
+    "vite-tsconfig-paths": "^6.0.3"
   },
   "dependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
     "@omnidotdev/rdk": "workspace:*",
-    "@react-three/fiber": "^9.4.2",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
+    "@react-three/fiber": "^9.5.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "three": "^0.182.0"
   }
 }

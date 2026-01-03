@@ -15,5 +15,8 @@
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true
+  },
+  "rules": {
+    "optionalPeerDependencies": "off"
   }
 }

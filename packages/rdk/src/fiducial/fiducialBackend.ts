@@ -2,10 +2,19 @@ import {
   ArToolkitContext,
   ArToolkitSource,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
+import { BACKEND_TYPES } from "lib/types/engine";
 
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
 import type { Backend, BackendInitArgs } from "lib/types/engine";
 import type { Camera } from "three";
+
+/**
+ * Internal state exposed by the fiducial backend.
+ */
+export interface FiducialInternal {
+  arSource: ArToolkitSource | null;
+  arContext: ArToolkitContext | null;
+}
 
 export interface FiducialSessionOptions {
   /** Input source type. */
@@ -29,13 +38,17 @@ export interface FiducialSessionOptions {
 /**
  * Create a fiducial marker-based AR backend.
  */
-const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
+const createFiducialBackend = (
+  options?: FiducialSessionOptions,
+): Backend<FiducialInternal> => {
   let arSource: ArToolkitSource | null = null;
   let arContext: ArToolkitContext | null = null;
   let cameraRef: Camera | null = null;
   let resizeHandler: (() => void) | undefined;
 
   return {
+    type: BACKEND_TYPES.FIDUCIAL,
+
     async init({ camera, renderer }: BackendInitArgs) {
       // AR.js needs its own video source for proper marker detection
       arSource = new ArToolkitSource({
@@ -48,9 +61,10 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
           reject(new Error("AR source initialization timeout"));
         }, 10000);
 
-        arSource!.init(() => {
+        arSource?.init(() => {
           clearTimeout(timeoutId);
-          const el = arSource!.domElement as HTMLElement;
+          const el = arSource?.domElement as HTMLElement;
+
           if (el) {
             el.style.position = "fixed";
             el.style.top = "0";
@@ -63,6 +77,7 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
             // don't block UI
             el.style.pointerEvents = "none";
           }
+
           resolve();
         });
       });
@@ -83,7 +98,7 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
 
       const doResize = () => {
         // let AR.js figure out its internal element size first
-        arSource!.onResizeElement();
+        arSource?.onResizeElement();
 
         // match fullscreen video background
         const vw = window.innerWidth;
@@ -91,10 +106,10 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
 
         renderer.setSize(vw, vh, false);
 
-        arSource!.copyElementSizeTo(renderer.domElement);
+        arSource?.copyElementSizeTo(renderer.domElement);
 
         if (arContext?.arController) {
-          arSource!.copyElementSizeTo(arContext.arController.canvas);
+          arSource?.copyElementSizeTo(arContext.arController.canvas);
         }
       };
 
@@ -103,11 +118,16 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
           reject(new Error("AR context initialization timeout"));
         }, 10000);
 
-        arContext!.init(() => {
+        arContext?.init(() => {
           clearTimeout(timeoutId);
+
           try {
-            camera.projectionMatrix.copy(arContext!.getProjectionMatrix());
+            const projMatrix = arContext?.getProjectionMatrix();
+
+            if (projMatrix) camera.projectionMatrix.copy(projMatrix);
+
             doResize();
+
             resolve();
           } catch (err) {
             reject(err);
@@ -128,9 +148,10 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
         arContext.update(arSource.domElement);
 
         // update camera projection matrix each frame to fix positioning
-        if (cameraRef && arContext.getProjectionMatrix) {
-          cameraRef.projectionMatrix.copy(arContext.getProjectionMatrix());
-        }
+        const projMatrix = arContext.getProjectionMatrix?.();
+
+        if (cameraRef && projMatrix)
+          cameraRef.projectionMatrix.copy(projMatrix);
       } catch (err) {
         console.warn("AR.js update error:", err);
       }
@@ -157,12 +178,10 @@ const createFiducialBackend = (options?: FiducialSessionOptions): Backend => {
       cameraRef = null;
     },
 
-    getInternal() {
-      return {
-        arSource,
-        arContext,
-      };
-    },
+    getInternal: (): FiducialInternal => ({
+      arSource,
+      arContext,
+    }),
   };
 };
 
