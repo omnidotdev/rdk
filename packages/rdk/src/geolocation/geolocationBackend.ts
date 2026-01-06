@@ -50,6 +50,16 @@ export interface GeolocationInternal {
 }
 
 /**
+ * State returned by geolocation backend hook.
+ */
+export interface GeolocationBackendState extends GeolocationInternal {
+  /** Whether the backend is still initializing (not yet ready). */
+  isPending: boolean;
+  /** Whether the backend is initialized and ready to use. */
+  isSuccess: boolean;
+}
+
+/**
  * Options for the geolocation backend.
  */
 export interface GeolocationSessionOptions {

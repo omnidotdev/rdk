@@ -7,6 +7,7 @@ export type { GeolocationAnchorProps } from "./GeolocationAnchor";
 export type { GeolocationSessionProps } from "./GeolocationSession";
 export type {
   AnchorEntry,
+  GeolocationBackendState,
   GeolocationInternal,
   GeolocationSessionOptions,
   GpsUpdateEvent,

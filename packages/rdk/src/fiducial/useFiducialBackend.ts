@@ -1,24 +1,45 @@
 import useXRStore from "engine/useXRStore";
 import { BACKEND_TYPES } from "lib/types/engine";
 
-import type { FiducialInternal } from "./fiducialBackend";
+import type { FiducialBackendState, FiducialInternal } from "./fiducialBackend";
+
+/**
+ * Default state returned when fiducial backend is not yet initialized.
+ */
+const FIDUCIAL_PENDING_STATE: FiducialBackendState = {
+  isPending: true,
+  isSuccess: false,
+  arSource: null,
+  arContext: null,
+};
 
 /**
  * Access the fiducial backend internals.
- * @returns fiducial backend or null if no fiducial session is active.
+ * @returns fiducial backend state. `isSuccess` can be checked to verify readiness.
  *
  * @example
  * ```tsx
- * const fiducial = useFiducialBackend();
- * const arContext = fiducial?.arContext;
+ * const { arContext, isSuccess } = useFiducialBackend();
+ *
+ * if (isSuccess && arContext) {
+ *   // use `arContext`
+ * }
  * ```
  */
-const useFiducialBackend = (): FiducialInternal | null => {
+const useFiducialBackend = (): FiducialBackendState => {
   const backends = useXRStore((state) => state.backends);
 
   const backend = backends.get(BACKEND_TYPES.FIDUCIAL);
 
-  return (backend?.getInternal() as FiducialInternal) ?? null;
+  if (!backend) {
+    return FIDUCIAL_PENDING_STATE;
+  }
+
+  return {
+    ...(backend.getInternal() as FiducialInternal),
+    isPending: false,
+    isSuccess: true,
+  };
 };
 
 export default useFiducialBackend;

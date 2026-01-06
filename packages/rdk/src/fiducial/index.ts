@@ -6,6 +6,7 @@ export { default as useFiducialBackend } from "./useFiducialBackend";
 export type { FiducialAnchorProps } from "./FiducialAnchor";
 export type { FiducialSessionProps } from "./FiducialSession";
 export type {
+  FiducialBackendState,
   FiducialInternal,
   FiducialSessionOptions,
 } from "./fiducialBackend";
