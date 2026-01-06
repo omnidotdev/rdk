@@ -6,7 +6,19 @@ import { GeolocationAnchor } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
 vi.mock("../src/geolocation/useGeolocationBackend", () => ({
-  default: vi.fn(() => null),
+  default: vi.fn(() => ({
+    isPending: true,
+    isSuccess: false,
+    locar: null,
+    webcam: null,
+    deviceOrientation: null,
+    scene: null,
+    camera: null,
+    lastPosition: null,
+    registerAnchor: vi.fn(),
+    unregisterAnchor: vi.fn(),
+    getAnchor: vi.fn(),
+  })),
 }));
 
 const GOING_TO_THE_SUN_MONTAIN_COORDINATES = {
