@@ -1,5 +1,5 @@
 ---
-"@omnistrate/rdk": minor
+"@omnidotdev/rdk": minor
 ---
 
 Add status flags to backend hooks for safe destructuring.
