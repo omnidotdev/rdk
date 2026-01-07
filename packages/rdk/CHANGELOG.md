@@ -1,5 +1,28 @@
 # @omnidotdev/rdk
 
+## 0.7.0
+
+### Minor Changes
+
+- [#56](https://github.com/omnidotdev/rdk/pull/56) [`39954c3`](https://github.com/omnidotdev/rdk/commit/39954c39ad6e35a389ba06a16915d4ec186dead2) Thanks [@coopbri](https://github.com/coopbri)! - Add status flags to backend hooks for safe destructuring.
+
+  `useGeolocationBackend()` and `useFiducialBackend()` now return an object with `isPending` and `isSuccess` boolean flags instead of returning `null` on first render. This enables safe destructuring without null checks:
+
+  ```tsx
+  // before (crashed on first render)
+  const geo = useGeolocationBackend();
+  const locar = geo?.locar;
+
+  // after (safe destructuring)
+  const { locar, isPending, isSuccess } = useGeolocationBackend();
+
+  if (isSuccess && locar) {
+    const worldCoords = locar.lonLatToWorldCoords(lon, lat);
+  }
+  ```
+
+  New exported types: `GeolocationBackendState`, `FiducialBackendState`
+
 ## 0.6.0
 
 ### Minor Changes
