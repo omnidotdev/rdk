@@ -58,7 +58,7 @@ const GeolocationAnchor = ({
   );
 
   useEffect(() => {
-    if (!geo) return;
+    if (!geo.isSuccess) return;
 
     // register anchor with the backend
     geo.registerAnchor(anchorId, {
@@ -75,7 +75,9 @@ const GeolocationAnchor = ({
       geo.unregisterAnchor(anchorId);
     };
   }, [
-    geo,
+    geo.isSuccess,
+    geo.registerAnchor,
+    geo.unregisterAnchor,
     anchor,
     anchorId,
     latitude,
@@ -87,7 +89,7 @@ const GeolocationAnchor = ({
 
   // billboard after LocAR owns the object
   useFrame(() => {
-    if (!isBillboard || !camera || !geo) return;
+    if (!isBillboard || !camera || !geo.isSuccess) return;
 
     const entry = geo.getAnchor(anchorId);
     if (!entry?.isAttached) return;

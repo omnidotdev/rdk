@@ -6,7 +6,12 @@ import { FiducialAnchor } from "../src/fiducial";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
 vi.mock("../src/fiducial/useFiducialBackend", () => ({
-  default: vi.fn(() => null),
+  default: vi.fn(() => ({
+    isPending: true,
+    isSuccess: false,
+    arSource: null,
+    arContext: null,
+  })),
 }));
 
 beforeEach(() => {

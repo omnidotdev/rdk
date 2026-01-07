@@ -16,6 +16,16 @@ export interface FiducialInternal {
   arContext: ArToolkitContext | null;
 }
 
+/**
+ * State returned by fiducial backend hook.
+ */
+export interface FiducialBackendState extends FiducialInternal {
+  /** Whether the backend is still initializing (not yet ready). */
+  isPending: boolean;
+  /** Whether the backend is initialized and ready to use. */
+  isSuccess: boolean;
+}
+
 export interface FiducialSessionOptions {
   /** Input source type. */
   sourceType?: "webcam" | "image" | "video";

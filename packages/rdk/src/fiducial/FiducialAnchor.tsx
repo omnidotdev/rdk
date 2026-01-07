@@ -39,7 +39,7 @@ const FiducialAnchor = ({
   const arControlsRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!fiducial) return;
+    if (!fiducial.isSuccess) return;
 
     let cancelled = false;
 
@@ -114,7 +114,14 @@ const FiducialAnchor = ({
       if (typeof anyControls?.dispose === "function") anyControls.dispose();
       initializedRef.current = false;
     };
-  }, [fiducial, patternUrl, barcodeValue, params]);
+  }, [
+    fiducial.isSuccess,
+    fiducial.arContext,
+    patternUrl,
+    barcodeValue,
+    params,
+    fiducial,
+  ]);
 
   // watch visibility
   useFrame(() => {
