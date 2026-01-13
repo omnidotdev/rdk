@@ -83,13 +83,14 @@
     },
     "packages/rdk": {
       "name": "@omnidotdev/rdk",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "zustand": "^5.0.9",
       },
       "devDependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
         "@biomejs/biome": "^2.3.11",
+        "@react-three/drei": "^10.0.0",
         "@react-three/fiber": "^9.5.0",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.1",
@@ -110,6 +111,7 @@
       },
       "peerDependencies": {
         "@ar-js-org/ar.js": "^3.4.7",
+        "@react-three/drei": "^10.0.0",
         "@react-three/fiber": "^9.5.0",
         "@react-three/xr": "^6.6.29",
         "locar": "^0.1.8",
@@ -119,6 +121,7 @@
       },
       "optionalPeers": [
         "@ar-js-org/ar.js",
+        "@react-three/drei",
         "@react-three/xr",
         "locar",
       ],

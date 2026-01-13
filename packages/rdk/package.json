@@ -45,6 +45,7 @@
   },
   "peerDependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
+    "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.5.0",
     "@react-three/xr": "^6.6.29",
     "locar": "^0.1.8",
@@ -54,6 +55,9 @@
   },
   "peerDependenciesMeta": {
     "@ar-js-org/ar.js": {
+      "optional": true
+    },
+    "@react-three/drei": {
       "optional": true
     },
     "@react-three/xr": {
@@ -66,6 +70,7 @@
   "devDependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
     "@biomejs/biome": "^2.3.11",
+    "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.5.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
