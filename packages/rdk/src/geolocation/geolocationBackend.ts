@@ -26,7 +26,8 @@ export interface AnchorEntry {
   latitude: number;
   longitude: number;
   altitude: number;
-  onAttach?: () => void;
+  /** Called once attached to LocAR scene. Receives locar instance for coordinate conversion. */
+  onAttach?: (locar: LocAR) => void;
   onGpsUpdate?: (position: GeolocationPosition, distMoved: number) => void;
 }
 
@@ -108,7 +109,7 @@ const createGeolocationBackend = (
     try {
       locar.add(entry.anchor, entry.longitude, entry.latitude, entry.altitude);
       entry.isAttached = true;
-      entry.onAttach?.();
+      entry.onAttach?.(locar);
     } catch (err) {
       console.error("❌ Failed to attach anchor:", err);
     }
