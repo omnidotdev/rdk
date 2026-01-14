@@ -40,6 +40,7 @@
       "name": "rdk-geolocation-demo",
       "dependencies": {
         "@omnidotdev/rdk": "workspace:*",
+        "@react-three/drei": "^10.0.0",
         "@react-three/fiber": "^9.5.0",
         "locar": "^0.1.8",
         "react": "^19.2.3",
