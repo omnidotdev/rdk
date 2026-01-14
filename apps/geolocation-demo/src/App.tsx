@@ -1,4 +1,10 @@
-import { GeolocationAnchor, GeolocationSession, XR } from "@omnidotdev/rdk";
+import {
+  GeoLine,
+  GeoPolygon,
+  GeolocationAnchor,
+  GeolocationSession,
+  XR,
+} from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
 import { Compass, GPSPin, Landmark } from "components";
 
@@ -15,6 +21,32 @@ const COORDS = {
   west: { lat: BASE_LATITUDE, lon: BASE_LONGITUDE - 0.0007 },
   northeast: { lat: BASE_LATITUDE + 0.0003, lon: BASE_LONGITUDE + 0.0004 },
 };
+
+// sample path coordinates (GeoJSON-style: [lon, lat, elevation?])
+const PATH_COORDINATES: Array<[number, number, number?]> = [
+  [BASE_LONGITUDE - 0.0003, BASE_LATITUDE - 0.0002, 2],
+  [BASE_LONGITUDE - 0.0001, BASE_LATITUDE - 0.0001, 2],
+  [BASE_LONGITUDE + 0.0001, BASE_LATITUDE, 2],
+  [BASE_LONGITUDE + 0.0003, BASE_LATITUDE + 0.0001, 2],
+  [BASE_LONGITUDE + 0.0005, BASE_LATITUDE + 0.0003, 2],
+];
+
+// sample dashed path coordinates (parallel to solid line, offset north)
+const DASHED_PATH_COORDINATES: Array<[number, number, number?]> = [
+  [BASE_LONGITUDE - 0.0003, BASE_LATITUDE - 0.0002 + 0.0001, 2],
+  [BASE_LONGITUDE - 0.0001, BASE_LATITUDE - 0.0001 + 0.0001, 2],
+  [BASE_LONGITUDE + 0.0001, BASE_LATITUDE + 0.0001, 2],
+  [BASE_LONGITUDE + 0.0003, BASE_LATITUDE + 0.0001 + 0.0001, 2],
+  [BASE_LONGITUDE + 0.0005, BASE_LATITUDE + 0.0003 + 0.0001, 2],
+];
+
+// sample polygon coordinates (area/zone)
+const ZONE_COORDINATES: Array<[number, number, number?]> = [
+  [BASE_LONGITUDE - 0.0006, BASE_LATITUDE + 0.0003, 1],
+  [BASE_LONGITUDE - 0.0003, BASE_LATITUDE + 0.0003, 1],
+  [BASE_LONGITUDE - 0.0003, BASE_LATITUDE + 0.0006, 1],
+  [BASE_LONGITUDE - 0.0006, BASE_LATITUDE + 0.0006, 1],
+];
 
 const App = () => (
   <Canvas>
@@ -126,6 +158,20 @@ const App = () => (
         >
           <Landmark isAnimated type="monument" color="#8e44ad" scale={0.8} />
         </GeolocationAnchor>
+
+        <GeoLine coordinates={PATH_COORDINATES} color="#ff4444" />
+
+        <GeoLine
+          coordinates={DASHED_PATH_COORDINATES}
+          color="#ffaa00"
+          isDashed
+        />
+
+        <GeoPolygon
+          coordinates={ZONE_COORDINATES}
+          color="#4488ff"
+          opacity={0.5}
+        />
       </GeolocationSession>
     </XR>
   </Canvas>
