@@ -89,7 +89,7 @@ Then install the extra dependencies you need based on your use case:
 bun add @ar-js-org/ar.js
 
 # for location-based AR
-bun add locar
+bun add locar @react-three/drei
 
 # for WebXR immersive AR/VR
 bun add @react-three/xr
