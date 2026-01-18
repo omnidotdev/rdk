@@ -77,17 +77,6 @@ const GeoLine = ({
 
       const geometry = new LineGeometry().setFromPoints(pts);
 
-      /*
-      let material: LineMaterial;
-
-      if (isDashed)
-        material = new LineDashedMaterial({
-          color,
-          dashSize,
-          gapSize,
-        });
-      else material = new LineBasicMaterial({ color });
-      */
       const material = new LineMaterial({
         color,
         dashSize,
