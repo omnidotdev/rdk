@@ -1,13 +1,9 @@
 import { createPortal } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
-import {
-  BufferGeometry,
-  Group,
-  Line,
-  LineBasicMaterial,
-  LineDashedMaterial,
-  Vector3,
-} from "three";
+import { Group, Vector3 } from "three";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 import useGeolocationBackend from "./useGeolocationBackend";
 
@@ -32,7 +28,12 @@ export interface GeoLineProps {
    */
   dashSize?: number;
   /**
-   * Gap size between dashes (requires isDashed=true).
+   * Line width (in world units).
+   * @default 1
+   */
+  lineWidth?: number;
+  /**
+   * Gap size (requires isDashed=true).
    * @default 1
    */
   gapSize?: number;
@@ -48,11 +49,12 @@ const GeoLine = ({
   isDashed = false,
   dashSize = 3,
   gapSize = 1,
+  lineWidth = 1,
 }: GeoLineProps) => {
   const geo = useGeolocationBackend();
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
-  const [line, setLine] = useState<Line | null>(null);
+  const [line, setLine] = useState<Line2 | null>(null);
 
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 2) return;
@@ -73,19 +75,18 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
-      const geometry = new BufferGeometry().setFromPoints(pts);
+      const geometry = new LineGeometry().setFromPoints(pts);
 
-      let material: LineBasicMaterial | LineDashedMaterial;
+      const material = new LineMaterial({
+        color,
+        dashSize,
+        gapSize,
+        dashed: isDashed,
+        worldUnits: true,
+        linewidth: lineWidth,
+      });
 
-      if (isDashed)
-        material = new LineDashedMaterial({
-          color,
-          dashSize,
-          gapSize,
-        });
-      else material = new LineBasicMaterial({ color });
-
-      const lineObj = new Line(geometry, material);
+      const lineObj = new Line2(geometry, material);
 
       if (isDashed) lineObj.computeLineDistances();
 
@@ -115,6 +116,7 @@ const GeoLine = ({
     isDashed,
     dashSize,
     gapSize,
+    lineWidth,
   ]);
 
   return createPortal(
