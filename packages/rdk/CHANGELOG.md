@@ -1,5 +1,16 @@
 # @omnidotdev/rdk
 
+## 0.8.0
+
+### Minor Changes
+
+- [#59](https://github.com/omnidotdev/rdk/pull/59) [`584773c`](https://github.com/omnidotdev/rdk/commit/584773c90dc280fd9534d5b4165950fcca446068) Thanks [@coopbri](https://github.com/coopbri) and [@nickw1](https://github.com/nickw1)! - Add `GeoLine` and `GeoPolygon` components for rendering paths and areas in AR space using lon/lat coordinates. These components complete the core GeoJSON geometry support:
+
+  - `GeoLine`: Renders lines (example use cases are roads, paths, routes) using Three.js `Line2` for variable width support
+  - `GeoPolygon`: Renders filled polygons (zones, areas, boundaries) with optional holes
+
+  Both components accept GeoJSON-style coordinate arrays `[lon, lat, elevation?]` for direct compatibility with mapping APIs and the `locar-tiler` library.
+
 ## 0.7.0
 
 ### Minor Changes
