@@ -83,7 +83,7 @@
     },
     "packages/rdk": {
       "name": "@omnidotdev/rdk",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "zustand": "^5.0.9",
       },
