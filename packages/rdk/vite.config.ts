@@ -18,6 +18,9 @@ const viteConfig = defineConfig(({ mode }) => ({
       outDir: "build",
     }),
   ],
+  worker: {
+    format: "es",
+  },
   build: {
     outDir: "build",
     lib: {
@@ -26,7 +29,7 @@ const viteConfig = defineConfig(({ mode }) => ({
         fiducial: resolve(__dirname, "src/fiducial/index.ts"),
         geolocation: resolve(__dirname, "src/geolocation/index.ts"),
         immersive: resolve(__dirname, "src/immersive/index.ts"),
-        magic: resolve(__dirname, "src/magic/index.ts"),
+        vision: resolve(__dirname, "src/vision/index.ts"),
       },
       formats: ["es", "cjs"],
       fileName: (format, entryName) =>
@@ -43,6 +46,9 @@ const viteConfig = defineConfig(({ mode }) => ({
           "locar",
           "@react-three/fiber",
           "@react-three/xr",
+          "@mediapipe/tasks-vision",
+          "onnxruntime-web",
+          "zustand",
         ].some((ext) => id === ext || id.startsWith(`${ext}/`)),
       output: {
         globals: {

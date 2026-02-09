@@ -9,6 +9,9 @@ export * from "./immersive";
 export { BACKEND_TYPES } from "./lib/types/engine";
 export * from "./magic";
 
+// NOTE: vision is opt-in via `@omnidotdev/rdk/vision` subpath import
+// due to heavy ML dependencies (MediaPipe, ONNX)
+
 export type {
   Backend,
   BackendType,

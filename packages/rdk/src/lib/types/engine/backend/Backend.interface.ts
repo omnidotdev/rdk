@@ -7,7 +7,7 @@ export const BACKEND_TYPES = {
   FIDUCIAL: "fiducial",
   GEOLOCATION: "geolocation",
   IMMERSIVE: "immersive",
-  MAGIC: "magic",
+  VISION: "vision",
 } as const;
 
 /**

@@ -166,8 +166,8 @@ describe("useXRStore", () => {
       expect(mockBackend.update).toHaveBeenCalledWith(0.016);
     });
 
-    it("registers magic backend", async () => {
-      const mockBackend = createMockBackend(BACKEND_TYPES.MAGIC);
+    it("registers vision backend", async () => {
+      const mockBackend = createMockBackend(BACKEND_TYPES.VISION);
       const mockThreeRefs = createMockThreeRefs();
 
       await act(async () => {
@@ -175,7 +175,7 @@ describe("useXRStore", () => {
       });
 
       const store = getXRStore();
-      expect(store.backends.get(BACKEND_TYPES.MAGIC)).toBe(mockBackend);
+      expect(store.backends.get(BACKEND_TYPES.VISION)).toBe(mockBackend);
     });
 
     it("provides O(1) backend lookup by type", async () => {

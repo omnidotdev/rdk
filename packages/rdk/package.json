@@ -47,10 +47,10 @@
       "import": "./build/immersive.js",
       "require": "./build/immersive.cjs"
     },
-    "./magic": {
-      "types": "./build/magic.d.ts",
-      "import": "./build/magic.js",
-      "require": "./build/magic.cjs"
+    "./vision": {
+      "types": "./build/vision.d.ts",
+      "import": "./build/vision.js",
+      "require": "./build/vision.cjs"
     }
   },
   "scripts": {
@@ -65,9 +65,11 @@
   },
   "peerDependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
+    "@mediapipe/tasks-vision": "^0.10.0",
     "@react-three/fiber": "^9.5.0",
     "@react-three/xr": "^6.6.29",
     "locar": "^0.1.8",
+    "onnxruntime-web": "^1.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "three": "^0.182.0"
@@ -76,16 +78,23 @@
     "@ar-js-org/ar.js": {
       "optional": true
     },
+    "@mediapipe/tasks-vision": {
+      "optional": true
+    },
     "@react-three/xr": {
       "optional": true
     },
     "locar": {
+      "optional": true
+    },
+    "onnxruntime-web": {
       "optional": true
     }
   },
   "devDependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
     "@biomejs/biome": "^2.3.11",
+    "@mediapipe/tasks-vision": "^0.10.22",
     "@react-three/fiber": "^9.5.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -95,6 +104,7 @@
     "@types/three": "^0.182.0",
     "jsdom": "^27.4.0",
     "locar": "^0.1.8",
+    "onnxruntime-web": "^1.22.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "three": "^0.182.0",
