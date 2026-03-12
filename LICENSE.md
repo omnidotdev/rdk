@@ -175,7 +175,7 @@
 
    END OF TERMS AND CONDITIONS
 
-   Copyright 2025 Omni (https://omni.dev)
+   Copyright Omni (https://omni.dev)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
