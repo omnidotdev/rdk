@@ -2,7 +2,7 @@
   "name": "@omnidotdev/rdk",
   "description": "Reality Development Kit, a unified React-first XR engine",
   "version": "0.9.0",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "build/index.js",
   "module": "build/index.js",
