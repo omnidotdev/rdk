@@ -11,7 +11,7 @@
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
-> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js), location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js), and WebXR via [`@react-three/xr`](https://github.com/pmndrs/xr) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js), location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js), WebXR via [`@react-three/xr`](https://github.com/pmndrs/xr), and ML vision tracking (hands, faces, poses) via [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/guide) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
 
 ## Overview
 
@@ -24,13 +24,13 @@ RDK unifies multiple spatial and XR technologies, such as AR.js for marker-based
 | **Geolocation / World Anchors**      | ⚗️ Experimental | [LocAR.js](https://github.com/ar-js-org/locar.js)                                                    | ✅      | ✅             | Uses GPS + compass; may later integrate Mapbox or Cesium.                                 |
 | **Magic Window (Camera Passthrough)**| ⚗️ Experimental | DeviceOrientation + getUserMedia                                                                      | ✅      | ✅             | Camera passthrough with device orientation tracking. No WebXR dependency; works everywhere |
 | **WebXR Native AR/VR Session**       | ⚗️ Experimental | [`@react-three/xr`](https://github.com/pmndrs/xr)                                                    | ✅      | ❌[^ios-webxr] | Entry point for immersive AR/VR sessions.                                                 |
-| **Face Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A            | Uses webcam + ML model; lightweight and fast.                                             |
-| **Body/Pose Tracking**               | 🧭 Planned      | [WebXR Body Tracking](https://github.com/immersive-web/body-tracking)                                | N/A     | N/A            | Real-time skeletal tracking. GPU/WebGL acceleration required.                             |
-| **Hand Tracking**                    | 🧭 Planned      | -                                                                                                    | N/A     | N/A            | Supported on Chrome + Meta; ML fallback possible.                                         |
+| **Face Tracking**                    | ⚗️ Experimental | [MediaPipe Face Mesh](https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker)         | ✅      | ✅             | 468-point face mesh via webcam + ML model; lightweight and fast.                          |
+| **Body/Pose Tracking**               | ⚗️ Experimental | [MediaPipe Pose](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker)              | ✅      | ✅             | 33-point skeletal tracking. GPU/WebGL acceleration required.                              |
+| **Hand Tracking**                    | ⚗️ Experimental | [MediaPipe Hands](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)             | ✅      | ✅             | 21-point hand landmark tracking with gesture detection.                                   |
 | **Plane/Surface Detection**          | 🧭 Planned      | [WebXR Hit Test API](https://immersive-web.github.io/hit-test)/ar.js (limited)                       | N/A     | N/A            | Enables AR object placement on flat surfaces.                                             |
 | **Depth Sensing/Environment Mesh**   | 🧭 Planned      | [WebXR Depth Sensing API](https://immersive-web.github.io/depth-sensing)                             | N/A     | N/A            | Provides per-pixel depth; early spec.                                                     |
 | **SLAM/Visual Positioning (VPS)**    | 🧭 Planned      | Custom                                                                                               | N/A     | N/A            | Requires world map data; long-term goal.                                                  |
-| **Voice/Gesture Interaction**        | 🧭 Planned      | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | N/A     | N/A            | Enables multimodal input: voice, hand, gaze.                                              |
+| **Voice/Gesture Interaction**        | ⚗️ Experimental | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)/MediaPipe Gestures | ✅      | ✅             | Gesture detection working; voice input planned.                                           |
 | **Mixed Reality Compositing**        | 🧭 Planned      | WebXR Layers/CanvasCaptureStream                                                                     | N/A     | N/A            | Transparent overlays/live compositing.                                                    |
 
 ## Demos
@@ -94,6 +94,9 @@ bun add locar
 
 # for WebXR immersive AR/VR
 bun add @react-three/xr
+
+# for ML vision tracking (hands, faces, poses)
+bun add @mediapipe/tasks-vision
 ```
 
 See the demo applications for examples of usage:
@@ -102,6 +105,7 @@ See the demo applications for examples of usage:
 - [`apps/geolocation-demo`](./apps/geolocation-demo): GPS-based AR powered by LocAR.js
 - [`apps/immersive-demo`](./apps/immersive-demo): WebXR powered by `@react-three/xr`
 - [`apps/magic-demo`](./apps/magic-demo): Magic window camera passthrough with device orientation
+- [`apps/vision-demo`](./apps/vision-demo): ML vision tracking (hands, faces, poses) via MediaPipe
 
 ## Goals: the "Why"
 
@@ -136,6 +140,6 @@ See Omni's [contributing docs](https://docs.omni.dev/contributing/overview).
 
 ## License
 
-The code in this repository is licensed under MIT, &copy; [Omni LLC](https://omni.dev). See [LICENSE.md](LICENSE.md) for more information.
+The code in this repository is licensed under Apache 2.0, &copy; [Omni LLC](https://omni.dev). See [LICENSE.md](LICENSE.md) for more information.
 
 [^ios-webxr]: [iOS does not currently natively support WebXR](https://caniuse.com/webxr), but an iOS fallback is planned for the RDK immersive module.
