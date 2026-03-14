@@ -1,5 +1,6 @@
+import { mock } from "bun:test";
+
 import { createElement } from "react";
-import { vi } from "vitest";
 
 import type { ReactNode } from "react";
 import type { XRStore } from "../../src/engine/useXRStore";
@@ -9,30 +10,29 @@ export const mockXRContext: Partial<XRStore> = {
   video: null,
   backends: new Map<BackendType, Backend>(),
 
-  registerBackend: vi.fn().mockResolvedValue(undefined),
-  unregisterBackend: vi.fn(),
-  setVideo: vi.fn(),
-  updateBackends: vi.fn(),
+  registerBackend: mock(() => Promise.resolve(undefined)),
+  unregisterBackend: mock(),
+  setVideo: mock(),
+  updateBackends: mock(),
 };
 
-export const useXR = vi.fn(() => ({
+export const useXR = mock(() => ({
   ...mockXRContext,
   isImmersive: false,
   webxr: null,
 }));
 
-export default vi.fn(({ children }: { children: ReactNode }) =>
+export default mock(({ children }: { children: ReactNode }) =>
   createElement("div", { "data-testid": "xr-session-provider" }, children),
 );
 
-export const XR = vi.fn(({ children }: { children: ReactNode }) => (
+export const XR = mock(({ children }: { children: ReactNode }) => (
   <div data-testid="xr">{children}</div>
 ));
 
 /**
- * Reset the XR context mock to default state.
+ * Reset the XR context mock to default state
  */
 export function resetXRContext(): void {
   mockXRContext.backends = new Map();
-  vi.clearAllMocks();
 }

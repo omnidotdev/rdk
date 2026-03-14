@@ -1,42 +1,81 @@
 import "@testing-library/jest-dom";
 
+import { afterEach, mock } from "bun:test";
+
+import { cleanup } from "@testing-library/react";
 import { createElement } from "react";
-import { vi } from "vitest";
 
 import { setupGlobalMocks } from "./mocks/globals.mock";
+
+// auto-cleanup after each test (bun:test doesn't do this automatically)
+afterEach(() => {
+  cleanup();
+});
 
 // set up all global mocks
 setupGlobalMocks();
 
 // mock module dependencies
-vi.mock("@react-three/fiber", () => {
+mock.module("@react-three/fiber", () => {
   return {
-    useFrame: vi.fn(),
-    useThree: vi.fn(() => ({
+    useFrame: mock(),
+    useThree: mock(() => ({
       camera: {
         position: { x: 0, y: 0, z: 0 },
-        lookAt: vi.fn(),
+        lookAt: mock(),
       },
       scene: {
-        add: vi.fn(),
-        remove: vi.fn(),
+        add: mock(),
+        remove: mock(),
       },
     })),
-    createPortal: vi.fn((children) => children),
-    Canvas: vi.fn(({ children, ...props }) => {
-      return createElement(
-        "div",
-        { "data-testid": "xr-canvas", ...props },
-        children,
-      );
-    }),
-    extend: vi.fn(),
+    createPortal: mock((children: unknown) => children),
+    Canvas: mock(
+      ({ children, ...props }: { children: unknown; [key: string]: unknown }) =>
+        createElement(
+          "div",
+          { "data-testid": "xr-canvas", ...props },
+          children as string,
+        ),
+    ),
+    extend: mock(),
   };
 });
 
+mock.module("locar", () => ({
+  LocationBased: mock(() => ({
+    scene: null,
+    camera: null,
+    add: mock(),
+    remove: mock(),
+    startGps: mock(() => true),
+    stopGps: mock(() => true),
+    fakeGps: mock(),
+    on: mock(),
+    off: mock(),
+    emit: mock(),
+  })),
+  Webcam: mock(() => ({
+    texture: null,
+    on: mock(),
+    dispose: mock(),
+  })),
+  DeviceOrientationControls: mock(() => ({
+    enabled: true,
+    on: mock(),
+    init: mock(),
+    connect: mock(),
+    disconnect: mock(),
+    update: mock(),
+    dispose: mock(),
+  })),
+}));
+
+mock.module("../src/engine/XR", () => import("./mocks/XR.mock"));
+
 // suppress React warnings about unknown DOM properties in tests
 const originalConsoleError = console.error;
-console.error = (...args) => {
+console.error = (...args: unknown[]) => {
   const message = args[0];
 
   // suppress Three.js related warnings
@@ -50,34 +89,3 @@ console.error = (...args) => {
   }
   originalConsoleError.apply(console, args);
 };
-
-vi.mock("@ar-js-org/ar.js/three.js/build/ar-threex");
-vi.mock("locar", () => ({
-  LocationBased: vi.fn().mockImplementation(() => ({
-    scene: null,
-    camera: null,
-    add: vi.fn(),
-    remove: vi.fn(),
-    startGps: vi.fn().mockReturnValue(true),
-    stopGps: vi.fn().mockReturnValue(true),
-    fakeGps: vi.fn(),
-    on: vi.fn(),
-    off: vi.fn(),
-    emit: vi.fn(),
-  })),
-  Webcam: vi.fn().mockImplementation(() => ({
-    texture: null,
-    on: vi.fn(),
-    dispose: vi.fn(),
-  })),
-  DeviceOrientationControls: vi.fn().mockImplementation(() => ({
-    enabled: true,
-    on: vi.fn(),
-    init: vi.fn(),
-    connect: vi.fn(),
-    disconnect: vi.fn(),
-    update: vi.fn(),
-    dispose: vi.fn(),
-  })),
-}));
-vi.mock("../src/engine/XR", () => import("./mocks/XR.mock"));

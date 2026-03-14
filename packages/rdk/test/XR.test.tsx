@@ -1,6 +1,15 @@
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from "bun:test";
+
 import { render, screen, waitFor } from "@testing-library/react";
 import { useEffect, useRef, useState } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { ReactNode } from "react";
 import "@testing-library/jest-dom";
@@ -10,34 +19,22 @@ import { Canvas } from "@react-three/fiber";
 import XR from "../src/engine/XR";
 import { clearGlobalMocks, setupGlobalMocks } from "./mocks/globals.mock";
 
-vi.mock("../src/fiducial/fiducialBackend", () => ({
-  createFiducialBackend: vi.fn().mockReturnValue({
-    init: vi.fn().mockResolvedValue(undefined),
-    update: vi.fn(),
-    dispose: vi.fn(),
-    getInternal: vi.fn().mockReturnValue({ arContext: {} }),
-  }),
-}));
-
-vi.mock("../src/geolocation/geolocationBackend", () => ({
-  createGeolocationBackend: vi.fn().mockReturnValue({
-    init: vi.fn().mockResolvedValue(undefined),
-    update: vi.fn(),
-    dispose: vi.fn(),
-    getInternal: vi.fn().mockReturnValue({ locar: {} }),
-  }),
-}));
+let errorSpy: ReturnType<typeof spyOn>;
+let warnSpy: ReturnType<typeof spyOn>;
+let logSpy: ReturnType<typeof spyOn>;
 
 beforeEach(() => {
   setupGlobalMocks();
-  vi.spyOn(console, "error").mockImplementation(() => {});
-  vi.spyOn(console, "warn").mockImplementation(() => {});
-  vi.spyOn(console, "log").mockImplementation(() => {});
+  errorSpy = spyOn(console, "error").mockImplementation(() => {});
+  warnSpy = spyOn(console, "warn").mockImplementation(() => {});
+  logSpy = spyOn(console, "log").mockImplementation(() => {});
 });
 
 afterEach(() => {
+  errorSpy.mockRestore();
+  warnSpy.mockRestore();
+  logSpy.mockRestore();
   clearGlobalMocks();
-  vi.restoreAllMocks();
 });
 
 describe("XR", () => {
@@ -58,9 +55,9 @@ describe("XR", () => {
           try {
             // access XR session provider context indirectly through a mock backend
             const mockBackend = {
-              init: vi.fn().mockResolvedValue(undefined),
-              update: vi.fn(),
-              dispose: vi.fn(),
+              init: mock(() => Promise.resolve(undefined)),
+              update: mock(),
+              dispose: mock(),
             };
 
             // trigger compatibility check in XR session provider

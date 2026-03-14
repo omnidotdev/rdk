@@ -1,12 +1,13 @@
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+
 import { Canvas } from "@react-three/fiber";
 import { render } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeoPolygon } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
-vi.mock("../src/geolocation/useGeolocationBackend", () => ({
-  default: vi.fn(() => ({
+mock.module("../src/geolocation/useGeolocationBackend", () => ({
+  default: mock(() => ({
     isPending: true,
     isSuccess: false,
     locar: null,
@@ -15,9 +16,9 @@ vi.mock("../src/geolocation/useGeolocationBackend", () => ({
     scene: null,
     camera: null,
     lastPosition: null,
-    registerAnchor: vi.fn(),
-    unregisterAnchor: vi.fn(),
-    getAnchor: vi.fn(),
+    registerAnchor: mock(),
+    unregisterAnchor: mock(),
+    getAnchor: mock(),
   })),
 }));
 

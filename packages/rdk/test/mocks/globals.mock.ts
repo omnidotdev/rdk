@@ -1,99 +1,97 @@
 /**
- * @file Shared mock utilities for global objects used across tests.
+ * @file Shared mock utilities for global objects used across tests
  */
 
-import { vi } from "vitest";
+import { mock } from "bun:test";
 
 /**
- * Mock implementation of AR.js THREEx global object.
+ * Mock implementation of AR.js THREEx global object
  */
 export const mockTHREEx: Record<string, unknown> = {
-  ArToolkitSource: vi.fn().mockImplementation(function ArToolkitSource() {
+  ArToolkitSource: mock(function ArToolkitSource() {
     return {
-      init: vi.fn().mockResolvedValue(undefined),
-      onReady: vi.fn(),
+      init: mock(() => Promise.resolve(undefined)),
+      onReady: mock(),
       domElement:
         typeof document !== "undefined" ? document.createElement("video") : {},
       parameters: {},
       ready: false,
-      dispose: vi.fn(),
+      dispose: mock(),
     };
   }),
-  ArToolkitContext: vi.fn().mockImplementation(function ArToolkitContext() {
+  ArToolkitContext: mock(function ArToolkitContext() {
     return {
-      init: vi.fn().mockResolvedValue(undefined),
-      update: vi.fn(),
+      init: mock(() => Promise.resolve(undefined)),
+      update: mock(),
       _arMarkersControls: [],
       parameters: {},
       arController: null,
-      dispose: vi.fn(),
+      dispose: mock(),
     };
   }),
-  ArMarkerControls: vi.fn().mockImplementation(function ArMarkerControls() {
+  ArMarkerControls: mock(function ArMarkerControls() {
     return {
       object3d: {
         visible: false,
       },
       context: null,
       parameters: {},
-      setPatternUrl: vi.fn(),
-      setBarcodeValue: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispose: vi.fn(),
+      setPatternUrl: mock(),
+      setBarcodeValue: mock(),
+      addEventListener: mock(),
+      removeEventListener: mock(),
+      dispose: mock(),
     };
   }),
 };
 
 /**
- * Mock implementation of LocAR.js global object.
+ * Mock implementation of LocAR.js global object
  */
 export const mockLocAR: Record<string, unknown> = {
-  LocationBased: vi.fn().mockImplementation(function LocationBased() {
+  LocationBased: mock(function LocationBased() {
     return {
       scene: null,
       camera: null,
-      add: vi.fn(),
-      remove: vi.fn(),
-      startGps: vi.fn().mockReturnValue(true),
-      stopGps: vi.fn().mockReturnValue(true),
-      fakeGps: vi.fn(),
-      on: vi.fn(),
-      off: vi.fn(),
-      emit: vi.fn(),
-      setElevation: vi.fn(),
+      add: mock(),
+      remove: mock(),
+      startGps: mock(() => true),
+      stopGps: mock(() => true),
+      fakeGps: mock(),
+      on: mock(),
+      off: mock(),
+      emit: mock(),
+      setElevation: mock(),
     };
   }),
-  Webcam: vi.fn().mockImplementation(function Webcam() {
+  Webcam: mock(function Webcam() {
     return {
       texture: null,
-      on: vi.fn(),
-      dispose: vi.fn(),
+      on: mock(),
+      dispose: mock(),
     };
   }),
-  DeviceOrientationControls: vi
-    .fn()
-    .mockImplementation(function DeviceOrientationControls() {
-      return {
-        enabled: true,
-        on: vi.fn(),
-        init: vi.fn(),
-        connect: vi.fn(),
-        disconnect: vi.fn(),
-        update: vi.fn(),
-        dispose: vi.fn(),
-      };
-    }),
+  DeviceOrientationControls: mock(function DeviceOrientationControls() {
+    return {
+      enabled: true,
+      on: mock(),
+      init: mock(),
+      connect: mock(),
+      disconnect: mock(),
+      update: mock(),
+      dispose: mock(),
+    };
+  }),
 };
 
 /**
- * Mock implementation of Three.js THREE global object.
+ * Mock implementation of Three.js THREE global object
  */
 export const mockTHREE: Record<string, unknown> = {
-  Group: vi.fn().mockImplementation(function Group() {
+  Group: mock(function Group() {
     return {
-      add: vi.fn(),
-      remove: vi.fn(),
+      add: mock(),
+      remove: mock(),
       visible: true,
       position: { x: 0, y: 0, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
@@ -101,10 +99,10 @@ export const mockTHREE: Record<string, unknown> = {
       children: [],
     };
   }),
-  Object3D: vi.fn().mockImplementation(function Object3D() {
+  Object3D: mock(function Object3D() {
     return {
-      add: vi.fn(),
-      remove: vi.fn(),
+      add: mock(),
+      remove: mock(),
       visible: true,
       position: { x: 0, y: 0, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
@@ -112,14 +110,14 @@ export const mockTHREE: Record<string, unknown> = {
       children: [],
     };
   }),
-  Scene: vi.fn().mockImplementation(function Scene() {
+  Scene: mock(function Scene() {
     return {
-      add: vi.fn(),
-      remove: vi.fn(),
+      add: mock(),
+      remove: mock(),
       children: [],
     };
   }),
-  Camera: vi.fn().mockImplementation(function Camera() {
+  Camera: mock(function Camera() {
     return {
       position: { x: 0, y: 0, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
@@ -129,7 +127,7 @@ export const mockTHREE: Record<string, unknown> = {
 
 /**
  * Setup global mocks for AR.js and Three.js.
- * Call this in test setup files or individual tests.
+ * Call this in test setup files or individual tests
  */
 export function setupGlobalMocks(): void {
   // @ts-expect-error
@@ -140,22 +138,22 @@ export function setupGlobalMocks(): void {
   global.LocAR = mockLocAR;
 
   // suppress console warnings in tests
-  global.console.warn = vi.fn();
+  global.console.warn = mock();
 }
 
 /**
- * Clear all global mocks
+ * Clear all global mocks.
  * Useful for cleanup between tests
  */
 export function clearGlobalMocks(): void {
-  vi.clearAllMocks();
+  // re-setup fresh mocks
+  setupGlobalMocks();
 }
 
 /**
- * Reset global mocks to their initial state
- * More thorough than clearAllMocks, recreates the mock objects
+ * Reset global mocks to their initial state.
+ * More thorough than clear, recreates the mock objects
  */
 export function resetGlobalMocks(): void {
-  vi.clearAllMocks();
   setupGlobalMocks();
 }

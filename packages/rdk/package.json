@@ -60,7 +60,7 @@
     "format": "biome format --write .",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "test": "vitest run",
+    "test": "bun test",
     "release": "bun run build && changeset publish"
   },
   "peerDependencies": {
@@ -110,9 +110,7 @@
     "three": "^0.182.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
-    "vite-plugin-dts": "^4.5.4",
-    "vite-tsconfig-paths": "^6.0.3",
-    "vitest": "^4.0.16"
+    "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
     "zustand": "^5.0.9"

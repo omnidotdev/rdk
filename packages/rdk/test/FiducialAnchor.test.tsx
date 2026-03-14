@@ -1,18 +1,26 @@
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+
 import { Canvas } from "@react-three/fiber";
 import { render } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { FiducialAnchor } from "../src/fiducial";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
-vi.mock("../src/fiducial/useFiducialBackend", () => ({
-  default: vi.fn(() => ({
+mock.module("@ar-js-org/ar.js/three.js/build/ar-threex", () => ({
+  ArToolkitSource: class {},
+  ArToolkitContext: class {},
+  ArMarkerControls: class {},
+}));
+
+mock.module("../src/fiducial/useFiducialBackend", () => ({
+  default: mock(() => ({
     isPending: true,
     isSuccess: false,
     arSource: null,
     arContext: null,
   })),
 }));
+
+import { FiducialAnchor } from "../src/fiducial";
 
 beforeEach(() => {
   clearGlobalMocks();
@@ -32,7 +40,7 @@ describe("FiducialAnchor", () => {
   });
 
   it("accepts pattern type and URL", () => {
-    const mockCallback = vi.fn();
+    const mockCallback = mock();
     const props = {
       type: "pattern" as const,
       patternUrl: "test-pattern.patt",
@@ -51,7 +59,7 @@ describe("FiducialAnchor", () => {
   });
 
   it("accepts barcode type and value", () => {
-    const mockCallback = vi.fn();
+    const mockCallback = mock();
     const props = {
       type: "barcode" as const,
       barcodeValue: 123,

@@ -1,12 +1,13 @@
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+
 import { Canvas } from "@react-three/fiber";
 import { render } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeolocationAnchor } from "../src/geolocation";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
-vi.mock("../src/geolocation/useGeolocationBackend", () => ({
-  default: vi.fn(() => ({
+mock.module("../src/geolocation/useGeolocationBackend", () => ({
+  default: mock(() => ({
     isPending: true,
     isSuccess: false,
     locar: null,
@@ -15,9 +16,9 @@ vi.mock("../src/geolocation/useGeolocationBackend", () => ({
     scene: null,
     camera: null,
     lastPosition: null,
-    registerAnchor: vi.fn(),
-    unregisterAnchor: vi.fn(),
-    getAnchor: vi.fn(),
+    registerAnchor: mock(),
+    unregisterAnchor: mock(),
+    getAnchor: mock(),
   })),
 }));
 
@@ -104,8 +105,8 @@ describe("GeolocationAnchor", () => {
   });
 
   it("accepts GPS event callbacks", () => {
-    const mockOnAttach = vi.fn();
-    const mockOnGpsUpdate = vi.fn();
+    const mockOnAttach = mock();
+    const mockOnGpsUpdate = mock();
     const props = {
       latitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.latitude,
       longitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.longitude,
@@ -154,8 +155,8 @@ describe("GeolocationAnchor", () => {
   });
 
   it("accepts all optional props together", () => {
-    const mockOnAttach = vi.fn();
-    const mockOnGpsUpdate = vi.fn();
+    const mockOnAttach = mock();
+    const mockOnGpsUpdate = mock();
     const props = {
       latitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.latitude,
       longitude: GOING_TO_THE_SUN_MONTAIN_COORDINATES.longitude,

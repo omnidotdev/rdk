@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+
 import { act } from "@testing-library/react";
 import { BACKEND_TYPES } from "lib/types/engine";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import useXRStore, { getXRStore } from "./useXRStore";
 
@@ -8,13 +9,13 @@ import type { Backend, BackendType } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
 // Mock @react-three/xr
-vi.mock("@react-three/xr", () => ({
-  useXRStore: vi.fn(() => ({
+mock.module("@react-three/xr", () => ({
+  useXRStore: mock(() => ({
     isPresenting: false,
     mode: null,
-    enterAR: vi.fn(),
-    enterVR: vi.fn(),
-    exit: vi.fn(),
+    enterAR: mock(),
+    enterVR: mock(),
+    exit: mock(),
     isHandTracking: false,
     controllers: [],
   })),
@@ -22,10 +23,10 @@ vi.mock("@react-three/xr", () => ({
 
 const createMockBackend = (type: BackendType): Backend => ({
   type,
-  init: vi.fn().mockResolvedValue(undefined),
-  update: vi.fn(),
-  dispose: vi.fn(),
-  getInternal: vi.fn(() => ({})),
+  init: mock(() => Promise.resolve(undefined)),
+  update: mock(),
+  dispose: mock(),
+  getInternal: mock(() => ({})),
 });
 
 const createMockThreeRefs = () => ({
@@ -46,9 +47,6 @@ describe("useXRStore", () => {
       }
       store.backends.clear();
     });
-
-    // Clear all mocks
-    vi.clearAllMocks();
   });
 
   describe("Basic Store Structure", () => {
@@ -144,11 +142,17 @@ describe("useXRStore", () => {
         await getXRStore().registerBackend(fiducialBackend, mockThreeRefs);
       });
 
-      await expect(
-        act(async () => {
+      let caughtError: Error | null = null;
+      try {
+        await act(async () => {
           await getXRStore().registerBackend(geolocationBackend, mockThreeRefs);
-        }),
-      ).rejects.toThrow(/INCOMPATIBLE SESSIONS/);
+        });
+      } catch (err) {
+        caughtError = err as Error;
+      }
+
+      expect(caughtError).not.toBeNull();
+      expect(caughtError!.message).toMatch(/INCOMPATIBLE SESSIONS/);
     });
 
     it("calls update on registered backends", async () => {

@@ -1,6 +1,7 @@
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
+
 import { Canvas } from "@react-three/fiber";
 import { render } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import XR from "../src/engine/XR";
 import { clearGlobalMocks, setupGlobalMocks } from "./mocks/globals.mock";
@@ -9,13 +10,12 @@ import type { ReactNode } from "react";
 
 beforeEach(() => {
   setupGlobalMocks();
-  vi.spyOn(console, "warn").mockImplementation(() => {});
-  vi.spyOn(console, "error").mockImplementation(() => {});
+  spyOn(console, "warn").mockImplementation(() => {});
+  spyOn(console, "error").mockImplementation(() => {});
 });
 
 afterEach(() => {
   clearGlobalMocks();
-  vi.restoreAllMocks();
 });
 
 describe("XR", () => {

@@ -1,4 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, mock } from "bun:test";
+
+mock.module("@ar-js-org/ar.js/three.js/build/ar-threex", () => ({
+  ArToolkitSource: class {},
+  ArToolkitContext: class {},
+  ArMarkerControls: class {},
+}));
 
 import createFiducialBackend from "../src/fiducial/fiducialBackend";
 
