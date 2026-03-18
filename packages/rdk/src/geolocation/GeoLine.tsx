@@ -90,7 +90,7 @@ const GeoLine = ({
 
       if (isDashed) lineObj.computeLineDistances();
 
-      setLine(lineObj);
+      if (line === null) setLine(lineObj);
     };
 
     geo.registerAnchor(anchorId, {
@@ -116,6 +116,7 @@ const GeoLine = ({
     isDashed,
     dashSize,
     gapSize,
+    line,
     lineWidth,
   ]);
 
