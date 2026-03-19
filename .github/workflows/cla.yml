@@ -14,3 +14,5 @@ jobs:
       contents: write
       pull-requests: write
       statuses: write
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
