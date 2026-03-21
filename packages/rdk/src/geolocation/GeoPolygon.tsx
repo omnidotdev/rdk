@@ -143,7 +143,9 @@ const GeoPolygon = ({
       // rotate to lie flat on XZ plane
       shapeGeometry.rotateX(-Math.PI / 2);
 
-      setGeometryData({ geometry: shapeGeometry, avgElevation });
+      if (geometryData === null) {
+        setGeometryData({ geometry: shapeGeometry, avgElevation });
+      }
     };
 
     geo.registerAnchor(anchorId, {
@@ -165,6 +167,7 @@ const GeoPolygon = ({
     anchorId,
     anchor,
     coordinates,
+    geometryData,
     holes,
   ]);
 
