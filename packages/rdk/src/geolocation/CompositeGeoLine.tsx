@@ -31,6 +31,7 @@ export interface CompositeGeoLineProps {
 
 /**
  * Geolocation line component for rendering lines in AR space. Useful for e.g. roads, paths, and routes.
+ * CompositeGeoLine is made up of individual triangles in a BufferGeometry, providing a smoother line with less artefacts compared to GeoLine - but with no dash options.
  * Accepts an array of lon/lat coordinates in GeoJSON-style format.
  */
 const CompositeGeoLine = ({
