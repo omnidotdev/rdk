@@ -1,8 +1,9 @@
 import {
+  CompositeGeoLine,
   GeoLine,
-  GeoPolygon,
   GeolocationAnchor,
   GeolocationSession,
+  GeoPolygon,
   XR,
 } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
@@ -159,7 +160,7 @@ const App = () => (
           <Landmark isAnimated type="monument" color="#8e44ad" scale={0.8} />
         </GeolocationAnchor>
 
-        <GeoLine coordinates={PATH_COORDINATES} color="#ff4444" />
+        <CompositeGeoLine coordinates={PATH_COORDINATES} color={0xff4444} />
 
         <GeoLine
           coordinates={DASHED_PATH_COORDINATES}
