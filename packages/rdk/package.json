@@ -1,7 +1,7 @@
 {
   "name": "@omnidotdev/rdk",
   "description": "Reality Development Kit, a unified React-first XR engine",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "license": "MIT",
   "type": "module",
   "main": "build/index.js",
@@ -70,7 +70,7 @@
     "locar": "^0.1.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "three": "^0.182.0"
+    "three": "^0.183.0"
   },
   "peerDependenciesMeta": {
     "@ar-js-org/ar.js": {
@@ -85,21 +85,21 @@
   },
   "devDependencies": {
     "@ar-js-org/ar.js": "^3.4.7",
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "^2.4.8",
     "@react-three/fiber": "^9.5.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@types/three": "^0.182.0",
-    "jsdom": "^27.4.0",
+    "@types/three": "^0.183.0",
+    "jsdom": "^29.0.0",
     "locar": "^0.1.8",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "three": "^0.182.0",
+    "three": "^0.183.0",
     "typescript": "^5.9.3",
-    "vite": "^7.3.0",
+    "vite": "^8.0.0",
     "vite-plugin-dts": "^4.5.4",
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.0.16"

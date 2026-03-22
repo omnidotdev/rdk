@@ -1,5 +1,5 @@
 import { createPortal } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BackSide,
   DoubleSide,
@@ -63,6 +63,9 @@ const GeoPolygon = ({
   side = "double",
 }: GeoPolygonProps) => {
   const geo = useGeolocationBackend();
+  const geoRef = useRef(geo);
+  geoRef.current = geo;
+
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
   const [geometryData, setGeometryData] = useState<{
@@ -75,7 +78,6 @@ const GeoPolygon = ({
 
     const [lon, lat, alt = 0] = coordinates[0];
 
-    // `onAttach` receives `locar` directly from the backend - no stale closure
     const onAttach = (locar: LocAR) => {
       const [originLon, originLat, originElev = 0] = coordinates[0];
 
@@ -143,12 +145,10 @@ const GeoPolygon = ({
       // rotate to lie flat on XZ plane
       shapeGeometry.rotateX(-Math.PI / 2);
 
-      if (geometryData === null) {
-        setGeometryData({ geometry: shapeGeometry, avgElevation });
-      }
+      setGeometryData({ geometry: shapeGeometry, avgElevation });
     };
 
-    geo.registerAnchor(anchorId, {
+    geoRef.current.registerAnchor(anchorId, {
       anchor,
       isAttached: false,
       latitude: lat,
@@ -158,18 +158,15 @@ const GeoPolygon = ({
     });
 
     return () => {
-      geo.unregisterAnchor(anchorId);
+      geoRef.current.unregisterAnchor(anchorId);
+
+      setGeometryData((prev) => {
+        if (prev) prev.geometry.dispose();
+
+        return null;
+      });
     };
-  }, [
-    geo.isSuccess,
-    geo.registerAnchor,
-    geo.unregisterAnchor,
-    anchorId,
-    anchor,
-    coordinates,
-    geometryData,
-    holes,
-  ]);
+  }, [anchorId, anchor, coordinates, holes, geo.isSuccess]);
 
   return createPortal(
     <group>

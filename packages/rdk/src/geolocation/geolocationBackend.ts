@@ -115,6 +115,31 @@ const createGeolocationBackend = (
     }
   };
 
+  // stable function refs (defined once per backend, not per `getInternal()` call)
+  const registerAnchor = (id: string, entry: AnchorEntry) => {
+    anchorRegistry.set(id, entry);
+
+    // if already a GPS position, attach immediately
+    if (lastPosition !== null && !entry.isAttached) {
+      attachAnchor(entry);
+      entry.onGpsUpdate?.(lastPosition, 0);
+    }
+  };
+
+  const unregisterAnchor = (id: string) => {
+    const entry = anchorRegistry.get(id);
+    if (entry?.isAttached) {
+      try {
+        entry.anchor.removeFromParent();
+      } catch (err) {
+        console.error(`⚠️ Error removing anchor ${id}:`, err);
+      }
+    }
+    anchorRegistry.delete(id);
+  };
+
+  const getAnchor = (id: string) => anchorRegistry.get(id);
+
   return {
     type: BACKEND_TYPES.GEOLOCATION,
 
@@ -283,27 +308,9 @@ const createGeolocationBackend = (
       scene: sceneRef,
       camera: cameraRef,
       lastPosition,
-      registerAnchor: (id: string, entry: AnchorEntry) => {
-        anchorRegistry.set(id, entry);
-
-        // if already a GPS position, attach immediately
-        if (lastPosition !== null && !entry.isAttached) {
-          attachAnchor(entry);
-          entry.onGpsUpdate?.(lastPosition, 0);
-        }
-      },
-      unregisterAnchor: (id: string) => {
-        const entry = anchorRegistry.get(id);
-        if (entry?.isAttached) {
-          try {
-            entry.anchor.removeFromParent();
-          } catch (err) {
-            console.error(`⚠️ Error removing anchor ${id}:`, err);
-          }
-        }
-        anchorRegistry.delete(id);
-      },
-      getAnchor: (id: string) => anchorRegistry.get(id),
+      registerAnchor,
+      unregisterAnchor,
+      getAnchor,
     }),
   };
 };

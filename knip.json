@@ -1,17 +1,13 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     "packages/*": {
-      "project": ["src/**/*.{ts,tsx}"],
-      "ignore": ["build/**", "lib/**", "dist/**", "node_modules/**"]
+      "project": ["src/**/*.{ts,tsx}"]
     },
     "apps/*": {
-      "entry": ["src/index.tsx"],
-      "project": ["src/**/*.{ts,tsx}"],
-      "ignore": ["build/**", "dist/**", "node_modules/**"]
+      "project": ["src/**/*.{ts,tsx}"]
     }
   },
-  "ignore": ["**/.turbo/**", ".github/**"],
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true
