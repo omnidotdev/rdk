@@ -1,5 +1,5 @@
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Group } from "three";
 
 import useGeolocationBackend from "./useGeolocationBackend";
@@ -41,6 +41,9 @@ const GeolocationAnchor = ({
   children,
 }: GeolocationAnchorProps) => {
   const geo = useGeolocationBackend();
+  const geoRef = useRef(geo);
+  geoRef.current = geo;
+
   const { camera } = useThree();
 
   const [anchor] = useState(() => new Group());
@@ -61,7 +64,7 @@ const GeolocationAnchor = ({
     if (!geo.isSuccess) return;
 
     // register anchor with the backend
-    geo.registerAnchor(anchorId, {
+    geoRef.current.registerAnchor(anchorId, {
       anchor,
       isAttached: false,
       latitude,
@@ -72,12 +75,9 @@ const GeolocationAnchor = ({
     });
 
     return () => {
-      geo.unregisterAnchor(anchorId);
+      geoRef.current.unregisterAnchor(anchorId);
     };
   }, [
-    geo.isSuccess,
-    geo.registerAnchor,
-    geo.unregisterAnchor,
     anchor,
     anchorId,
     latitude,
@@ -85,6 +85,7 @@ const GeolocationAnchor = ({
     altitude,
     onAttach,
     onGpsUpdate,
+    geo.isSuccess,
   ]);
 
   // billboard after LocAR owns the object
