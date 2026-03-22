@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.9.1
+
+### Patch Changes
+
+- [#75](https://github.com/omnidotdev/rdk/pull/75) [`45be62b`](https://github.com/omnidotdev/rdk/commit/45be62b9dd269d34e4b4ad6a51712c81ca6b0569) Thanks [@nickw1](https://github.com/nickw1)! - Fix infinite rendering loop in `GeoLine` and `GeoPolygon` components
+
 ## 0.9.0
 
 ### Minor Changes
