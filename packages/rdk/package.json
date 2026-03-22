@@ -15,6 +15,9 @@
   "bugs": {
     "url": "https://github.com/omnidotdev/rdk-framework/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "build/"
   ],
