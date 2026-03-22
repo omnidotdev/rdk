@@ -1,5 +1,5 @@
 import { createPortal } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Group, Vector3 } from "three";
 import { Line2 } from "three/addons/lines/Line2.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
@@ -52,6 +52,9 @@ const GeoLine = ({
   lineWidth = 1,
 }: GeoLineProps) => {
   const geo = useGeolocationBackend();
+  const geoRef = useRef(geo);
+  geoRef.current = geo;
+
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
   const [line, setLine] = useState<Line2 | null>(null);
@@ -90,10 +93,10 @@ const GeoLine = ({
 
       if (isDashed) lineObj.computeLineDistances();
 
-      if (line === null) setLine(lineObj);
+      setLine(lineObj);
     };
 
-    geo.registerAnchor(anchorId, {
+    geoRef.current.registerAnchor(anchorId, {
       anchor,
       isAttached: false,
       latitude: lat,
@@ -103,12 +106,18 @@ const GeoLine = ({
     });
 
     return () => {
-      geo.unregisterAnchor(anchorId);
+      geoRef.current.unregisterAnchor(anchorId);
+
+      setLine((prev) => {
+        if (prev) {
+          prev.geometry.dispose();
+          (prev.material as LineMaterial).dispose();
+        }
+
+        return null;
+      });
     };
   }, [
-    geo.isSuccess,
-    geo.registerAnchor,
-    geo.unregisterAnchor,
     anchorId,
     anchor,
     coordinates,
@@ -116,8 +125,8 @@ const GeoLine = ({
     isDashed,
     dashSize,
     gapSize,
-    line,
     lineWidth,
+    geo.isSuccess,
   ]);
 
   return createPortal(
