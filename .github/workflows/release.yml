@@ -36,4 +36,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          # TODO: re-enable provenance after updating linked repo on npmjs.com from rdk-framework to rdk
+          # NPM_CONFIG_PROVENANCE: true
