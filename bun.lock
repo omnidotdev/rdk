@@ -102,9 +102,31 @@
         "vite-tsconfig-paths": "^6.0.3",
       },
     },
+    "apps/vision-demo": {
+      "name": "rdk-vision-demo",
+      "dependencies": {
+        "@mediapipe/tasks-vision": "^0.10.0",
+        "@omnidotdev/rdk": "workspace:*",
+        "@react-three/fiber": "^9.5.0",
+        "react": "^19.2.3",
+        "react-dom": "^19.2.3",
+        "three": "^0.183.0",
+      },
+      "devDependencies": {
+        "@biomejs/biome": "^2.4.8",
+        "@types/react": "^19.2.7",
+        "@types/react-dom": "^19.2.3",
+        "@types/three": "^0.183.0",
+        "@vitejs/plugin-react": "^6.0.0",
+        "typescript": "^5.9.3",
+        "vite": "^8.0.0",
+        "vite-plugin-mkcert": "^1.17.9",
+        "vite-tsconfig-paths": "^6.0.3",
+      },
+    },
     "packages/rdk": {
       "name": "@omnidotdev/rdk",
-      "version": "0.9.1",
+      "version": "0.9.0",
       "dependencies": {
         "zustand": "^5.0.9",
       },
@@ -1125,6 +1147,8 @@
     "rdk-immersive-demo": ["rdk-immersive-demo@workspace:apps/immersive-demo"],
 
     "rdk-magic-demo": ["rdk-magic-demo@workspace:apps/magic-demo"],
+
+    "rdk-vision-demo": ["rdk-vision-demo@workspace:apps/vision-demo"],
 
     "react": ["react@19.2.3", "", {}, "sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA=="],
 
