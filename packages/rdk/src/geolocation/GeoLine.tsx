@@ -1,6 +1,14 @@
 import { createPortal } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Group, Vector3 } from "three";
+import {
+  BufferAttribute,
+  BufferGeometry,
+  DoubleSide,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  Vector3,
+} from "three";
 import { Line2 } from "three/addons/lines/Line2.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
@@ -8,6 +16,7 @@ import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import useGeolocationBackend from "./useGeolocationBackend";
 
 import type { LocationBased as LocAR } from "locar";
+import type { ColorRepresentation } from "three";
 
 export interface GeoLineProps {
   /** Array of coordinates forming the line. GeoJSON-style: [lon, lat, elevation?] */
@@ -16,7 +25,7 @@ export interface GeoLineProps {
    * Line color.
    * @default "#ff0000"
    */
-  color?: string;
+  color?: ColorRepresentation;
   /**
    * Whether line is dashed.
    * @default false
@@ -39,8 +48,70 @@ export interface GeoLineProps {
   gapSize?: number;
 }
 
+/** Build a triangle-strip mesh geometry from a polyline for smooth, artifact-free rendering. */
+const buildTriStripGeometry = (vertices: Vector3[], width: number) => {
+  const k = vertices.length - 1;
+  const positions: number[] = [];
+
+  let prevDxPerp = 0;
+  let prevDzPerp = 0;
+
+  for (let i = 0; i < k; i++) {
+    const dx = vertices[i + 1].x - vertices[i].x;
+    const dy = vertices[i + 1].y - vertices[i].y;
+    const dz = vertices[i + 1].z - vertices[i].z;
+    const len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const halfWidth = width / 2;
+    const dxPerp = -(dz * halfWidth) / len;
+    const dzPerp = (dx * halfWidth) / len;
+
+    // Average with previous segment's perpendicular for smooth joints
+    const avgDxPerp = i > 0 ? (dxPerp + prevDxPerp) / 2 : dxPerp;
+    const avgDzPerp = i > 0 ? (dzPerp + prevDzPerp) / 2 : dzPerp;
+
+    positions.push(
+      vertices[i].x - avgDxPerp,
+      vertices[i].y,
+      vertices[i].z - avgDzPerp,
+      vertices[i].x + avgDxPerp,
+      vertices[i].y,
+      vertices[i].z + avgDzPerp,
+    );
+
+    prevDxPerp = dxPerp;
+    prevDzPerp = dzPerp;
+  }
+
+  // Last vertex uses the final segment's perpendicular
+  positions.push(
+    vertices[k].x - prevDxPerp,
+    vertices[k].y,
+    vertices[k].z - prevDzPerp,
+    vertices[k].x + prevDxPerp,
+    vertices[k].y,
+    vertices[k].z + prevDzPerp,
+  );
+
+  const indices: number[] = [];
+  for (let i = 0; i < k; i++) {
+    indices.push(i * 2, i * 2 + 1, i * 2 + 2);
+    indices.push(i * 2 + 1, i * 2 + 3, i * 2 + 2);
+  }
+
+  const geometry = new BufferGeometry();
+  geometry.setIndex(indices);
+  geometry.setAttribute(
+    "position",
+    new BufferAttribute(new Float32Array(positions), 3),
+  );
+  geometry.computeBoundingBox();
+
+  return geometry;
+};
+
 /**
  * Geolocation line component for rendering lines in AR space. Useful for e.g. roads, paths, and routes.
+ * Uses triangle-strip meshes for smooth rendering. Falls back to Line2 when dashing is enabled.
  * Accepts an array of lon/lat coordinates in GeoJSON-style format.
  */
 const GeoLine = ({
@@ -57,7 +128,7 @@ const GeoLine = ({
 
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
-  const [line, setLine] = useState<Line2 | null>(null);
+  const [line, setLine] = useState<Line2 | Mesh | null>(null);
 
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 2) return;
@@ -78,22 +149,26 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
-      const geometry = new LineGeometry().setFromPoints(pts);
+      if (isDashed) {
+        const geometry = new LineGeometry().setFromPoints(pts);
 
-      const material = new LineMaterial({
-        color,
-        dashSize,
-        gapSize,
-        dashed: isDashed,
-        worldUnits: true,
-        linewidth: lineWidth,
-      });
+        const material = new LineMaterial({
+          color,
+          dashSize,
+          gapSize,
+          dashed: true,
+          worldUnits: true,
+          linewidth: lineWidth,
+        });
 
-      const lineObj = new Line2(geometry, material);
-
-      if (isDashed) lineObj.computeLineDistances();
-
-      setLine(lineObj);
+        const lineObj = new Line2(geometry, material);
+        lineObj.computeLineDistances();
+        setLine(lineObj);
+      } else {
+        const geometry = buildTriStripGeometry(pts, lineWidth);
+        const material = new MeshBasicMaterial({ color, side: DoubleSide });
+        setLine(new Mesh(geometry, material));
+      }
     };
 
     geoRef.current.registerAnchor(anchorId, {
@@ -111,7 +186,9 @@ const GeoLine = ({
       setLine((prev) => {
         if (prev) {
           prev.geometry.dispose();
-          (prev.material as LineMaterial).dispose();
+
+          const material = prev.material as MeshBasicMaterial | LineMaterial;
+          material.dispose();
         }
 
         return null;
