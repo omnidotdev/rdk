@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.10.0
+
+### Minor Changes
+
+- [#77](https://github.com/omnidotdev/rdk/pull/77) [`9aa76cb`](https://github.com/omnidotdev/rdk/commit/9aa76cba02c531cd3d54634d04b311dde2707740) Thanks [@nickw1](https://github.com/nickw1)! - Use triangle-strip mesh rendering for `GeoLine` for smoother lines with fewer artifacts, falling back to `Line2` when dashing is enabled
+
 ## 0.9.1
 
 ### Patch Changes
