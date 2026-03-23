@@ -1,8 +1,8 @@
 import {
   GeoLine,
-  GeoPolygon,
   GeolocationAnchor,
   GeolocationSession,
+  GeoPolygon,
   XR,
 } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
