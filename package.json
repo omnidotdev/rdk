@@ -1,5 +1,6 @@
 {
   "name": "rdk",
+  "version": "0.0.0",
   "description": "Reality Development Kit, a unified React-first XR engine",
   "private": true,
   "type": "module",
