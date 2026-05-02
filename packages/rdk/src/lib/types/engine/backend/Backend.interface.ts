@@ -8,6 +8,7 @@ export const BACKEND_TYPES = {
   GEOLOCATION: "geolocation",
   IMMERSIVE: "immersive",
   MAGIC: "magic",
+  VISION: "vision",
 } as const;
 
 /**
