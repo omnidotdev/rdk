@@ -18,6 +18,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "build/"
   ],
@@ -54,6 +57,11 @@
       "types": "./build/magic.d.ts",
       "import": "./build/magic.js",
       "require": "./build/magic.cjs"
+    },
+    "./vision": {
+      "types": "./build/vision.d.ts",
+      "import": "./build/vision.js",
+      "require": "./build/vision.cjs"
     }
   },
   "scripts": {
