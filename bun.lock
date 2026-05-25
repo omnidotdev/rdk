@@ -11,7 +11,7 @@
         "husky": "^9.1.7",
         "knip": "^6.0.0",
         "turbo": "^2.7.3",
-        "typescript": "^5.9.3",
+        "typescript": "^6.0.0",
       },
     },
     "apps/fiducial-demo": {
@@ -30,7 +30,7 @@
         "@types/react-dom": "^19.2.3",
         "@types/three": "^0.183.0",
         "@vitejs/plugin-react": "^6.0.0",
-        "typescript": "^5.9.3",
+        "typescript": "^6.0.0",
         "vite": "^8.0.0",
         "vite-plugin-mkcert": "^1.17.9",
         "vite-tsconfig-paths": "^6.0.3",
@@ -52,7 +52,7 @@
         "@types/react-dom": "^19.2.3",
         "@types/three": "^0.183.0",
         "@vitejs/plugin-react": "^6.0.0",
-        "typescript": "^5.9.3",
+        "typescript": "^6.0.0",
         "vite": "^8.0.0",
         "vite-plugin-mkcert": "^1.17.9",
         "vite-tsconfig-paths": "^6.0.3",
@@ -75,7 +75,7 @@
         "@types/react-dom": "^19.2.3",
         "@types/three": "^0.183.0",
         "@vitejs/plugin-react": "^6.0.0",
-        "typescript": "~5.9.3",
+        "typescript": "~6.0.0",
         "vite": "^8.0.0",
         "vite-plugin-mkcert": "^1.17.9",
         "vite-tsconfig-paths": "^6.0.3",
@@ -96,7 +96,7 @@
         "@types/react-dom": "^19.2.3",
         "@types/three": "^0.183.0",
         "@vitejs/plugin-react": "^6.0.0",
-        "typescript": "^5.9.3",
+        "typescript": "^6.0.0",
         "vite": "^8.0.0",
         "vite-plugin-mkcert": "^1.17.9",
         "vite-tsconfig-paths": "^6.0.3",
@@ -123,7 +123,7 @@
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
         "three": "^0.183.0",
-        "typescript": "^5.9.3",
+        "typescript": "^6.0.0",
         "vite": "^8.0.0",
         "vite-plugin-dts": "^4.5.4",
         "vite-tsconfig-paths": "^6.0.3",
@@ -1282,7 +1282,7 @@
 
     "turbo-windows-arm64": ["turbo-windows-arm64@2.7.3", "", { "os": "win32", "cpu": "arm64" }, "sha512-nTodweTbPmkvwMu/a55XvjMsPtuyUSC+sV7f/SR57K36rB2I0YG21qNETN+00LOTUW9B3omd8XkiXJkt4kx/cw=="],
 
-    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+    "typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "ufo": ["ufo@1.6.2", "", {}, "sha512-heMioaxBcG9+Znsda5Q8sQbWnLJSl98AFDXTO80wELWEzX3hordXsTdxrIfMQoO9IY1MEnoGoPjpoKpMj+Yx0Q=="],
 
