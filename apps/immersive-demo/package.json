@@ -19,7 +19,7 @@
     "@vitejs/plugin-react": "^6.0.0",
     "typescript": "~5.9.3",
     "vite": "^8.0.0",
-    "vite-plugin-mkcert": "^1.17.9",
+    "vite-plugin-mkcert": "^2.0.0",
     "vite-tsconfig-paths": "^6.0.3"
   },
   "dependencies": {
