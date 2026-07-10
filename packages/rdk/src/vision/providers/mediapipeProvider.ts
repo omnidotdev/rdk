@@ -48,31 +48,43 @@ class MediaPipeProvider implements VisionProvider {
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10/wasm",
     );
 
+    const delegate = (this.options.useGpu ?? true) ? "GPU" : "CPU";
+
+    const createWithFallback = async <T>(
+      create: (d: "GPU" | "CPU") => Promise<T>,
+    ): Promise<T> => {
+      if (delegate === "CPU") return create("CPU");
+      try {
+        return await create("GPU");
+      } catch {
+        console.warn("MediaPipe GPU delegate failed, falling back to CPU");
+        return create("CPU");
+      }
+    };
+
     this.options.onProgress?.({ step: 1, total: 3, label: "hand landmarker" });
-    this.models.handLandmarker = await HandLandmarker.createFromOptions(
-      vision,
-      {
+    this.models.handLandmarker = await createWithFallback((d) =>
+      HandLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath:
             "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-          delegate: "GPU",
+          delegate: d,
         },
         runningMode: "VIDEO",
         numHands: 2,
         minHandDetectionConfidence: 0.7,
         minHandPresenceConfidence: 0.5,
         minTrackingConfidence: 0.5,
-      },
+      }),
     );
 
     this.options.onProgress?.({ step: 2, total: 3, label: "face landmarker" });
-    this.models.faceLandmarker = await FaceLandmarker.createFromOptions(
-      vision,
-      {
+    this.models.faceLandmarker = await createWithFallback((d) =>
+      FaceLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath:
             "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-          delegate: "GPU",
+          delegate: d,
         },
         runningMode: "VIDEO",
         numFaces: 1,
@@ -81,17 +93,16 @@ class MediaPipeProvider implements VisionProvider {
         minTrackingConfidence: 0.5,
         outputFaceBlendshapes: false,
         outputFacialTransformationMatrixes: false,
-      },
+      }),
     );
 
     this.options.onProgress?.({ step: 3, total: 3, label: "pose landmarker" });
-    this.models.poseLandmarker = await PoseLandmarker.createFromOptions(
-      vision,
-      {
+    this.models.poseLandmarker = await createWithFallback((d) =>
+      PoseLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath:
             "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
-          delegate: "GPU",
+          delegate: d,
         },
         runningMode: "VIDEO",
         numPoses: 1,
@@ -99,7 +110,7 @@ class MediaPipeProvider implements VisionProvider {
         minPosePresenceConfidence: 0.5,
         minTrackingConfidence: 0.5,
         outputSegmentationMasks: true,
-      },
+      }),
     );
 
     this.isInitialized = true;
