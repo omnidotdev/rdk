@@ -1,9 +1,5 @@
 import { BACKEND_TYPES } from "lib/types/engine";
-import {
-  DeviceOrientationControls,
-  LocationBased as LocAR,
-  Webcam,
-} from "locar";
+import { DeviceOrientationControls, LocAR, Webcam } from "locar";
 
 import type { Backend, BackendInitArgs } from "lib/types/engine";
 import type { Camera, Group, Scene, WebGLRenderer } from "three";
@@ -88,6 +84,10 @@ const createGeolocationBackend = (
   let webcam: Webcam | null = null;
   let deviceOrientation: DeviceOrientationControls | null = null;
   let resizeHandler: (() => void) | undefined;
+  // LocAR 0.2.x renders the camera feed into its own <video> element appended to
+  // the document (there is no stop()/dispose() on Webcam), so we track it to tear
+  // the stream down and remove the element on session end
+  let webcamVideoEl: HTMLVideoElement | null = null;
 
   let gpsUpdateHandler: ((data: GpsUpdateEvent) => void) | null = null;
 
@@ -158,13 +158,29 @@ const createGeolocationBackend = (
       // location-based handler
       locar = new LocAR(scene, camera);
 
-      // video background
+      // LocAR 0.2.x renders the camera feed as a DOM <video> element (sized to
+      // preserve aspect ratio) behind the canvas, rather than a stretched
+      // `scene.background` texture. Clear the WebGL canvas to transparent so the
+      // feed shows through
+      renderer.setClearAlpha?.(0);
+
+      // snapshot existing videos so we can identify the element LocAR creates
+      const existingVideos = new Set(document.querySelectorAll("video"));
+
+      // video background (LocAR creates and appends its own <video> element)
       webcam = new Webcam(
         (options?.webcamConstraints ?? {
           video: { facingMode: "environment" },
-          // TODO remove `as any` once fixed upstream (LocAR.js)
+          // TODO narrow `webcamConstraints` to LocAR's `{ video: { facingMode } }` shape
         }) as any,
       );
+
+      for (const video of document.querySelectorAll("video")) {
+        if (!existingVideos.has(video)) {
+          webcamVideoEl = video as HTMLVideoElement;
+          break;
+        }
+      }
 
       gpsUpdateHandler = (data: GpsUpdateEvent) => {
         // store the last known position for new anchors
@@ -181,10 +197,6 @@ const createGeolocationBackend = (
       };
 
       locar.on("gpsupdate", gpsUpdateHandler);
-
-      webcam.on("webcamstarted", (evt) => {
-        scene.background = evt.texture;
-      });
 
       webcam.on("webcamerror", (err) => {
         console.error("[geolocationBackend] webcam error:", err);
@@ -209,8 +221,8 @@ const createGeolocationBackend = (
         console.error("[geolocationBackend] gps error:", err);
       });
 
-      // start GPS
-      locar.startGps();
+      // start GPS (0.2.x returns a Promise; errors surface via the gpserror event)
+      void locar.startGps();
 
       // optional boot in fake mode
       if (
@@ -270,8 +282,18 @@ const createGeolocationBackend = (
       }
 
       locar?.stopGps?.();
-      // TODO remove `as any` once fixed upstream (LocAR.js)
-      (webcam as any)?.stop?.();
+
+      // LocAR 0.2.x has no Webcam teardown, so stop the media stream and remove
+      // the <video> element it appended, then restore canvas opacity
+      if (webcamVideoEl) {
+        const stream = webcamVideoEl.srcObject as MediaStream | null;
+        for (const track of stream?.getTracks() ?? []) track.stop();
+        webcamVideoEl.srcObject = null;
+        webcamVideoEl.remove();
+        webcamVideoEl = null;
+      }
+      rendererRef?.setClearAlpha?.(1);
+
       deviceOrientation?.dispose?.();
 
       if (resizeHandler) {

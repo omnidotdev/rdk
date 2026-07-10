@@ -12,7 +12,7 @@ import {
 
 import useGeolocationBackend from "./useGeolocationBackend";
 
-import type { LocationBased as LocAR } from "locar";
+import type { LocAR } from "locar";
 import type { Side } from "three";
 
 export interface GeoPolygonProps {
