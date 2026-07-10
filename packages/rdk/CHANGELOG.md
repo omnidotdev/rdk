@@ -1,5 +1,15 @@
 # @omnidotdev/rdk
 
+## 0.10.1
+
+### Patch Changes
+
+- [#92](https://github.com/omnidotdev/rdk/pull/92) [`dab1341`](https://github.com/omnidotdev/rdk/commit/dab1341312e30892b32aa1e51c7c47eb72eac743) Thanks [@coopbri](https://github.com/coopbri)! - Migrate license from MIT to Apache 2.0
+
+- [#93](https://github.com/omnidotdev/rdk/pull/93) [`f7b749a`](https://github.com/omnidotdev/rdk/commit/f7b749a02d34ef1db0dd276b837131f04083e881) Thanks [@coopbri](https://github.com/coopbri)! - Upgrade LocAR.js to 0.2.x. The geolocation backend now renders the camera feed via LocAR's aspect-ratio-preserving DOM video element behind a transparent canvas (instead of a stretched `scene.background` texture), and tears down the media stream and video element on session end.
+
+- [#95](https://github.com/omnidotdev/rdk/pull/95) [`1683a35`](https://github.com/omnidotdev/rdk/commit/1683a358ae3b430fe109d604f2fa3aed073236a7) Thanks [@coopbri](https://github.com/coopbri)! - Upgrade dependencies: `three` and `@types/three` to `^0.185.0` (bumps the `three` peer range), plus dev tooling `vite-plugin-dts` to v5 and `vite-plugin-mkcert` to v2.
+
 ## 0.10.0
 
 ### Minor Changes
