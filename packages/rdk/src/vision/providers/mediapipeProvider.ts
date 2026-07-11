@@ -62,56 +62,82 @@ class MediaPipeProvider implements VisionProvider {
       }
     };
 
-    this.options.onProgress?.({ step: 1, total: 3, label: "hand landmarker" });
-    this.models.handLandmarker = await createWithFallback((d) =>
-      HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-          delegate: d,
-        },
-        runningMode: "VIDEO",
-        numHands: 2,
-        minHandDetectionConfidence: 0.7,
-        minHandPresenceConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-      }),
+    // Only load (and later run) the landmarkers for the requested tasks. Loading
+    // and running all three per frame is ~3x the necessary main-thread work.
+    const tasks = new Set(this.options.tasks ?? ["hands", "faces", "poses"]);
+    const steps = (["hands", "faces", "poses"] as const).filter((t) =>
+      tasks.has(t),
     );
+    let step = 0;
 
-    this.options.onProgress?.({ step: 2, total: 3, label: "face landmarker" });
-    this.models.faceLandmarker = await createWithFallback((d) =>
-      FaceLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-          delegate: d,
-        },
-        runningMode: "VIDEO",
-        numFaces: 1,
-        minFaceDetectionConfidence: 0.7,
-        minFacePresenceConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-        outputFaceBlendshapes: false,
-        outputFacialTransformationMatrixes: false,
-      }),
-    );
+    if (tasks.has("hands")) {
+      this.options.onProgress?.({
+        step: ++step,
+        total: steps.length,
+        label: "hand landmarker",
+      });
+      this.models.handLandmarker = await createWithFallback((d) =>
+        HandLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+            delegate: d,
+          },
+          runningMode: "VIDEO",
+          numHands: 2,
+          minHandDetectionConfidence: 0.7,
+          minHandPresenceConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+        }),
+      );
+    }
 
-    this.options.onProgress?.({ step: 3, total: 3, label: "pose landmarker" });
-    this.models.poseLandmarker = await createWithFallback((d) =>
-      PoseLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
-          delegate: d,
-        },
-        runningMode: "VIDEO",
-        numPoses: 1,
-        minPoseDetectionConfidence: 0.7,
-        minPosePresenceConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-        outputSegmentationMasks: true,
-      }),
-    );
+    if (tasks.has("faces")) {
+      this.options.onProgress?.({
+        step: ++step,
+        total: steps.length,
+        label: "face landmarker",
+      });
+      this.models.faceLandmarker = await createWithFallback((d) =>
+        FaceLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+            delegate: d,
+          },
+          runningMode: "VIDEO",
+          numFaces: 1,
+          minFaceDetectionConfidence: 0.7,
+          minFacePresenceConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+          outputFaceBlendshapes: false,
+          outputFacialTransformationMatrixes: false,
+        }),
+      );
+    }
+
+    if (tasks.has("poses")) {
+      this.options.onProgress?.({
+        step: ++step,
+        total: steps.length,
+        label: "pose landmarker",
+      });
+      this.models.poseLandmarker = await createWithFallback((d) =>
+        PoseLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+            delegate: d,
+          },
+          runningMode: "VIDEO",
+          numPoses: 1,
+          minPoseDetectionConfidence: 0.7,
+          minPosePresenceConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+          outputSegmentationMasks: this.options.segmentation ?? false,
+        }),
+      );
+    }
 
     this.isInitialized = true;
     this.options.onProgress?.(null);

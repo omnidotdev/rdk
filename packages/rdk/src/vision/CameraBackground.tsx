@@ -6,6 +6,8 @@ export type CameraBackgroundProps = {
   constraints?: MediaStreamConstraints["video"];
   onReady?: (video: HTMLVideoElement) => void;
   onError?: (error: Error) => void;
+  /** Mirror the preview horizontally, matching a user-facing (selfie) camera */
+  mirrored?: boolean;
 };
 
 /**
@@ -16,6 +18,7 @@ const CameraBackground: React.FC<CameraBackgroundProps> = ({
   constraints,
   onReady,
   onError,
+  mirrored = true,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isReady, setIsReady] = useState(false);
@@ -101,13 +104,15 @@ const CameraBackground: React.FC<CameraBackgroundProps> = ({
     <video
       ref={videoRef}
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
+        // Fill the overlay container (shares the R3F canvas rect) so landmark
+        // coordinates line up with the 3D overlay
+        position: "absolute",
+        inset: 0,
         width: "100%",
         height: "100%",
         objectFit: "cover",
-        zIndex: -1,
+        // Mirror the selfie preview; the overlay mirrors to match
+        transform: mirrored ? "scaleX(-1)" : undefined,
         opacity: isReady ? 1 : 0,
         transition: "opacity 0.5s ease",
       }}

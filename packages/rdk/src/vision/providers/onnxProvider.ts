@@ -1,12 +1,16 @@
 // ONNX provider - supports ONNX models like RF-DETR and YOLO
 
 import type {
-  ObjectDetection,
   ONNXModelConfig,
   VisionFrame,
   VisionProvider,
   VisionSessionOptions,
 } from "../types";
+import type {
+  ONNXWorkerRequest,
+  ONNXWorkerResponse,
+  ONNXWorkerResult,
+} from "../worker/types";
 
 /** Timeout before force-resetting isProcessing if worker stalls */
 const PROCESSING_STALL_TIMEOUT = 5000;
@@ -35,6 +39,15 @@ class ONNXProvider implements VisionProvider {
     this.options = options;
   }
 
+  /** Post a typed request to the worker, with an optional transfer list */
+  private post(message: ONNXWorkerRequest, transfer?: Transferable[]): void {
+    if (transfer) {
+      this.worker?.postMessage(message, transfer);
+    } else {
+      this.worker?.postMessage(message);
+    }
+  }
+
   async initialize(video: HTMLVideoElement): Promise<void> {
     this.videoElement = video;
 
@@ -51,40 +64,51 @@ class ONNXProvider implements VisionProvider {
       }, 10000);
 
       this.messageHandler = (event: MessageEvent) => {
-        const { type, result, error, modelName } = event.data;
+        const data = event.data as ONNXWorkerResponse;
 
-        if (type === "initialized") {
-          clearTimeout(timeout);
-          this.isInitialized = true;
-          resolve();
-        } else if (type === "result") {
-          this.isProcessing = false;
-          this.handleResult(result);
-        } else if (type === "modelLoaded") {
-          const pending = this.pendingModelCallbacks.get(modelName);
-          if (pending) {
-            this.pendingModelCallbacks.delete(modelName);
-            pending.resolve();
-          }
-        } else if (type === "modelError") {
-          const pending = this.pendingModelCallbacks.get(modelName);
-          if (pending) {
-            this.pendingModelCallbacks.delete(modelName);
-            pending.reject(new Error(error));
-          }
-        } else if (type === "error") {
-          this.isProcessing = false;
-          if (!this.isInitialized) {
+        switch (data.type) {
+          case "initialized": {
             clearTimeout(timeout);
-            reject(new Error(error));
-          } else {
-            console.error("ONNX worker error:", error);
+            this.isInitialized = true;
+            resolve();
+            break;
+          }
+          case "result": {
+            this.isProcessing = false;
+            this.handleResult(data.result);
+            break;
+          }
+          case "modelLoaded": {
+            const pending = this.pendingModelCallbacks.get(data.modelName);
+            if (pending) {
+              this.pendingModelCallbacks.delete(data.modelName);
+              pending.resolve();
+            }
+            break;
+          }
+          case "modelError": {
+            const pending = this.pendingModelCallbacks.get(data.modelName);
+            if (pending) {
+              this.pendingModelCallbacks.delete(data.modelName);
+              pending.reject(new Error(data.error));
+            }
+            break;
+          }
+          case "error": {
+            this.isProcessing = false;
+            if (!this.isInitialized) {
+              clearTimeout(timeout);
+              reject(new Error(data.error));
+            } else {
+              console.error("ONNX worker error:", data.error);
+            }
+            break;
           }
         }
       };
 
       this.worker?.addEventListener("message", this.messageHandler);
-      this.worker?.postMessage({ type: "init" });
+      this.post({ type: "init" });
     });
 
     // Load configured models
@@ -156,7 +180,7 @@ class ONNXProvider implements VisionProvider {
         this.worker.removeEventListener("message", this.messageHandler);
         this.messageHandler = null;
       }
-      this.worker.postMessage({ type: "dispose" });
+      this.post({ type: "dispose" });
       this.worker.terminate();
       this.worker = null;
     }
@@ -175,7 +199,7 @@ class ONNXProvider implements VisionProvider {
       this.pendingModelCallbacks.set(model.name, { resolve, reject });
     });
 
-    this.worker.postMessage({ type: "loadModel", model });
+    this.post({ type: "loadModel", model });
 
     await promise;
     this.loadedModels.set(model.name, model);
@@ -191,22 +215,19 @@ class ONNXProvider implements VisionProvider {
 
     const { videoWidth, videoHeight } = this.videoElement;
 
-    createImageBitmap(this.videoElement, {
-      resizeWidth: 640,
-      resizeHeight: 640,
-    }).then(
+    // Send the full-resolution frame; the worker letterboxes to the model's
+    // input size so aspect ratio is preserved and boxes map back correctly.
+    createImageBitmap(this.videoElement).then(
       (bitmap) => {
         if (this.isDisposed) {
           bitmap.close();
           return;
         }
 
-        this.worker?.postMessage(
+        this.post(
           {
             type: "process",
             imageBitmap: bitmap,
-            width: 640,
-            height: 640,
             sourceWidth: videoWidth,
             sourceHeight: videoHeight,
             options: {
@@ -224,12 +245,7 @@ class ONNXProvider implements VisionProvider {
     );
   }
 
-  private handleResult(result: {
-    detections: ObjectDetection[];
-    frameSize: { width: number; height: number };
-    timestamp: number;
-    processingTime?: number;
-  }): void {
+  private handleResult(result: ONNXWorkerResult): void {
     const minConfidence = this.options.minConfidence ?? 0.5;
     const maxResults = this.options.maxResults ?? 100;
 

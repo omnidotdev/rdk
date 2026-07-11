@@ -1,4 +1,4 @@
-export type Mode = "hands" | "faces" | "poses";
+export type Mode = "hands" | "faces" | "poses" | "objects";
 
 type ModeSelectorProps = {
   mode: Mode;
@@ -6,8 +6,8 @@ type ModeSelectorProps = {
 };
 
 const BUTTON_STYLES = {
-  padding: "12px 24px",
-  fontSize: "16px",
+  padding: "10px 16px",
+  fontSize: "15px",
   color: "#ccc",
   border: "2px solid #333",
   borderRadius: "8px",
@@ -27,6 +27,7 @@ const MODES: { key: Mode; label: string }[] = [
   { key: "hands", label: "Hands" },
   { key: "faces", label: "Faces" },
   { key: "poses", label: "Poses" },
+  { key: "objects", label: "Objects" },
 ];
 
 const ModeSelector = ({ mode, onModeChange }: ModeSelectorProps) => (
@@ -35,9 +36,12 @@ const ModeSelector = ({ mode, onModeChange }: ModeSelectorProps) => (
       position: "fixed",
       bottom: "20px",
       display: "flex",
+      flexWrap: "wrap",
       justifyContent: "center",
-      gap: "12px",
+      gap: "8px",
       width: "100%",
+      padding: "0 12px",
+      boxSizing: "border-box",
       zIndex: 1000,
     }}
   >

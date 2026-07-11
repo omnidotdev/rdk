@@ -1,10 +1,16 @@
-import { FaceMode, HandMode, ModeSelector, PoseMode } from "components";
+import {
+  FaceMode,
+  HandMode,
+  ModeSelector,
+  ObjectMode,
+  PoseMode,
+} from "components";
 import { useState } from "react";
 
 import type { VisionTask } from "@omnidotdev/rdk/vision";
 import type { Mode } from "components";
 
-const MODE_TASKS: Record<Mode, VisionTask[]> = {
+const MODE_TASKS: Record<"hands" | "faces" | "poses", VisionTask[]> = {
   hands: ["hands"],
   faces: ["faces"],
   poses: ["poses"],
@@ -26,6 +32,7 @@ const App = () => {
         {mode === "hands" && <HandMode tasks={MODE_TASKS.hands} />}
         {mode === "faces" && <FaceMode tasks={MODE_TASKS.faces} />}
         {mode === "poses" && <PoseMode tasks={MODE_TASKS.poses} />}
+        {mode === "objects" && <ObjectMode />}
       </div>
 
       <ModeSelector mode={mode} onModeChange={setMode} />

@@ -38,12 +38,19 @@ export type VisionFrame = {
 /** Supported vision tasks */
 export type VisionTask = "hands" | "faces" | "poses" | "objects";
 
+/** Identifier of a registered ONNX output decoder */
+export type ONNXDecoderName = "yolo" | "rfdetr";
+
 /** ONNX model configuration */
 export type ONNXModelConfig = {
   name: string;
   path: string;
+  /** Square input side length the model expects (default 640) */
   inputSize?: number;
+  /** Class labels indexed by class id (defaults to COCO-80) */
   labels?: string[];
+  /** Which registered decoder interprets this model's raw outputs (default "yolo") */
+  decoder?: ONNXDecoderName;
 };
 
 /** Progress callback payload */
@@ -67,6 +74,8 @@ export type VisionSessionOptions = {
   throttle?: number;
   /** Use GPU acceleration */
   useGpu?: boolean;
+  /** Compute a pose segmentation mask (MediaPipe pose only; costly, default off) */
+  segmentation?: boolean;
   /** External video element (skip internal camera setup) */
   videoElement?: HTMLVideoElement;
   /** Progress callback for model loading */
