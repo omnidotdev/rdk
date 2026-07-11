@@ -1,5 +1,13 @@
 # @omnidotdev/rdk
 
+## 0.12.0
+
+### Minor Changes
+
+- [#98](https://github.com/omnidotdev/rdk/pull/98) [`62280ca`](https://github.com/omnidotdev/rdk/commit/62280cae627bc2ebbb43473722de6cc1c396cde9) Thanks [@coopbri](https://github.com/coopbri)! - Add ONNX instance segmentation to the vision module. A new `yoloseg` decoder assembles per-instance masks from a YOLOv8/v11-seg model (detection `[1, 4+C+M, A]` + prototype `[1, M, H, W]` outputs) as `sigmoid(coeffs · prototypes)`, thresholded and cropped to each box. Results arrive on `VisionFrame.masks` as `SegmentationMask[]` (label, confidence, source-space bbox, and a cropped alpha mask), with mask buffers transferred zero-copy from the worker.
+
+  The decoder interface now returns `{ objects?, masks? }`, and a `yoloSeg()` model preset + `SegmentationMask` type are exported. The demo gains a "Segment" mode.
+
 ## 0.11.0
 
 ### Minor Changes
