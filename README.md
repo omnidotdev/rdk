@@ -11,7 +11,7 @@
 
 > [!IMPORTANT]
 > **Project Status:** 🚧 This project is **brand new**.
-> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js), location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js), WebXR via [`@react-three/xr`](https://github.com/pmndrs/xr), and ML vision (hand/face/pose tracking, gestures, and ONNX object detection via [MediaPipe](https://ai.google.dev/edge/mediapipe) + [ONNX Runtime Web](https://onnxruntime.ai)) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
+> Currently, fiducial marker-based AR via [AR.js](https://github.com/ar-js-org/ar.js), location-based AR via [LocAR.js](https://github.com/ar-js-org/locar.js), WebXR via [`@react-three/xr`](https://github.com/pmndrs/xr), and ML vision (hand/face/pose tracking, gestures, and ONNX object detection + instance segmentation via [MediaPipe](https://ai.google.dev/edge/mediapipe) + [ONNX Runtime Web](https://onnxruntime.ai)) are working (see [`apps/`](./apps/) for demos), though they are **experimental**. Contributions (PRs, [Omni organization sponsorship](https://github.com/sponsors/omnidotdev)) appreciated.
 
 ## Overview
 
@@ -28,6 +28,7 @@ RDK unifies multiple spatial and XR technologies, such as AR.js for marker-based
 | **Body/Pose Tracking**               | ⚗️ Experimental | [MediaPipe Pose Landmarker](https://ai.google.dev/edge/mediapipe)                                    | ✅      | ✅             | Real-time skeletal tracking via MediaPipe Tasks Vision.                                    |
 | **Hand Tracking**                    | ⚗️ Experimental | [MediaPipe Hand Landmarker](https://ai.google.dev/edge/mediapipe)                                    | ✅      | ✅             | Includes built-in gesture detection (fist, peace, thumbs up, etc.).                       |
 | **Object Detection (2D)**            | ⚗️ Experimental | [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web) (YOLO / RF-DETR)                       | ✅      | ✅             | Pluggable decoders; inference runs in a Web Worker. Bring your own model via presets.     |
+| **Instance Segmentation**            | ⚗️ Experimental | [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web) (YOLO-seg)                             | ✅      | ✅             | Per-instance masks + labels in a Web Worker; mask buffers transferred zero-copy.          |
 | **Plane/Surface Detection**          | 🧭 Planned      | [WebXR Hit Test API](https://immersive-web.github.io/hit-test)/ar.js (limited)                       | N/A     | N/A            | Enables AR object placement on flat surfaces.                                             |
 | **Depth Sensing/Environment Mesh**   | 🧭 Planned      | [WebXR Depth Sensing API](https://immersive-web.github.io/depth-sensing)                             | N/A     | N/A            | Provides per-pixel depth; early spec.                                                     |
 | **SLAM/Visual Positioning (VPS)**    | 🧭 Planned      | Custom                                                                                               | N/A     | N/A            | Requires world map data; long-term goal.                                                  |

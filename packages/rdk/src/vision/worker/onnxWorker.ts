@@ -5,8 +5,12 @@ import { getDecoder } from "./decoders";
 import { computeLetterbox, rgbaToNchw } from "./preprocess";
 
 import type { InferenceSession } from "onnxruntime-web";
-import type { ObjectDetection, ONNXModelConfig } from "../types";
-import type { DecodeContext, TensorLike } from "./decoders";
+import type {
+  ObjectDetection,
+  ONNXModelConfig,
+  SegmentationMask,
+} from "../types";
+import type { DecodeContext, DecodeResult, TensorLike } from "./decoders";
 import type {
   ONNXProcessOptions,
   ONNXWorkerRequest,
@@ -36,8 +40,12 @@ const loadOrt = (): Promise<OrtModule> => {
   return ortPromise;
 };
 
-const post = (message: ONNXWorkerResponse): void => {
-  self.postMessage(message);
+const post = (message: ONNXWorkerResponse, transfer?: Transferable[]): void => {
+  if (transfer && transfer.length > 0) {
+    self.postMessage(message, { transfer });
+  } else {
+    self.postMessage(message);
+  }
 };
 
 /** Preprocess, run one model, and decode its outputs to source-space boxes */
@@ -48,7 +56,7 @@ const runModel = async (
   sourceWidth: number,
   sourceHeight: number,
   options: ONNXProcessOptions,
-): Promise<ObjectDetection[]> => {
+): Promise<DecodeResult> => {
   const size = loaded.config.inputSize ?? DEFAULT_INPUT_SIZE;
   const { scale, padX, padY, drawWidth, drawHeight } = computeLetterbox(
     sourceWidth,
@@ -132,28 +140,36 @@ const handleMessage = async (event: MessageEvent): Promise<void> => {
         const started = performance.now();
 
         const detections: ObjectDetection[] = [];
+        const masks: SegmentationMask[] = [];
         for (const loaded of models.values()) {
-          detections.push(
-            ...(await runModel(
-              ort,
-              loaded,
-              imageBitmap,
-              sourceWidth,
-              sourceHeight,
-              options,
-            )),
+          const result = await runModel(
+            ort,
+            loaded,
+            imageBitmap,
+            sourceWidth,
+            sourceHeight,
+            options,
           );
+          if (result.objects) detections.push(...result.objects);
+          if (result.masks) masks.push(...result.masks);
         }
 
-        post({
-          type: "result",
-          result: {
-            detections,
-            frameSize: { width: sourceWidth, height: sourceHeight },
-            timestamp: Date.now(),
-            processingTime: performance.now() - started,
+        // Transfer mask buffers (zero-copy) instead of structured-cloning them
+        const transfer = masks.map((m) => m.mask.buffer);
+
+        post(
+          {
+            type: "result",
+            result: {
+              detections,
+              masks,
+              frameSize: { width: sourceWidth, height: sourceHeight },
+              timestamp: Date.now(),
+              processingTime: performance.now() - started,
+            },
           },
-        });
+          transfer,
+        );
       } catch (error) {
         post({
           type: "error",

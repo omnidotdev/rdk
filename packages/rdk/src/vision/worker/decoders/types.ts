@@ -1,4 +1,4 @@
-import type { ObjectDetection } from "../../types";
+import type { ObjectDetection, SegmentationMask } from "../../types";
 
 /**
  * Minimal structural view of an onnxruntime-web tensor. Decoders depend on this
@@ -32,14 +32,17 @@ export type DecodeContext = {
   maxResults: number;
 };
 
+/** Output of a decoder: detections and/or per-instance segmentation masks */
+export type DecodeResult = {
+  objects?: ObjectDetection[];
+  masks?: SegmentationMask[];
+};
+
 /**
- * Interprets a model's raw output tensors into detections in source pixel
+ * Interprets a model's raw output tensors into detections/masks in source pixel
  * coordinates. Register concrete decoders by {@link import("../../types").ONNXDecoderName}.
  */
 export type ONNXDecoder = {
   readonly name: string;
-  decode(
-    outputs: Record<string, TensorLike>,
-    ctx: DecodeContext,
-  ): ObjectDetection[];
+  decode(outputs: Record<string, TensorLike>, ctx: DecodeContext): DecodeResult;
 };

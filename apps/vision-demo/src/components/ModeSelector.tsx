@@ -1,4 +1,4 @@
-export type Mode = "hands" | "faces" | "poses" | "objects";
+export type Mode = "hands" | "faces" | "poses" | "objects" | "segment";
 
 type ModeSelectorProps = {
   mode: Mode;
@@ -28,6 +28,7 @@ const MODES: { key: Mode; label: string }[] = [
   { key: "faces", label: "Faces" },
   { key: "poses", label: "Poses" },
   { key: "objects", label: "Objects" },
+  { key: "segment", label: "Segment" },
 ];
 
 const ModeSelector = ({ mode, onModeChange }: ModeSelectorProps) => (

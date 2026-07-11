@@ -124,7 +124,7 @@ describe("yoloDecoder", () => {
       0.1, // class 1
     ];
 
-    const out = yoloDecoder.decode(
+    const { objects: out = [] } = yoloDecoder.decode(
       { output0: { data, dims: [1, 6, 3] } },
       identityCtx({ labels: ["a", "b"] }),
     );
@@ -157,7 +157,7 @@ describe("yoloDecoder", () => {
       0.0,
       0.0, // class 1
     ];
-    const out = yoloDecoder.decode(
+    const { objects: out = [] } = yoloDecoder.decode(
       { output0: { data, dims: [1, 6, 3] } },
       identityCtx({ labels: ["a", "b"], maxResults: 2 }),
     );
@@ -174,7 +174,7 @@ describe("rfDetrDecoder", () => {
     const boxes = [0.5, 0.5, 0.1, 0.1, 0.5, 0.5, 0.2, 0.2];
     const logits = [-5, 2, -5, -5, -5, -5];
 
-    const out = rfDetrDecoder.decode(
+    const { objects: out = [] } = rfDetrDecoder.decode(
       {
         boxes: { data: boxes, dims: [1, 2, 4] },
         logits: { data: logits, dims: [1, 2, 3] },
@@ -192,7 +192,7 @@ describe("rfDetrDecoder", () => {
   it("identifies boxes/logits tensors regardless of key order", () => {
     const boxes = [0.5, 0.5, 0.1, 0.1];
     const logits = [-5, 3, -5];
-    const out = rfDetrDecoder.decode(
+    const { objects: out = [] } = rfDetrDecoder.decode(
       {
         // logits first, boxes second: split must key off dims, not order
         pred_logits: { data: logits, dims: [1, 1, 3] },

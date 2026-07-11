@@ -260,6 +260,7 @@ class ONNXProvider implements VisionProvider {
       faces: [],
       poses: [],
       objects,
+      masks: result.masks.length > 0 ? result.masks : undefined,
       timestamp: result.timestamp,
       frameSize: result.frameSize,
       processingTime: result.processingTime,

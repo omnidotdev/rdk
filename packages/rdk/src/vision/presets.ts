@@ -129,3 +129,23 @@ export const rfDetr = (
   path,
   decoder: "rfdetr",
 });
+
+/**
+ * Build a config for a YOLOv8/v11-**seg** instance-segmentation model. Expects a
+ * `[1, 4 + numClasses + M, numAnchors]` detection output and a
+ * `[1, M, protoH, protoW]` prototype output; produces per-instance masks.
+ *
+ * @param path URL or same-origin path to the exported `.onnx` weights
+ *   (e.g. from `yolo export format=onnx` on a `-seg` model). Weights are not bundled.
+ */
+export const yoloSeg = (
+  path: string,
+  overrides: PresetOverrides = {},
+): ONNXModelConfig => ({
+  name: "yolo-seg",
+  inputSize: 640,
+  labels: [...COCO_LABELS],
+  ...overrides,
+  path,
+  decoder: "yoloseg",
+});
