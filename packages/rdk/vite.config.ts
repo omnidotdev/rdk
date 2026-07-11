@@ -4,6 +4,22 @@ import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+/** Peer dependencies kept external (never bundled into the published package) */
+const EXTERNAL_DEPS = [
+  "react",
+  "react-dom",
+  "three",
+  "@ar-js-org/ar.js",
+  "locar",
+  "@react-three/fiber",
+  "@react-three/xr",
+  "onnxruntime-web",
+  "@mediapipe/tasks-vision",
+];
+
+const isExternal = (id: string): boolean =>
+  EXTERNAL_DEPS.some((ext) => id === ext || id.startsWith(`${ext}/`));
+
 /**
  * Vite configuration.
  * @see https://vite.dev/config
@@ -27,6 +43,7 @@ const viteConfig = defineConfig(({ mode }) => ({
         geolocation: resolve(__dirname, "src/geolocation/index.ts"),
         immersive: resolve(__dirname, "src/immersive/index.ts"),
         magic: resolve(__dirname, "src/magic/index.ts"),
+        vision: resolve(__dirname, "src/vision/index.ts"),
       },
       formats: ["es", "cjs"],
       fileName: (format, entryName) =>
@@ -34,16 +51,7 @@ const viteConfig = defineConfig(({ mode }) => ({
     },
     minify: mode === "production",
     rollupOptions: {
-      external: (id) =>
-        [
-          "react",
-          "react-dom",
-          "three",
-          "@ar-js-org/ar.js",
-          "locar",
-          "@react-three/fiber",
-          "@react-three/xr",
-        ].some((ext) => id === ext || id.startsWith(`${ext}/`)),
+      external: isExternal,
       output: {
         globals: {
           react: "React",
@@ -55,6 +63,14 @@ const viteConfig = defineConfig(({ mode }) => ({
           locar: "LocAR",
         },
       },
+    },
+  },
+  // The ONNX worker is a separate bundle; externalize its deps too so
+  // onnxruntime-web is not inlined (the consumer resolves it as a peer dep)
+  worker: {
+    format: "es",
+    rollupOptions: {
+      external: isExternal,
     },
   },
 }));
