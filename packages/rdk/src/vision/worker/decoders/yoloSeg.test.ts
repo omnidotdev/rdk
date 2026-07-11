@@ -115,4 +115,38 @@ describe("yoloSegDecoder", () => {
     expect(masks?.[0].maskHeight).toBe(4);
     expect(masks?.[0].bbox).toEqual({ x: 0, y: 0, width: 4, height: 8 });
   });
+
+  it("clamps the mask crop to the frame at letterboxed edges", () => {
+    // Landscape 8x4 source into an 8px input -> padY 2 (top/bottom bars).
+    // A box extending above the frame clamps to y=0; the mask crop must exclude
+    // the padding rows so it stays aligned with the (clamped) returned bbox.
+    const paddedCtx: DecodeContext = {
+      inputSize: 8,
+      sourceWidth: 8,
+      sourceHeight: 4,
+      scale: 1,
+      padX: 0,
+      padY: 2,
+      labels: ["obj"],
+      minConfidence: 0.5,
+      maxResults: 10,
+    };
+    // box cx=4,cy=1,w=8,h=6 -> input y1=-2 (above frame) .. y2=4
+    const det = [4, 1, 8, 6, 0.9, 1, 0];
+    const proto = [...new Array(16).fill(10), ...new Array(16).fill(0)];
+
+    const { masks } = yoloSegDecoder.decode(
+      {
+        output0: { data: det, dims: [1, 7, 1] },
+        output1: { data: proto, dims: [1, 2, 4, 4] },
+      },
+      paddedCtx,
+    );
+
+    expect(masks?.[0].bbox).toEqual({ x: 0, y: 0, width: 8, height: 2 });
+    expect(masks?.[0].maskWidth).toBe(4);
+    // padding row excluded -> single content row, not 2
+    expect(masks?.[0].maskHeight).toBe(1);
+    expect(Array.from(masks?.[0].mask ?? [])).toEqual([255, 255, 255, 255]);
+  });
 });

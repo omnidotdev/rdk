@@ -25,6 +25,8 @@ type SegmentationOverlayProps = {
  */
 const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Reused across masks/frames to avoid per-instance canvas allocation
+  const scratchRef = useRef<OffscreenCanvas | null>(null);
   const frame = useVisionFrame();
 
   useEffect(() => {
@@ -32,6 +34,11 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    if (!scratchRef.current) scratchRef.current = new OffscreenCanvas(1, 1);
+    const scratch = scratchRef.current;
+    const scratchCtx = scratch.getContext("2d");
+    if (!scratchCtx) return;
 
     const dpr = window.devicePixelRatio || 1;
     const cw = canvas.clientWidth;
@@ -60,11 +67,10 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
     masks.forEach((m, i) => {
       const [r, g, b] = COLORS[i % COLORS.length];
 
-      // Paint the mask into a small offscreen canvas, then scale into the box
-      const maskCanvas = new OffscreenCanvas(m.maskWidth, m.maskHeight);
-      const maskCtx = maskCanvas.getContext("2d");
-      if (!maskCtx) return;
-      const img = maskCtx.createImageData(m.maskWidth, m.maskHeight);
+      // Paint the mask into the reused scratch canvas, then scale into the box
+      scratch.width = m.maskWidth;
+      scratch.height = m.maskHeight;
+      const img = scratchCtx.createImageData(m.maskWidth, m.maskHeight);
       for (let p = 0; p < m.mask.length; p++) {
         if (m.mask[p]) {
           img.data[p * 4] = r;
@@ -73,7 +79,7 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
           img.data[p * 4 + 3] = MASK_ALPHA;
         }
       }
-      maskCtx.putImageData(img, 0, 0);
+      scratchCtx.putImageData(img, 0, 0);
 
       const nw = (m.bbox.width / fw) * rx;
       const nh = (m.bbox.height / fh) * ry;
@@ -83,7 +89,7 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
 
       const left = u * cw;
       const top = v * ch;
-      ctx.drawImage(maskCanvas, left, top, nw * cw, nh * ch);
+      ctx.drawImage(scratch, left, top, nw * cw, nh * ch);
 
       const label = `${m.label} ${Math.round(m.confidence * 100)}%`;
       const labelTop = Math.max(0, top - 18);

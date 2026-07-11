@@ -19,8 +19,6 @@ type Candidate = {
   label: string;
   confidence: number;
   bbox: { x: number; y: number; width: number; height: number };
-  /** Box in input-space (letterboxed) pixels, for cropping the prototype masks */
-  inputBox: [number, number, number, number];
   coeffs: number[];
 };
 
@@ -94,7 +92,6 @@ export const yoloSegDecoder: ONNXDecoder = {
         label: ctx.labels[bestClass] ?? String(bestClass),
         confidence: bestScore,
         bbox,
-        inputBox: [x1, y1, x2, y2],
         coeffs,
       });
     }
@@ -117,7 +114,14 @@ export const yoloSegDecoder: ONNXDecoder = {
     const sy = protoH / ctx.inputSize;
 
     const masks: SegmentationMask[] = kept.map((cand) => {
-      const [ix1, iy1, ix2, iy2] = cand.inputBox;
+      // Map the (frame-clamped) source bbox back into input space, then onto the
+      // prototype grid, so the mask crop matches the returned bbox exactly -
+      // including at frame edges where the raw box is clamped.
+      const { x, y, width, height } = cand.bbox;
+      const ix1 = x * ctx.scale + ctx.padX;
+      const iy1 = y * ctx.scale + ctx.padY;
+      const ix2 = (x + width) * ctx.scale + ctx.padX;
+      const iy2 = (y + height) * ctx.scale + ctx.padY;
       const px0 = Math.max(0, Math.floor(ix1 * sx));
       const py0 = Math.max(0, Math.floor(iy1 * sy));
       const px1 = Math.min(protoW, Math.ceil(ix2 * sx));
