@@ -1,4 +1,8 @@
-import type { ObjectDetection, ONNXModelConfig } from "../types";
+import type {
+  ObjectDetection,
+  ONNXModelConfig,
+  SegmentationMask,
+} from "../types";
 
 export type { VisionProgress } from "../types";
 
@@ -11,6 +15,7 @@ export type ONNXProcessOptions = {
 /** Result payload the ONNX worker produces for a processed frame */
 export type ONNXWorkerResult = {
   detections: ObjectDetection[];
+  masks: SegmentationMask[];
   frameSize: { width: number; height: number };
   timestamp: number;
   processingTime?: number;

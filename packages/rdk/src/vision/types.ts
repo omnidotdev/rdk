@@ -23,12 +23,31 @@ export type ObjectDetection = {
   };
 };
 
+/** A per-instance segmentation mask, cropped to its bounding box */
+export type SegmentationMask = {
+  label: string;
+  confidence: number;
+  /** Bounding box in source pixel coordinates */
+  bbox: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  /** Row-major alpha values (0-255) covering the bbox, sized maskWidth x maskHeight */
+  mask: Uint8Array;
+  maskWidth: number;
+  maskHeight: number;
+};
+
 /** A single frame of vision detection results */
 export type VisionFrame = {
   hands: LandmarkDetection[];
   faces: LandmarkDetection[];
   poses: LandmarkDetection[];
   objects: ObjectDetection[];
+  /** Per-instance segmentation masks (present when a segmentation model runs) */
+  masks?: SegmentationMask[];
   timestamp: number;
   frameSize: { width: number; height: number };
   processingTime?: number;
@@ -39,7 +58,7 @@ export type VisionFrame = {
 export type VisionTask = "hands" | "faces" | "poses" | "objects";
 
 /** Identifier of a registered ONNX output decoder */
-export type ONNXDecoderName = "yolo" | "rfdetr";
+export type ONNXDecoderName = "yolo" | "rfdetr" | "yoloseg";
 
 /** ONNX model configuration */
 export type ONNXModelConfig = {

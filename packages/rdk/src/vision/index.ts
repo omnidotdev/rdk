@@ -10,7 +10,7 @@ export {
 } from "./gestures";
 export { default as HandTracker } from "./HandTracker";
 export { landmarksCentroid, landmarkToWorld } from "./landmarkMapping";
-export { COCO_LABELS, rfDetr, yolo } from "./presets";
+export { COCO_LABELS, rfDetr, yolo, yoloSeg } from "./presets";
 export { default as useVisionBackend } from "./useVisionBackend";
 export { default as useVisionFrame } from "./useVisionFrame";
 export { default as VisionAnchor } from "./VisionAnchor";
@@ -30,6 +30,7 @@ export type {
   ObjectDetection,
   ONNXDecoderName,
   ONNXModelConfig,
+  SegmentationMask,
   VisionFrame,
   VisionLandmark,
   VisionProgress,

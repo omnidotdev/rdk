@@ -1,7 +1,12 @@
 import { letterboxToSource } from "./nms";
 
 import type { ObjectDetection } from "../../types";
-import type { DecodeContext, ONNXDecoder, TensorLike } from "./types";
+import type {
+  DecodeContext,
+  DecodeResult,
+  ONNXDecoder,
+  TensorLike,
+} from "./types";
 
 const sigmoid = (x: number): number => 1 / (1 + Math.exp(-x));
 
@@ -34,7 +39,7 @@ export const rfDetrDecoder: ONNXDecoder = {
   decode(
     outputs: Record<string, TensorLike>,
     ctx: DecodeContext,
-  ): ObjectDetection[] {
+  ): DecodeResult {
     const { boxes, logits } = splitOutputs(outputs);
 
     const numQueries = boxes.dims[1];
@@ -81,8 +86,10 @@ export const rfDetrDecoder: ONNXDecoder = {
     }
 
     // Set prediction: no NMS, just rank and cap
-    return detections
+    const objects = detections
       .sort((a, b) => b.confidence - a.confidence)
       .slice(0, ctx.maxResults);
+
+    return { objects };
   },
 };

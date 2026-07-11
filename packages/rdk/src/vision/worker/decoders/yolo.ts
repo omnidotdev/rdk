@@ -1,7 +1,12 @@
 import { letterboxToSource, nms } from "./nms";
 
 import type { ObjectDetection } from "../../types";
-import type { DecodeContext, ONNXDecoder, TensorLike } from "./types";
+import type {
+  DecodeContext,
+  DecodeResult,
+  ONNXDecoder,
+  TensorLike,
+} from "./types";
 
 /** IoU threshold for YOLO non-maximum suppression */
 const YOLO_IOU_THRESHOLD = 0.45;
@@ -27,7 +32,7 @@ export const yoloDecoder: ONNXDecoder = {
   decode(
     outputs: Record<string, TensorLike>,
     ctx: DecodeContext,
-  ): ObjectDetection[] {
+  ): DecodeResult {
     const tensor = firstTensor(outputs);
     const { dims, data } = tensor;
 
@@ -81,8 +86,10 @@ export const yoloDecoder: ONNXDecoder = {
       });
     }
 
-    return nms(detections, YOLO_IOU_THRESHOLD)
+    const objects = nms(detections, YOLO_IOU_THRESHOLD)
       .sort((a, b) => b.confidence - a.confidence)
       .slice(0, ctx.maxResults);
+
+    return { objects };
   },
 };

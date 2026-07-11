@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { COCO_LABELS, rfDetr, yolo } from "./presets";
+import { COCO_LABELS, rfDetr, yolo, yoloSeg } from "./presets";
 
 describe("presets", () => {
   it("yolo() wires the yolo decoder + COCO labels + path", () => {
@@ -16,6 +16,14 @@ describe("presets", () => {
     const config = rfDetr("/models/rf-detr.onnx");
     expect(config.decoder).toBe("rfdetr");
     expect(config.name).toBe("rf-detr");
+  });
+
+  it("yoloSeg() wires the yoloseg decoder", () => {
+    const config = yoloSeg("/models/yolo11n-seg.onnx");
+    expect(config.decoder).toBe("yoloseg");
+    expect(config.name).toBe("yolo-seg");
+    expect(config.inputSize).toBe(640);
+    expect(config.labels).toHaveLength(80);
   });
 
   it("allows overrides but pins path + decoder", () => {

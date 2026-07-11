@@ -4,6 +4,7 @@ import {
   ModeSelector,
   ObjectMode,
   PoseMode,
+  SegmentMode,
 } from "components";
 import { useState } from "react";
 
@@ -33,6 +34,7 @@ const App = () => {
         {mode === "faces" && <FaceMode tasks={MODE_TASKS.faces} />}
         {mode === "poses" && <PoseMode tasks={MODE_TASKS.poses} />}
         {mode === "objects" && <ObjectMode />}
+        {mode === "segment" && <SegmentMode />}
       </div>
 
       <ModeSelector mode={mode} onModeChange={setMode} />
