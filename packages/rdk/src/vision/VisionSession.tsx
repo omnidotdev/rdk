@@ -51,6 +51,12 @@ const VisionSession: React.FC<VisionSessionProps> = ({
 
         await registerBackend(backend, { scene, camera, renderer: gl });
 
+        // Cleanup may have run during the await; don't leak the registration
+        if (cancelled) {
+          unregisterBackend(backend);
+          return;
+        }
+
         backendRef.current = backend;
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
