@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Check permissions
         id: checkPermissions
-        uses: actions-cool/check-user-permission@v2
+        uses: actions-cool/check-user-permission@c21884f3dda18dafc2f8b402fe807ccc9ec1aa5e # v2
         with:
           # require repo write access to trigger the package preview
           require: "write"
@@ -26,8 +26,8 @@ jobs:
     if: needs.check.outputs.has-permissions == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
       - name: Install dependencies
         run: bun i
       - name: Build package
