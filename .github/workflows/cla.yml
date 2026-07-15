@@ -8,7 +8,7 @@ on:
 
 jobs:
   cla:
-    uses: omnidotdev/.github/.github/workflows/cla.yml@master
+    uses: omnidotdev/.github/.github/workflows/cla.yml@fff8e1bea2b720c122cc068021410fb53de73de9 # master
     permissions:
       actions: read
       contents: write
