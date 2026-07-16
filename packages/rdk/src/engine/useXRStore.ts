@@ -7,6 +7,16 @@ import type { XRStore as ReactThreeXRStore } from "@react-three/xr";
 import type { Backend, BackendType } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
+/**
+ * Backends that own the device camera feed. Only one may be active at a time,
+ * since they each acquire the camera and manage their own video element.
+ */
+const CAMERA_EXCLUSIVE_BACKENDS: BackendType[] = [
+  BACKEND_TYPES.FIDUCIAL,
+  BACKEND_TYPES.GEOLOCATION,
+  BACKEND_TYPES.IMAGE_TRACKING,
+];
+
 interface BaseXRStoreState {
   /** Shared video element. */
   video?: HTMLVideoElement | null;
@@ -55,15 +65,17 @@ const useXRStoreBase = create<BaseXRStore>()(
         const state = get();
         const existingTypes = new Set(state.backends.keys());
 
-        const hasFiducial =
-            existingTypes.has(BACKEND_TYPES.FIDUCIAL) ||
-            backend.type === BACKEND_TYPES.FIDUCIAL,
-          hasGeolocation =
-            existingTypes.has(BACKEND_TYPES.GEOLOCATION) ||
-            backend.type === BACKEND_TYPES.GEOLOCATION;
+        // camera-owning backends fight over `getUserMedia` and the video
+        // element, so at most one may be active at a time
+        const conflictingCameraBackend = CAMERA_EXCLUSIVE_BACKENDS.find(
+          (type) => existingTypes.has(type) && type !== backend.type,
+        );
 
-        if (hasFiducial && hasGeolocation) {
-          const errorMessage = `❌ [RDK] INCOMPATIBLE SESSIONS: fiducial and geolocation backends cannot be used together due to camera/video conflicts between AR.js and LocAR.js libraries. Use only one session type per app.`;
+        if (
+          CAMERA_EXCLUSIVE_BACKENDS.includes(backend.type) &&
+          conflictingCameraBackend
+        ) {
+          const errorMessage = `❌ [RDK] INCOMPATIBLE SESSIONS: the "${backend.type}" and "${conflictingCameraBackend}" backends both require exclusive camera access and cannot be used together. Use only one camera-owning session type per app.`;
 
           console.error(errorMessage);
 

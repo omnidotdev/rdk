@@ -6,6 +6,7 @@ import type { BackendInitArgs } from "./BackendInitArgs.interface";
 export const BACKEND_TYPES = {
   FIDUCIAL: "fiducial",
   GEOLOCATION: "geolocation",
+  IMAGE_TRACKING: "image-tracking",
   IMMERSIVE: "immersive",
   MAGIC: "magic",
   VISION: "vision",

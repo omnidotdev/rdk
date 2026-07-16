@@ -1,0 +1,33 @@
+{
+  "name": "rdk-image-tracking-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "clean": "rm -rf build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.8",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0",
+    "vite-plugin-mkcert": "^2.0.0",
+    "vite-tsconfig-paths": "^6.0.3"
+  },
+  "dependencies": {
+    "@omnidotdev/rdk": "workspace:*",
+    "@react-three/fiber": "^9.5.0",
+    "mind-ar": "^1.2.5",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "three": "^0.185.0"
+  }
+}

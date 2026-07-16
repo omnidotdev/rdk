@@ -5,6 +5,7 @@ export {
 } from "./engine/useXRStore";
 export * from "./fiducial";
 export * from "./geolocation";
+export * from "./image-tracking";
 export * from "./immersive";
 export { BACKEND_TYPES } from "./lib/types/engine";
 export * from "./magic";

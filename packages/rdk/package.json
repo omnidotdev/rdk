@@ -45,6 +45,11 @@
       "import": "./build/geolocation.js",
       "require": "./build/geolocation.cjs"
     },
+    "./image-tracking": {
+      "types": "./build/image-tracking.d.ts",
+      "import": "./build/image-tracking.js",
+      "require": "./build/image-tracking.cjs"
+    },
     "./immersive": {
       "types": "./build/immersive.d.ts",
       "import": "./build/immersive.js",
@@ -77,6 +82,7 @@
     "@react-three/fiber": "^9.5.0",
     "@react-three/xr": "^6.6.29",
     "locar": "^0.2.3",
+    "mind-ar": "^1.2.5",
     "onnxruntime-web": "^1.22.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -93,6 +99,9 @@
       "optional": true
     },
     "locar": {
+      "optional": true
+    },
+    "mind-ar": {
       "optional": true
     },
     "onnxruntime-web": {
@@ -112,6 +121,7 @@
     "@types/three": "^0.185.0",
     "jsdom": "^29.0.0",
     "locar": "^0.2.3",
+    "mind-ar": "^1.2.5",
     "onnxruntime-web": "^1.27.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
