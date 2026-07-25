@@ -104,7 +104,7 @@
     "@biomejs/biome": "^2.4.8",
     "@mediapipe/tasks-vision": "^0.10.35",
     "@react-three/fiber": "^9.5.0",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.1",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
