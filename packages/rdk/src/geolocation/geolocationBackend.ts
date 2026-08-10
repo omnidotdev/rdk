@@ -1,8 +1,15 @@
 import { BACKEND_TYPES } from "lib/types/engine";
-import { DeviceOrientationControls, LocAR, Webcam } from "locar";
+import { App } from "locar";
 
 import type { Backend, BackendInitArgs } from "lib/types/engine";
-import type { Camera, Group, Scene, WebGLRenderer } from "three";
+import type { DeviceOrientationControls, LocAR, Webcam } from "locar";
+import type {
+  Camera,
+  Group,
+  PerspectiveCamera,
+  Scene,
+  WebGLRenderer,
+} from "three";
 
 /**
  * GPS update event structure emitted by LocAR.
@@ -80,14 +87,11 @@ export interface GeolocationSessionOptions {
 const createGeolocationBackend = (
   options?: GeolocationSessionOptions,
 ): Backend<GeolocationInternal> => {
+  // LocAR's App orchestrates the LocAR core, webcam feed and device orientation
+  // against our existing (react-three-fiber owned) camera, renderer and scene
+  let app: App | null = null;
   let locar: LocAR | null = null;
-  let webcam: Webcam | null = null;
-  let deviceOrientation: DeviceOrientationControls | null = null;
   let resizeHandler: (() => void) | undefined;
-  // LocAR 0.2.x renders the camera feed into its own <video> element appended to
-  // the document (there is no stop()/dispose() on Webcam), so we track it to tear
-  // the stream down and remove the element on session end
-  let webcamVideoEl: HTMLVideoElement | null = null;
 
   let gpsUpdateHandler: ((data: GpsUpdateEvent) => void) | null = null;
 
@@ -155,32 +159,27 @@ const createGeolocationBackend = (
       rendererRef = renderer;
       sceneRef = scene;
 
-      // location-based handler
-      locar = new LocAR(scene, camera);
-
-      // LocAR 0.2.x renders the camera feed as a DOM <video> element (sized to
-      // preserve aspect ratio) behind the canvas, rather than a stretched
-      // `scene.background` texture. Clear the WebGL canvas to transparent so the
-      // feed shows through
-      renderer.setClearAlpha?.(0);
-
-      // snapshot existing videos so we can identify the element LocAR creates
-      const existingVideos = new Set(document.querySelectorAll("video"));
-
-      // video background (LocAR creates and appends its own <video> element)
-      webcam = new Webcam(
-        (options?.webcamConstraints ?? {
+      // App wires the LocAR core, webcam and device orientation against our
+      // existing three.js objects (LocAR >= 0.2.6 `threeObjects` option)
+      app = new App({
+        threeObjects: {
+          // TODO location-based AR assumes a perspective camera; narrow
+          // `BackendInitArgs.camera` to PerspectiveCamera or validate here
+          camera: camera as PerspectiveCamera,
+          renderer,
+          scene,
+        },
+        videoConstraints: (options?.webcamConstraints ?? {
           video: { facingMode: "environment" },
           // TODO narrow `webcamConstraints` to LocAR's `{ video: { facingMode } }` shape
-        }) as any,
-      );
+        }) as { video: { facingMode: string } },
+        deviceOrientationOptions: { enabled: true },
+      });
 
-      for (const video of document.querySelectorAll("video")) {
-        if (!existingVideos.has(video)) {
-          webcamVideoEl = video as HTMLVideoElement;
-          break;
-        }
-      }
+      // App renders the camera feed as a DOM <video> (object-fit: cover) behind
+      // the canvas, rather than a stretched `scene.background` texture. Clear the
+      // WebGL canvas to transparent so the feed shows through
+      renderer.setClearAlpha?.(0);
 
       gpsUpdateHandler = (data: GpsUpdateEvent) => {
         // store the last known position for new anchors
@@ -196,25 +195,19 @@ const createGeolocationBackend = (
         options?.onGpsUpdate?.(data.position, data.distMoved);
       };
 
+      // start() initializes the webcam + device orientation and resolves with the
+      // LocAR instance (which extends EventEmitter for gps events)
+      locar = await app.start();
+
       locar.on("gpsupdate", gpsUpdateHandler);
 
-      webcam.on("webcamerror", (err) => {
+      app.webcam?.on?.("webcamerror", (err) => {
         console.error("[geolocationBackend] webcam error:", err);
       });
 
-      // device orientation using LocAR.js built-in permission handling
-      deviceOrientation = new DeviceOrientationControls(camera);
-
-      deviceOrientation.on("deviceorientationgranted", (evt) => {
-        evt.target?.connect?.();
-      });
-
-      deviceOrientation.on("deviceorientationerror", (err) => {
+      app.deviceOrientationControls?.on?.("deviceorientationerror", (err) => {
         console.error("[geolocationBackend] Device orientation error:", err);
       });
-
-      // Initialize permission handling
-      deviceOrientation.init?.();
 
       // GPS events; just log here, components can listen via `getInternal()`
       locar.on("gpserror", (err) => {
@@ -273,7 +266,7 @@ const createGeolocationBackend = (
     },
 
     update() {
-      deviceOrientation?.update?.();
+      app?.deviceOrientationControls?.update?.();
     },
 
     dispose() {
@@ -283,18 +276,13 @@ const createGeolocationBackend = (
 
       locar?.stopGps?.();
 
-      // LocAR 0.2.x has no Webcam teardown, so stop the media stream and remove
-      // the <video> element it appended, then restore canvas opacity
-      if (webcamVideoEl) {
-        const stream = webcamVideoEl.srcObject as MediaStream | null;
-        for (const track of stream?.getTracks() ?? []) track.stop();
-        webcamVideoEl.srcObject = null;
-        webcamVideoEl.remove();
-        webcamVideoEl = null;
-      }
+      // App's Webcam owns the <video> element and media stream; dispose() stops
+      // the tracks and removes the element (LocAR >= 0.2.5), then restore canvas
+      // opacity
+      app?.webcam?.dispose?.();
       rendererRef?.setClearAlpha?.(1);
 
-      deviceOrientation?.dispose?.();
+      app?.deviceOrientationControls?.dispose?.();
 
       if (resizeHandler) {
         window.removeEventListener("resize", resizeHandler);
@@ -313,9 +301,8 @@ const createGeolocationBackend = (
       }
       anchorRegistry.clear();
 
+      app = null;
       locar = null;
-      webcam = null;
-      deviceOrientation = null;
       cameraRef = null;
       rendererRef = null;
       sceneRef = null;
@@ -325,8 +312,8 @@ const createGeolocationBackend = (
 
     getInternal: (): GeolocationInternal => ({
       locar,
-      webcam,
-      deviceOrientation,
+      webcam: app?.webcam ?? null,
+      deviceOrientation: app?.deviceOrientationControls ?? null,
       scene: sceneRef,
       camera: cameraRef,
       lastPosition,
