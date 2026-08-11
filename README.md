@@ -105,6 +105,17 @@ See the demo applications for examples of usage:
 - [`apps/immersive-demo`](./apps/immersive-demo): WebXR powered by `@react-three/xr`
 - [`apps/magic-demo`](./apps/magic-demo): Magic window camera passthrough with device orientation
 
+### Minimising dependencies 
+
+Please note that the `XR` component pulls in all dependencies. If you wish to use just one of the modules, you should omit the `XR` component. So for example, for geolocation, use the `GeolocationSession` component directly inside your `Canvas`, e.g:
+
+```jsx
+<Canvas gl={{ antialias: false, powerPreference: "default" }}>
+  <ambientLight args={[0xffffff, 3]} />
+  <directionalLight args={[0xffffff, 6]} position={[0, 1, 0.1]} />
+  <GeolocationSession options={...}>
+```
+
 ## Goals: the "Why"
 
 Web-based XR today is deeply fragmented: split between native SDKs (ARCore, ARKit) and the web, and further divided by platform politics.
