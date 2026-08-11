@@ -199,6 +199,31 @@ const createGeolocationBackend = (
       // LocAR instance (which extends EventEmitter for gps events)
       locar = await app.start();
 
+      // LocAR's DeviceOrientationControls binds to the `deviceorientationabsolute`
+      // event by default. iOS Safari never fires that event, and some devices
+      // deliver it as a stuck zero reading, so no usable orientation arrives and the
+      // control holds its neutral "device flat" pose, pitching the camera straight
+      // down. Every anchor sits at the horizon, so the AR scene renders empty in
+      // every direction. Rebinding to the plain `deviceorientation` event (fired on
+      // all platforms, and carrying webkitCompassHeading for absolute heading on
+      // iOS) makes the camera track the device everywhere. Verified on-device
+      const orientationControls = app.deviceOrientationControls;
+      if (
+        orientationControls &&
+        orientationControls.orientationChangeEventName !== "deviceorientation"
+      ) {
+        try {
+          orientationControls.disconnect();
+          orientationControls.orientationChangeEventName = "deviceorientation";
+          orientationControls.connect();
+        } catch (err) {
+          console.error(
+            "[geolocationBackend] failed to rebind device orientation event:",
+            err,
+          );
+        }
+      }
+
       locar.on("gpsupdate", gpsUpdateHandler);
 
       app.webcam?.on?.("webcamerror", (err) => {
