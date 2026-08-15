@@ -46,6 +46,11 @@ export interface GeoLineProps {
    * @default 1
    */
   gapSize?: number;
+  /**
+   * Opacity
+   * @default 1
+   */
+  opacity?: number;
 }
 
 /** Build a triangle-strip mesh geometry from a polyline for smooth, artifact-free rendering. */
@@ -121,6 +126,7 @@ const GeoLine = ({
   dashSize = 3,
   gapSize = 1,
   lineWidth = 1,
+  opacity = 1,
 }: GeoLineProps) => {
   const geo = useGeolocationBackend();
   const geoRef = useRef(geo);
@@ -159,6 +165,8 @@ const GeoLine = ({
           dashed: true,
           worldUnits: true,
           linewidth: lineWidth,
+          transparent: opacity < 1,
+          opacity,
         });
 
         const lineObj = new Line2(geometry, material);
@@ -166,7 +174,12 @@ const GeoLine = ({
         setLine(lineObj);
       } else {
         const geometry = buildTriStripGeometry(pts, lineWidth);
-        const material = new MeshBasicMaterial({ color, side: DoubleSide });
+        const material = new MeshBasicMaterial({
+          color,
+          transparent: opacity < 1,
+          opacity,
+          side: DoubleSide,
+        });
         setLine(new Mesh(geometry, material));
       }
     };
@@ -202,6 +215,7 @@ const GeoLine = ({
     dashSize,
     gapSize,
     lineWidth,
+    opacity,
     geo.isSuccess,
   ]);
 
