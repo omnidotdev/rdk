@@ -165,6 +165,7 @@ const GeoLine = ({
           dashed: true,
           worldUnits: true,
           linewidth: lineWidth,
+          transparent: opacity < 1,
           opacity,
         });
 
