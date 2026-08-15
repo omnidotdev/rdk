@@ -24,7 +24,7 @@
     "vite-tsconfig-paths": "^6.0.3"
   },
   "dependencies": {
-    "@mediapipe/tasks-vision": "^0.10.0",
+    "@mediapipe/tasks-vision": "^1.0.0",
     "@omnidotdev/rdk": "workspace:*",
     "@react-three/fiber": "^9.5.0",
     "react": "^19.2.3",
