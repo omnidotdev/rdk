@@ -1,5 +1,5 @@
 declare module "@ar-js-org/ar.js/three.js/build/ar-threex" {
-  import { type Object3D, type Matrix4 } from "three";
+  import { type Matrix4, type Object3D } from "three";
 
   export interface ArToolkitSourceParameters {
     sourceType: string;
