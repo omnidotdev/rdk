@@ -105,15 +105,22 @@ See the demo applications for examples of usage:
 - [`apps/immersive-demo`](./apps/immersive-demo): WebXR powered by `@react-three/xr`
 - [`apps/magic-demo`](./apps/magic-demo): Magic window camera passthrough with device orientation
 
-### Minimising dependencies 
+### Reducing bundle size
 
-Please note that the `XR` component pulls in all dependencies. If you wish to use just one of the modules, you should omit the `XR` component. So for example, for geolocation, use the `GeolocationSession` component directly inside your `Canvas`, e.g:
+Please note that to reduce the bundle size, you should import from the appropriate subpath, e.g. `@omnidotdev/rdk/geolocation' for the Geolocation module. For example:
 
 ```jsx
+import { XR } from '@omnidotdev/rdk';
+import { GeolocationSession } from '@omnidotdev/rdk/geolocation';
+ 
 <Canvas gl={{ antialias: false, powerPreference: "default" }}>
   <ambientLight args={[0xffffff, 3]} />
   <directionalLight args={[0xffffff, 6]} position={[0, 1, 0.1]} />
-  <GeolocationSession options={...}>
+  <XR>
+    <GeolocationSession options={{fakeLat: 51.05, fakeLon: -0.72}>
+    </GeolocationSession>
+  </XR>
+</Canvas>
 ```
 
 ## Goals: the "Why"
