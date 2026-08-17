@@ -107,18 +107,17 @@ See the demo applications for examples of usage:
 
 ### Reducing bundle size
 
-Please note that to reduce the bundle size, you should import from the appropriate subpath, e.g. `@omnidotdev/rdk/geolocation' for the Geolocation module. For example:
+To reduce the bundle size, import from the module's subpath rather than the top-level `@omnidotdev/rdk` barrel, which re-exports every module (and their optional peer dependencies). For example, to use only the Geolocation module, import `XR` from `@omnidotdev/rdk/engine` and the session from `@omnidotdev/rdk/geolocation`:
 
 ```jsx
-import { XR } from '@omnidotdev/rdk';
-import { GeolocationSession } from '@omnidotdev/rdk/geolocation';
- 
+import { XR } from "@omnidotdev/rdk/engine";
+import { GeolocationSession } from "@omnidotdev/rdk/geolocation";
+
 <Canvas gl={{ antialias: false, powerPreference: "default" }}>
   <ambientLight args={[0xffffff, 3]} />
   <directionalLight args={[0xffffff, 6]} position={[0, 1, 0.1]} />
   <XR>
-    <GeolocationSession options={{fakeLat: 51.05, fakeLon: -0.72}>
-    </GeolocationSession>
+    <GeolocationSession options={{ fakeLat: 51.05, fakeLon: -0.72 }} />
   </XR>
 </Canvas>
 ```

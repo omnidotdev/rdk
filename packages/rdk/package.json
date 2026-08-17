@@ -4,6 +4,7 @@
   "version": "0.12.1",
   "license": "Apache-2.0",
   "type": "module",
+  "sideEffects": false,
   "main": "build/index.js",
   "module": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,6 +35,11 @@
       "types": "./build/index.d.ts",
       "import": "./build/index.js",
       "require": "./build/index.cjs"
+    },
+    "./engine": {
+      "types": "./build/engine.d.ts",
+      "import": "./build/engine.js",
+      "require": "./build/engine.cjs"
     },
     "./fiducial": {
       "types": "./build/fiducial.d.ts",
