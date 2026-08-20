@@ -12,8 +12,9 @@ import {
 
 import useGeolocationBackend from "./useGeolocationBackend";
 
+import type { ThreeEvent } from "@react-three/fiber";
 import type { LocAR } from "locar";
-import type { Side } from "three";
+import type { Mesh, Side } from "three";
 
 export interface GeoPolygonProps {
   /** Outer ring coordinates. GeoJSON-style: [lon, lat, elevation?] */
@@ -38,6 +39,21 @@ export interface GeoPolygonProps {
    */
   isWireframe?: boolean;
   /**
+   * Click event handler
+   * @default empty function
+   */
+  onClick?: (e: ThreeEvent<Mesh>) => void;
+  /**
+   * Pointer out event handler
+   * @default empty function
+   */
+  onPointerOut?: (e: ThreeEvent<Mesh>) => void;
+  /**
+   * Pointer over event handler
+   * @default empty function
+   */
+  onPointerOver?: (e: ThreeEvent<Mesh>) => void;
+  /**
    * Side to render: front, back, or double.
    * @default "double"
    */
@@ -60,6 +76,9 @@ const GeoPolygon = ({
   color = "#ff0000",
   opacity = 1,
   isWireframe = false,
+  onClick = () => {},
+  onPointerOut = () => {},
+  onPointerOver = () => {},
   side = "double",
 }: GeoPolygonProps) => {
   const geo = useGeolocationBackend();
@@ -172,7 +191,12 @@ const GeoPolygon = ({
     <group>
       {geometryData && (
         <group position={[0, geometryData.avgElevation, 0]}>
-          <mesh geometry={geometryData.geometry}>
+          <mesh
+            geometry={geometryData.geometry}
+            onClick={onClick}
+            onPointerOut={onPointerOut}
+            onPointerOver={onPointerOver}
+          >
             <meshBasicMaterial
               color={color}
               opacity={opacity}

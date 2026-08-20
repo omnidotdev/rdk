@@ -15,6 +15,7 @@ import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 import useGeolocationBackend from "./useGeolocationBackend";
 
+import type { ThreeEvent } from "@react-three/fiber";
 import type { LocAR } from "locar";
 import type { ColorRepresentation } from "three";
 
@@ -46,6 +47,21 @@ export interface GeoLineProps {
    * @default 1
    */
   gapSize?: number;
+  /**
+   * Click event handler
+   * @default empty function
+   */
+  onClick?: (e: ThreeEvent<Group>) => void;
+  /**
+   * Pointer out event handler
+   * @default empty function
+   */
+  onPointerOut?: (e: ThreeEvent<Group>) => void;
+  /**
+   * Pointer over event handler
+   * @default empty function
+   */
+  onPointerOver?: (e: ThreeEvent<Group>) => void;
   /**
    * Opacity
    * @default 1
@@ -126,6 +142,9 @@ const GeoLine = ({
   dashSize = 3,
   gapSize = 1,
   lineWidth = 1,
+  onClick = () => {},
+  onPointerOut = () => {},
+  onPointerOver = () => {},
   opacity = 1,
 }: GeoLineProps) => {
   const geo = useGeolocationBackend();
@@ -220,7 +239,13 @@ const GeoLine = ({
   ]);
 
   return createPortal(
-    <group>{line && <primitive object={line} />}</group>,
+    <group
+      onClick={onClick}
+      onPointerOut={onPointerOut}
+      onPointerOver={onPointerOver}
+    >
+      {line && <primitive object={line} />}
+    </group>,
     anchor,
   );
 };
