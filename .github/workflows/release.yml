@@ -30,9 +30,9 @@ jobs:
         id: changesets
         uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
         with:
-          publish: bun release
-          title: "feature(release): version packages"
-          commit: "ci(changesets): version packages"
+          publish-script: bun release
+          pr-title: "feature(release): version packages"
+          commit-message: "ci(changesets): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
