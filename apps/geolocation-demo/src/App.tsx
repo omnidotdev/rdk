@@ -162,8 +162,8 @@ const App = () => {
           options={{
             // enable fake GPS for testing on desktop: uncomment and adjust
             // (example: Missoula, MT)
-            // fakeLat: 46.8721,
-            // fakeLon: -114.009,
+            fakeLat: 46.8721,
+            fakeLon: -114.009,
             onGpsUpdate: (pos) => {
               // lock the base to the first GPS fix
               setBase((prev) =>
