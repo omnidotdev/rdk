@@ -6,8 +6,9 @@ import {
   XR,
 } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
-import { Compass, GPSPin, Landmark } from "components";
 import { useState } from "react";
+
+import { Compass, GPSPin, Landmark } from "@/components";
 
 interface LatLon {
   lat: number;

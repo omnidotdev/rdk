@@ -1,7 +1,7 @@
-import { BACKEND_TYPES } from "lib/types/engine";
 import { App } from "locar";
 
-import type { Backend, BackendInitArgs } from "lib/types/engine";
+import { BACKEND_TYPES } from "@/lib/types/engine";
+
 import type { DeviceOrientationControls, LocAR, Webcam } from "locar";
 import type {
   Camera,
@@ -10,6 +10,7 @@ import type {
   Scene,
   WebGLRenderer,
 } from "three";
+import type { Backend, BackendInitArgs } from "@/lib/types/engine";
 
 /**
  * GPS update event structure emitted by LocAR.

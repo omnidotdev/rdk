@@ -1,11 +1,11 @@
 import { createXRStore, XR as ReactThreeXR } from "@react-three/xr";
-import { BACKEND_TYPES } from "lib/types/engine";
 import { useEffect, useMemo } from "react";
 
+import { BACKEND_TYPES } from "@/lib/types/engine";
 import { getXRStore } from "../engine/useXRStore";
 
-import type { Backend } from "lib/types/engine";
 import type { PropsWithChildren } from "react";
+import type { Backend } from "@/lib/types/engine";
 
 /**
  * Create a minimal immersive backend for tracking purposes.
