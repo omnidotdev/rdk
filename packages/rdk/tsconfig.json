@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowImportingTsExtensions": true,
-    "baseUrl": "src",
+    "paths": { "@/*": ["./src/*"] },
     "declaration": true,
     "declarationMap": true,
     "isolatedModules": true,

@@ -1,6 +1,7 @@
 import { FiducialAnchor, FiducialSession, XR } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
-import { Supertorus } from "components";
+
+import { Supertorus } from "@/components";
 
 /**
  * Fiducial marker-based AR demo application.
