@@ -54,9 +54,6 @@
           "level": "error"
         }
       },
-      "a11y": {
-        "noStaticElementInteractions": "warn"
-      },
       "nursery": {
         "useSortedClasses": {
           "fix": "safe",

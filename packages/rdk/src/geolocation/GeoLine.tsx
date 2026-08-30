@@ -48,20 +48,17 @@ export interface GeoLineProps {
    */
   gapSize?: number;
   /**
-   * Click event handler
-   * @default empty function
+   * Click event handler. When omitted, the line is not registered for pointer raycasting.
    */
-  onClick?: (e: ThreeEvent<Group>) => void;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
   /**
-   * Pointer out event handler
-   * @default empty function
+   * Pointer out event handler. When omitted, the line is not registered for pointer raycasting.
    */
-  onPointerOut?: (e: ThreeEvent<Group>) => void;
+  onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
   /**
-   * Pointer over event handler
-   * @default empty function
+   * Pointer over event handler. When omitted, the line is not registered for pointer raycasting.
    */
-  onPointerOver?: (e: ThreeEvent<Group>) => void;
+  onPointerOver?: (e: ThreeEvent<PointerEvent>) => void;
   /**
    * Opacity
    * @default 1
@@ -142,9 +139,9 @@ const GeoLine = ({
   dashSize = 3,
   gapSize = 1,
   lineWidth = 1,
-  onClick = () => {},
-  onPointerOut = () => {},
-  onPointerOver = () => {},
+  onClick,
+  onPointerOut,
+  onPointerOver,
   opacity = 1,
 }: GeoLineProps) => {
   const geo = useGeolocationBackend();
@@ -239,6 +236,7 @@ const GeoLine = ({
   ]);
 
   return createPortal(
+    // biome-ignore lint/a11y/noStaticElementInteractions: <group> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics
     <group
       onClick={onClick}
       onPointerOut={onPointerOut}
