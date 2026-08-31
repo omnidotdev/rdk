@@ -1,10 +1,11 @@
 import { useThree } from "@react-three/fiber";
-import useXRStore from "engine/useXRStore";
-import { createFiducialBackend } from "fiducial";
 import { useEffect, useRef } from "react";
 
-import type { Backend } from "lib/types/engine";
+import useXRStore from "@/engine/useXRStore";
+import { createFiducialBackend } from "@/fiducial";
+
 import type { PropsWithChildren } from "react";
+import type { Backend } from "@/lib/types/engine";
 // NB: relative type import path resolves downstream type issues
 import type { FiducialSessionOptions } from "./fiducialBackend";
 

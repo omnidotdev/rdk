@@ -1,11 +1,11 @@
 import { act } from "@testing-library/react";
-import { BACKEND_TYPES } from "lib/types/engine";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { BACKEND_TYPES } from "@/lib/types/engine";
 import useXRStore, { getXRStore } from "./useXRStore";
 
-import type { Backend, BackendType } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
+import type { Backend, BackendType } from "@/lib/types/engine";
 
 // Mock @react-three/xr
 vi.mock("@react-three/xr", () => ({
