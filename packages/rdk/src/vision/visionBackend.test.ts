@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createVisionProvider } from "./providers";
 import createVisionBackend from "./visionBackend";
 
-import type { BackendInitArgs } from "lib/types/engine";
+import type { BackendInitArgs } from "@/lib/types/engine";
 import type { VisionFrame } from "./types";
 
 // Shared mock provider state (hoisted above the vi.mock factory)

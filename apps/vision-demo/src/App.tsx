@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   FaceMode,
   HandMode,
@@ -5,11 +7,10 @@ import {
   ObjectMode,
   PoseMode,
   SegmentMode,
-} from "components";
-import { useState } from "react";
+} from "@/components";
 
 import type { VisionTask } from "@omnidotdev/rdk/vision";
-import type { Mode } from "components";
+import type { Mode } from "@/components";
 
 const MODE_TASKS: Record<"hands" | "faces" | "poses", VisionTask[]> = {
   hands: ["hands"],

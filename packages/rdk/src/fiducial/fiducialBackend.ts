@@ -2,11 +2,12 @@ import {
   ArToolkitContext,
   ArToolkitSource,
 } from "@ar-js-org/ar.js/three.js/build/ar-threex";
-import { BACKEND_TYPES } from "lib/types/engine";
+
+import { BACKEND_TYPES } from "@/lib/types/engine";
 
 import type { ArToolkitContextParameters } from "@ar-js-org/ar.js/three.js/build/ar-threex";
-import type { Backend, BackendInitArgs } from "lib/types/engine";
 import type { Camera } from "three";
+import type { Backend, BackendInitArgs } from "@/lib/types/engine";
 
 /**
  * Internal state exposed by the fiducial backend.

@@ -1,6 +1,7 @@
 import { MagicSession, WorldAnchor, XR } from "@omnidotdev/rdk";
 import { Canvas } from "@react-three/fiber";
-import { FloatingCrystal, OrientationHUD } from "components";
+
+import { FloatingCrystal, OrientationHUD } from "@/components";
 
 const App = () => (
   <>

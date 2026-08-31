@@ -1,11 +1,12 @@
-import { BACKEND_TYPES } from "lib/types/engine";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
+import { BACKEND_TYPES } from "@/lib/types/engine";
+
 import type { XRStore as ReactThreeXRStore } from "@react-three/xr";
-import type { Backend, BackendType } from "lib/types/engine";
 import type { Camera, Scene, WebGLRenderer } from "three";
+import type { Backend, BackendType } from "@/lib/types/engine";
 
 interface BaseXRStoreState {
   /** Shared video element. */

@@ -1,8 +1,7 @@
-import { BACKEND_TYPES } from "lib/types/engine";
-
+import { BACKEND_TYPES } from "@/lib/types/engine";
 import { createVisionProvider } from "./providers";
 
-import type { Backend, BackendInitArgs } from "lib/types/engine";
+import type { Backend, BackendInitArgs } from "@/lib/types/engine";
 import type {
   VisionFrame,
   VisionProvider,

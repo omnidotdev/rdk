@@ -1,5 +1,3 @@
-import { resolve } from "node:path";
-
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
@@ -23,11 +21,6 @@ const vitestConfig = defineConfig({
         url: "http://localhost:3000",
         pretendToBeVisual: true,
       },
-    },
-  },
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
     },
   },
   esbuild: {

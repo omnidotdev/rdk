@@ -1,7 +1,8 @@
-import { BACKEND_TYPES } from "lib/types/engine";
 import * as THREE from "three";
 
-import type { Backend, BackendInitArgs } from "lib/types/engine";
+import { BACKEND_TYPES } from "@/lib/types/engine";
+
+import type { Backend, BackendInitArgs } from "@/lib/types/engine";
 
 /**
  * Internal state exposed by the magic window backend.
