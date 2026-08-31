@@ -92,7 +92,6 @@ const createGeolocationBackend = (
   // against our existing (react-three-fiber owned) camera, renderer and scene
   let app: App | null = null;
   let locar: LocAR | null = null;
-  let resizeHandler: (() => void) | undefined;
 
   let gpsUpdateHandler: ((data: GpsUpdateEvent) => void) | null = null;
 
@@ -288,11 +287,6 @@ const createGeolocationBackend = (
       rendererRef?.setClearAlpha?.(1);
 
       app?.deviceOrientationControls?.dispose?.();
-
-      if (resizeHandler) {
-        window.removeEventListener("resize", resizeHandler);
-        resizeHandler = undefined;
-      }
 
       // clean up all anchors
       for (const entry of anchorRegistry.values()) {
