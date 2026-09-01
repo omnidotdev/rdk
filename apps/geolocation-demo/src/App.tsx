@@ -136,11 +136,25 @@ const DemoScene = ({ base }: { base: LatLon }) => {
         <Landmark isAnimated type="monument" color="#8e44ad" scale={0.8} />
       </GeolocationAnchor>
 
-      <GeoLine coordinates={pathCoordinates} color="#ff4444" />
+      <GeoLine
+        coordinates={pathCoordinates}
+        color="#ff4444"
+        onClick={() => alert("Regular line clicked!")}
+      />
 
-      <GeoLine coordinates={dashedPathCoordinates} color="#ffaa00" isDashed />
+      <GeoLine
+        coordinates={dashedPathCoordinates}
+        color="#ffaa00"
+        isDashed
+        onClick={() => alert("Dashed line clicked!")}
+      />
 
-      <GeoPolygon coordinates={zoneCoordinates} color="#4488ff" opacity={0.5} />
+      <GeoPolygon
+        coordinates={zoneCoordinates}
+        color="#4488ff"
+        opacity={0.5}
+        onClick={() => alert("Polygon clicked!")}
+      />
     </>
   );
 };
