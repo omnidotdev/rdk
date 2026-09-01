@@ -1,5 +1,19 @@
 # @omnidotdev/rdk
 
+## 0.13.0
+
+### Minor Changes
+
+- [#113](https://github.com/omnidotdev/rdk/pull/113) [`5334385`](https://github.com/omnidotdev/rdk/commit/53343858e29832905e447817de8e56fb201be955) Thanks [@nickw1](https://github.com/nickw1)! - feat(engine): add `@omnidotdev/rdk/engine` subpath export
+  
+  Adds a dedicated `./engine` subpath so `XR` (and the XR store helpers) can be imported without the top-level barrel, which re-exports every module including `fiducial` and its optional `@ar-js-org/ar.js` peer dependency. Import `XR` from `@omnidotdev/rdk/engine` to use a single module (e.g. geolocation) without installing ar.js. Also sets `"sideEffects": false` so the barrel tree-shakes cleanly.
+
+### Patch Changes
+
+- [#120](https://github.com/omnidotdev/rdk/pull/120) [`7026548`](https://github.com/omnidotdev/rdk/commit/70265484fcf15d5b6ca91cc2facdbaf0ac746413) Thanks [@nickw1](https://github.com/nickw1)! - feat(geolocation): add pointer event handlers to `GeoLine` and `GeoPolygon`
+  
+  Adds optional `onClick`, `onPointerOver`, and `onPointerOut` props to `GeoLine` and `GeoPolygon`, forwarded to the underlying R3F scene object. Handlers receive a `ThreeEvent<MouseEvent>` (click) or `ThreeEvent<PointerEvent>` (pointer over/out). When a handler is omitted the element stays non-interactive and is not registered for pointer raycasting, so existing scenes keep their current behavior and cost.
+
 ## 0.12.2
 
 ### Patch Changes
