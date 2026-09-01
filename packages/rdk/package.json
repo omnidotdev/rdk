@@ -1,9 +1,10 @@
 {
   "name": "@omnidotdev/rdk",
   "description": "Reality Development Kit, a unified React-first XR engine",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "license": "Apache-2.0",
   "type": "module",
+  "sideEffects": false,
   "main": "build/index.js",
   "module": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,6 +35,11 @@
       "types": "./build/index.d.ts",
       "import": "./build/index.js",
       "require": "./build/index.cjs"
+    },
+    "./engine": {
+      "types": "./build/engine.d.ts",
+      "import": "./build/engine.js",
+      "require": "./build/engine.cjs"
     },
     "./fiducial": {
       "types": "./build/fiducial.d.ts",
@@ -120,7 +126,6 @@
     "typescript": "^7.0.0",
     "vite": "^8.0.0",
     "vite-plugin-dts": "^5.0.0",
-    "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.0.16"
   },
   "dependencies": {

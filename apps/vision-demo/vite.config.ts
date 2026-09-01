@@ -3,14 +3,13 @@ import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import mkcert from "vite-plugin-mkcert";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 /**
  * Vite configuration.
  * @see https://vite.dev/config
  */
 const viteConfig = defineConfig({
-  plugins: [react(), mkcert(), tsconfigPaths()],
+  plugins: [react(), mkcert()],
   server: {
     host: true,
     port: 3000,
@@ -25,6 +24,8 @@ const viteConfig = defineConfig({
     exclude: ["@omnidotdev/rdk"],
   },
   resolve: {
+    // Vite 8 resolves tsconfig paths (the @/ alias) natively
+    tsconfigPaths: true,
     alias: {
       // Resolve to source so Vite handles the worker natively
       "@omnidotdev/rdk/vision": resolve(

@@ -15,6 +15,7 @@ import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 import useGeolocationBackend from "./useGeolocationBackend";
 
+import type { ThreeEvent } from "@react-three/fiber";
 import type { LocAR } from "locar";
 import type { ColorRepresentation } from "three";
 
@@ -46,6 +47,18 @@ export interface GeoLineProps {
    * @default 1
    */
   gapSize?: number;
+  /**
+   * Click event handler. When omitted, the line is not registered for pointer raycasting.
+   */
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  /**
+   * Pointer out event handler. When omitted, the line is not registered for pointer raycasting.
+   */
+  onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
+  /**
+   * Pointer over event handler. When omitted, the line is not registered for pointer raycasting.
+   */
+  onPointerOver?: (e: ThreeEvent<PointerEvent>) => void;
   /**
    * Opacity
    * @default 1
@@ -126,6 +139,9 @@ const GeoLine = ({
   dashSize = 3,
   gapSize = 1,
   lineWidth = 1,
+  onClick,
+  onPointerOut,
+  onPointerOver,
   opacity = 1,
 }: GeoLineProps) => {
   const geo = useGeolocationBackend();
@@ -220,7 +236,14 @@ const GeoLine = ({
   ]);
 
   return createPortal(
-    <group>{line && <primitive object={line} />}</group>,
+    // biome-ignore lint/a11y/noStaticElementInteractions: <group> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics
+    <group
+      onClick={onClick}
+      onPointerOut={onPointerOut}
+      onPointerOver={onPointerOver}
+    >
+      {line && <primitive object={line} />}
+    </group>,
     anchor,
   );
 };
