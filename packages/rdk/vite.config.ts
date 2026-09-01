@@ -41,6 +41,7 @@ const viteConfig = defineConfig(({ mode }) => ({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
+        engine: resolve(__dirname, "src/engine/index.ts"),
         fiducial: resolve(__dirname, "src/fiducial/index.ts"),
         geolocation: resolve(__dirname, "src/geolocation/index.ts"),
         immersive: resolve(__dirname, "src/immersive/index.ts"),
