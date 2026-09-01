@@ -60,7 +60,6 @@ const createMagicBackend = (
   let videoElement: HTMLVideoElement | null = null;
   let videoTexture: THREE.VideoTexture | null = null;
   let stream: MediaStream | null = null;
-  let resizeHandler: (() => void) | undefined;
 
   // Orientation state
   let orientationEnabled = options?.enableOrientation ?? true;
@@ -312,26 +311,6 @@ const createMagicBackend = (
           document.addEventListener("touchend", retryOnGesture);
         }
       }
-
-      // Handle resize
-      const doResize = () => {
-        if (!rendererRef || !cameraRef) return;
-
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        rendererRef.setSize(w, h, false);
-
-        // Update camera aspect ratio
-        // TODO improve this, these attributes are part of Three.js perspective cameras; figure whether custom cameras should be allowed here
-        (cameraRef as any).aspect = w / h;
-        (cameraRef as any).updateProjectionMatrix?.();
-      };
-
-      doResize();
-
-      window.addEventListener("resize", doResize);
-      resizeHandler = doResize;
     },
 
     update() {
@@ -406,12 +385,6 @@ const createMagicBackend = (
         document.removeEventListener("click", gestureRetryHandler);
         document.removeEventListener("touchend", gestureRetryHandler);
         gestureRetryHandler = null;
-      }
-
-      // Remove resize handler
-      if (resizeHandler) {
-        window.removeEventListener("resize", resizeHandler);
-        resizeHandler = undefined;
       }
 
       // Stop media stream tracks
