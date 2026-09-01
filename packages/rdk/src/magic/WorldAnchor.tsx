@@ -1,11 +1,12 @@
 import { useFrame } from "@react-three/fiber";
-import useXRStore from "engine/useXRStore";
-import { BACKEND_TYPES } from "lib/types/engine";
 import { useRef } from "react";
 
-import type { Backend } from "lib/types/engine";
+import useXRStore from "@/engine/useXRStore";
+import { BACKEND_TYPES } from "@/lib/types/engine";
+
 import type { PropsWithChildren } from "react";
 import type { Group } from "three";
+import type { Backend } from "@/lib/types/engine";
 import type { MagicInternal } from "./magicBackend";
 
 export interface WorldAnchorProps extends PropsWithChildren {

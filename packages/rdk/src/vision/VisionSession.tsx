@@ -1,11 +1,11 @@
 import { useThree } from "@react-three/fiber";
-import useXRStore from "engine/useXRStore";
 import { useEffect, useRef } from "react";
 
+import useXRStore from "@/engine/useXRStore";
 import createVisionBackend from "./visionBackend";
 
-import type { Backend } from "lib/types/engine";
 import type React from "react";
+import type { Backend } from "@/lib/types/engine";
 import type { VisionSessionOptions } from "./types";
 
 export type VisionSessionProps = {
