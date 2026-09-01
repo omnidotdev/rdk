@@ -92,7 +92,6 @@ const createGeolocationBackend = (
   // against our existing (react-three-fiber owned) camera, renderer and scene
   let app: App | null = null;
   let locar: LocAR | null = null;
-  let resizeHandler: (() => void) | undefined;
 
   let gpsUpdateHandler: ((data: GpsUpdateEvent) => void) | null = null;
 
@@ -268,27 +267,6 @@ const createGeolocationBackend = (
           toJSON: () => lastLocation,
         };
       }
-
-      // handle resize
-      const doResize = () => {
-        if (!rendererRef || !cameraRef) return;
-
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        rendererRef.setSize(w, h, false);
-
-        // camera can be perspective or other
-        // TODO improve this, these attributes are part of Three.js perspective cameras (https://threejs.org/docs/#PerspectiveCamera); figure whether custom cameras should be allowed here or if it should be narrowed to perspective cameras
-        (cameraRef as any).aspect = w / h;
-        (cameraRef as any).updateProjectionMatrix?.();
-      };
-
-      doResize();
-
-      window.addEventListener("resize", doResize);
-
-      resizeHandler = doResize;
     },
 
     update() {
@@ -309,11 +287,6 @@ const createGeolocationBackend = (
       rendererRef?.setClearAlpha?.(1);
 
       app?.deviceOrientationControls?.dispose?.();
-
-      if (resizeHandler) {
-        window.removeEventListener("resize", resizeHandler);
-        resizeHandler = undefined;
-      }
 
       // clean up all anchors
       for (const entry of anchorRegistry.values()) {
