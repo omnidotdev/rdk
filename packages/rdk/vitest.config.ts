@@ -1,6 +1,5 @@
 import { resolve } from "node:path";
 
-import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 /**
@@ -8,7 +7,13 @@ import { defineConfig } from "vitest/config";
  * @see https://vitest.dev/config
  */
 const vitestConfig = defineConfig({
-  plugins: [tsconfigPaths()],
+  // Vitest 4 does not honor Vite's native `resolve.tsconfigPaths`, so map the
+  // `@/*` alias explicitly here (the Vite build uses native resolution instead)
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+    },
+  },
   test: {
     environment: "jsdom",
     globals: true,
@@ -23,11 +28,6 @@ const vitestConfig = defineConfig({
         url: "http://localhost:3000",
         pretendToBeVisual: true,
       },
-    },
-  },
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
     },
   },
   esbuild: {

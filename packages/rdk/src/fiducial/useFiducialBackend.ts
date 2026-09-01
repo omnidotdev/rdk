@@ -1,5 +1,5 @@
-import useXRStore from "engine/useXRStore";
-import { BACKEND_TYPES } from "lib/types/engine";
+import useXRStore from "@/engine/useXRStore";
+import { BACKEND_TYPES } from "@/lib/types/engine";
 
 import type { FiducialBackendState, FiducialInternal } from "./fiducialBackend";
 

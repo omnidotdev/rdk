@@ -1,5 +1,29 @@
 # @omnidotdev/rdk
 
+## 0.12.2
+
+### Patch Changes
+
+- [#112](https://github.com/omnidotdev/rdk/pull/112) [`4efc9dc`](https://github.com/omnidotdev/rdk/commit/4efc9dcf8cee80ff1e98a2d5186643bbbffde265) Thanks [@nickw1](https://github.com/nickw1)! - feat(geolocation): add `opacity` prop to `GeoLine`
+  
+  Adds an `opacity` prop (default `1`) to `GeoLine`, applied to both the default triangle-strip mesh and the dashed `Line2` fallback. The material is only marked `transparent` when `opacity < 1`, so fully opaque lines keep their existing render path.
+
+- [#124](https://github.com/omnidotdev/rdk/pull/124) [`f1ba1ac`](https://github.com/omnidotdev/rdk/commit/f1ba1ac046d11a13234cd107181a80cf7251a155) Thanks [@coopbri](https://github.com/coopbri)! - fix(build): resolve internal modules via a `@/` alias instead of `baseUrl`
+  
+  TypeScript 7 removed the `baseUrl` compiler option, which the package relied on to resolve `src`-relative bare imports (e.g. `engine/useXRStore`, `lib/types/engine`). Under TS 7 this broke `vite-tsconfig-paths` resolution, failing the Vitest suite and the library build (including `.d.ts` emission).
+  
+  Replace `baseUrl` with an explicit `@/*` -> `./src/*` path mapping and migrate internal imports to the `@/` prefix. Unlike bare `src`-relative imports, the `@/` prefix cannot collide with npm package names, so a future dependency named `engine`, `lib`, `vision`, etc. can no longer shadow local modules. `vite-tsconfig-paths` is now the single resolver for both build and test (the redundant Vitest `resolve.alias` was removed).
+
+## 0.12.1
+
+### Patch Changes
+
+- [#110](https://github.com/omnidotdev/rdk/pull/110) [`8b870a5`](https://github.com/omnidotdev/rdk/commit/8b870a5ce26d32d141299083bf6274111ed6f1ab) Thanks [@coopbri](https://github.com/coopbri)! - refactor(geolocation): re-platform onto the LocAR.js `App` API (0.2.7)
+
+  Bumps `locar` from `^0.2.3` to `^0.2.7` and rebuilds the geolocation backend on LocAR's `App` orchestrator via its `threeObjects` option, so LocAR wires the core, webcam feed and device orientation against RDK's existing react-three-fiber camera, renderer and scene instead of RDK instantiating `LocAR`, `Webcam` and `DeviceOrientationControls` by hand. Webcam teardown now uses `Webcam.dispose()` (added upstream in 0.2.5), replacing the manual `<video>` element hunt-and-remove workaround. The public API (`GeolocationSession`, `GeolocationAnchor`, `GeoLine`, `GeoPolygon`, `useGeolocationBackend`) is unchanged.
+
+  Also fixes a pre-existing bug where geolocation AR objects never appeared on device: LocAR's `DeviceOrientationControls` binds to the `deviceorientationabsolute` event, which iOS Safari never fires (and some devices deliver as a stuck zero reading), so the camera stayed pitched at its neutral "device flat" pose looking straight down and horizon-placed anchors were never in view. The backend now rebinds the control to the universally-fired `deviceorientation` event so the camera tracks the device on every platform.
+
 ## 0.12.0
 
 ### Minor Changes
