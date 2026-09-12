@@ -22,13 +22,13 @@
         "@react-three/fiber": "^9.5.0",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
-        "three": "^0.185.0",
+        "three": "^0.186.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.8",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.185.0",
+        "@types/three": "^0.186.0",
         "@vitejs/plugin-react": "^6.0.0",
         "typescript": "^7.0.0",
         "vite": "^8.0.0",
@@ -43,13 +43,13 @@
         "locar": "^0.2.7",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
-        "three": "^0.185.0",
+        "three": "^0.186.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.8",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.185.0",
+        "@types/three": "^0.186.0",
         "@vitejs/plugin-react": "^6.0.0",
         "typescript": "^7.0.0",
         "vite": "^8.0.0",
@@ -65,13 +65,13 @@
         "@react-three/xr": "^6.6.29",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
-        "three": "^0.185.0",
+        "three": "^0.186.0",
       },
       "devDependencies": {
         "@biomejs/biome": "2.5.11",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.185.0",
+        "@types/three": "^0.186.0",
         "@vitejs/plugin-react": "^6.0.0",
         "typescript": "~7.0.0",
         "vite": "^8.0.0",
@@ -85,13 +85,13 @@
         "@react-three/fiber": "^9.5.0",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
-        "three": "^0.185.0",
+        "three": "^0.186.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.8",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.185.0",
+        "@types/three": "^0.186.0",
         "@vitejs/plugin-react": "^6.0.0",
         "typescript": "^7.0.0",
         "vite": "^8.0.0",
@@ -107,13 +107,13 @@
         "@react-three/fiber": "^9.5.0",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
-        "three": "^0.185.0",
+        "three": "^0.186.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.8",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.185.0",
+        "@types/three": "^0.186.0",
         "@vitejs/plugin-react": "^6.0.0",
         "typescript": "^7.0.0",
         "vite": "^8.0.0",
@@ -122,7 +122,7 @@
     },
     "packages/rdk": {
       "name": "@omnidotdev/rdk",
-      "version": "0.12.1",
+      "version": "0.13.0",
       "dependencies": {
         "zustand": "^5.0.9",
       },
@@ -136,14 +136,14 @@
         "@types/node": "^26.0.0",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.185.0",
+        "@types/three": "^0.186.0",
         "@typescript/typescript6": "^6.0.2",
         "jsdom": "^30.0.0",
         "locar": "^0.2.7",
         "onnxruntime-web": "^1.27.0",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
-        "three": "^0.185.0",
+        "three": "^0.186.0",
         "typescript": "^7.0.0",
         "vite": "^8.0.0",
         "vite-plugin-dts": "^5.0.0",
@@ -606,7 +606,7 @@
 
     "@types/stylis": ["@types/stylis@4.2.7", "", {}, "sha512-VgDNokpBoKF+wrdvhAAfS55OMQpL6QRglwTwNC3kIgBrzZxA4WsFj+2eLfEA/uMUDzBcEhYmjSbwQakn/i3ajA=="],
 
-    "@types/three": ["@types/three@0.185.1", "", { "dependencies": { "@dimforge/rapier3d-compat": "~0.12.0", "@tweenjs/tween.js": "~23.1.3", "@types/stats.js": "*", "@types/webxr": ">=0.5.17", "fflate": "~0.8.2", "meshoptimizer": "~1.1.1" } }, "sha512-db1xTb+EgYF2didW+eudSvVPtn75zo+fGsY8ShQrJY/B5ZBmC2Fiaykv3aImHAlCNEGuMPkPGXBJGLwzu5mC7A=="],
+    "@types/three": ["@types/three@0.186.0", "", { "dependencies": { "@dimforge/rapier3d-compat": "~0.12.0", "@tweenjs/tween.js": "~23.1.3", "@types/stats.js": "*", "@types/webxr": ">=0.5.17", "fflate": "~0.8.3", "meshoptimizer": "~1.1.1" } }, "sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ=="],
 
     "@types/webxr": ["@types/webxr@0.5.24", "", {}, "sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg=="],
 
@@ -824,7 +824,7 @@
 
     "fdir": ["fdir@6.5.0", "", { "peerDependencies": { "picomatch": "^3 || ^4" }, "optionalPeers": ["picomatch"] }, "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg=="],
 
-    "fflate": ["fflate@0.8.2", "", {}, "sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A=="],
+    "fflate": ["fflate@0.8.3", "", {}, "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA=="],
 
     "fill-range": ["fill-range@7.1.1", "", { "dependencies": { "to-regex-range": "^5.0.1" } }, "sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg=="],
 
@@ -1172,7 +1172,7 @@
 
     "symbol-tree": ["symbol-tree@3.2.4", "", {}, "sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw=="],
 
-    "three": ["three@0.185.1", "", {}, "sha512-5aojFCXKwnjBRZvUnt3WFfEcvUJgkN5LlijRFN95hMy8WVkG4I0QNcJE+OuWvuJ0bOdStrbfXn0pkd6/QyiAlg=="],
+    "three": ["three@0.186.0", "", {}, "sha512-cr/fIM2ddMSVbYVgkfD4jLJv7Fh/8ZTjvo+7gQeSVGUZHxpx9FDwoL5iC7hUz/LiRA8wMbqfnb90xKfm1/HHkQ=="],
 
     "three-bmfont-text": ["three-bmfont-text@github:dmarcos/three-bmfont-text#eed4878", { "dependencies": { "array-shuffle": "^1.0.1", "layout-bmfont-text": "^1.2.0", "nice-color-palettes": "^3.0.0", "quad-indices": "^2.0.1" } }, "dmarcos-three-bmfont-text-eed4878"],
 
@@ -1395,6 +1395,8 @@
     "mlly/pkg-types/confbox": ["confbox@0.1.8", "", {}, "sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w=="],
 
     "protobufjs/@types/node/undici-types": ["undici-types@7.16.0", "", {}, "sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw=="],
+
+    "stats-gl/@types/three/fflate": ["fflate@0.8.2", "", {}, "sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A=="],
 
     "stats-gl/@types/three/meshoptimizer": ["meshoptimizer@0.22.0", "", {}, "sha512-IebiK79sqIy+E4EgOr+CAw+Ke8hAspXKzBd0JdgEmPHiAwmvEj2S4h1rfvo+o/BnfEYd/jAOg5IeeIjzlzSnDg=="],
 
