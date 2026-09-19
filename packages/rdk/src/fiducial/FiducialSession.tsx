@@ -19,7 +19,7 @@ export interface FiducialSessionProps extends PropsWithChildren {
  * Registers with the XR session provider and provides AR.js marker tracking capabilities.
  */
 const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
-  const { scene, camera, gl } = useThree();
+  const { scene, camera, gl, size } = useThree();
 
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -40,7 +40,7 @@ const FiducialSession = ({ options = {}, children }: FiducialSessionProps) => {
 
         if (cancelled) return;
 
-        await registerBackend(backend, { scene, camera, renderer: gl });
+        await registerBackend(backend, { scene, camera, renderer: gl, size });
 
         backendRef.current = backend;
       } catch (err) {

@@ -1,3 +1,4 @@
+import type { Size } from "@react-three/fiber";
 import type { Camera, Scene, WebGLRenderer } from "three";
 
 /**
@@ -11,4 +12,6 @@ export interface BackendInitArgs {
   camera: Camera;
   /** The WebGL renderer instance. */
   renderer: WebGLRenderer;
+  /** The canvas size. */
+  size: Size;
 }
