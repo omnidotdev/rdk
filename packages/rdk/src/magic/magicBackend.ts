@@ -82,7 +82,6 @@ const createMagicBackend = (
 
   // Three.js refs
   let cameraRef: THREE.Camera | null = null;
-  let rendererRef: THREE.WebGLRenderer | null = null;
   let sceneRef: THREE.Scene | null = null;
 
   // Pre-allocated objects for quaternion-based orientation
@@ -280,7 +279,6 @@ const createMagicBackend = (
 
     async init({ scene, camera, renderer }: BackendInitArgs) {
       cameraRef = camera;
-      rendererRef = renderer;
       sceneRef = scene;
 
       // Set up video passthrough
@@ -416,7 +414,6 @@ const createMagicBackend = (
 
       // Reset state
       cameraRef = null;
-      rendererRef = null;
       sceneRef = null;
       orientationEnabled = false;
       orientationPermissionGranted = false;

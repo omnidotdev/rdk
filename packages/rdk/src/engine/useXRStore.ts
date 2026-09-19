@@ -4,6 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { BACKEND_TYPES } from "@/lib/types/engine";
 
+import type { Size } from "@react-three/fiber";
 import type { XRStore as ReactThreeXRStore } from "@react-three/xr";
 import type { Camera, Scene, WebGLRenderer } from "three";
 import type { Backend, BackendType } from "@/lib/types/engine";
@@ -21,7 +22,12 @@ interface BaseXRStoreActions {
   /** Register a backend (called by sessions). */
   registerBackend: (
     backend: Backend,
-    threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
+    threeRefs: {
+      scene: Scene;
+      camera: Camera;
+      renderer: WebGLRenderer;
+      size: Size;
+    },
   ) => Promise<void>;
   /** Unregister a backend (called by sessions). */
   unregisterBackend: (backend: Backend) => void;
@@ -49,7 +55,12 @@ const useXRStoreBase = create<BaseXRStore>()(
     // actions
     registerBackend: async (
       backend: Backend,
-      threeRefs: { scene: Scene; camera: Camera; renderer: WebGLRenderer },
+      threeRefs: {
+        scene: Scene;
+        camera: Camera;
+        renderer: WebGLRenderer;
+        size: Size;
+      },
     ) => {
       try {
         // check for session compatibility before registering
@@ -76,6 +87,7 @@ const useXRStoreBase = create<BaseXRStore>()(
           scene: threeRefs.scene,
           camera: threeRefs.camera,
           renderer: threeRefs.renderer,
+          size: threeRefs.size,
         });
 
         set((state) => {

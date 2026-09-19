@@ -32,6 +32,7 @@ const createMockThreeRefs = () => ({
   scene: {} as Scene,
   camera: {} as Camera,
   renderer: {} as WebGLRenderer,
+  size: { width: 0, height: 0, top: 0, left: 0 },
 });
 
 describe("useXRStore", () => {
