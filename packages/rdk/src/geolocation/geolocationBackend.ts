@@ -260,15 +260,16 @@ const createGeolocationBackend = (
         console.error("[geolocationBackend] gps error:", err);
       });
 
-      // start GPS (0.2.x returns a Promise; errors surface via the gpserror event)
-      void locar.startGps();
-
       // optional boot in fake mode
       if (
         typeof options?.fakeLat === "number" &&
         typeof options?.fakeLon === "number"
-      )
+      ) {
         locar.fakeGps(options.fakeLon, options.fakeLat);
+      } else {
+        // start GPS (0.2.x returns a Promise; errors surface via the gpserror event)
+        void locar.startGps();
+      }
 
       // check for existing GPS position from LocAR
       const lastLocation = locar.getLastKnownLocation();
