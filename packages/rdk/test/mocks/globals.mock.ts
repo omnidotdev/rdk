@@ -133,14 +133,14 @@ export const mockTHREE: Record<string, unknown> = {
  */
 export function setupGlobalMocks(): void {
   // @ts-expect-error
-  global.THREEx = mockTHREEx;
+  globalThis.THREEx = mockTHREEx;
   // @ts-expect-error
-  global.THREE = mockTHREE;
+  globalThis.THREE = mockTHREE;
   // @ts-expect-error
-  global.LocAR = mockLocAR;
+  globalThis.LocAR = mockLocAR;
 
   // suppress console warnings in tests
-  global.console.warn = vi.fn();
+  globalThis.console.warn = vi.fn();
 }
 
 /**
