@@ -79,7 +79,7 @@ export interface GeolocationSessionOptions {
   fakeLon?: number;
   /** Custom webcam constraints. */
   webcamConstraints?: MediaStreamConstraints;
-  /** Horizontal field of view. This will override any R3F canvas setting. LocAR will not render consistently between landscape and portrait without this. Defaults to 80.*/
+  /** Horizontal field of view. This will override any R3F canvas setting. LocAR will not render consistently between landscape and portrait without this. Defaults to 80. */
   hFov?: number;
   /**
    * GPS update callback. Fires when a new GPS position is received.
