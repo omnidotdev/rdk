@@ -1,5 +1,15 @@
 # @omnidotdev/rdk
 
+## 0.14.0
+
+### Minor Changes
+
+- [#135](https://github.com/omnidotdev/rdk/pull/135) [`de4b99c`](https://github.com/omnidotdev/rdk/commit/de4b99cf4621cfd0105e397a82e5e68b277766e3) Thanks [@nickw1](https://github.com/nickw1)! - Keep AR content at a consistent scale in both landscape and portrait. The Three camera's horizontal field of view is now matched to the webcam feed's visible area (which CSS `object-fit: cover` crops differently per orientation) via LocAR's FOV APIs, and re-synced on canvas resize/rotation. Adds an optional `hFov` geolocation session option (defaults to 80) and threads the canvas `size` through backend initialization.
+
+### Patch Changes
+
+- [#136](https://github.com/omnidotdev/rdk/pull/136) [`68cdb5a`](https://github.com/omnidotdev/rdk/commit/68cdb5aa4e335e8c3da521a62103db0b4f444d77) Thanks [@nickw1](https://github.com/nickw1)! - Do not start real GPS when a fake location is provided. Previously `startGps()` was always called even when `fakeLat`/`fakeLon` were set, so a real GPS fix would override the fake position; real GPS now starts only when no fake location is configured.
+
 ## 0.13.0
 
 ### Minor Changes
