@@ -27,7 +27,7 @@ const VisionSession: React.FC<VisionSessionProps> = ({
   children,
   onError,
 }) => {
-  const { scene, camera, gl } = useThree();
+  const { scene, camera, gl, size } = useThree();
 
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -49,7 +49,7 @@ const VisionSession: React.FC<VisionSessionProps> = ({
 
         if (cancelled) return;
 
-        await registerBackend(backend, { scene, camera, renderer: gl });
+        await registerBackend(backend, { scene, camera, renderer: gl, size });
 
         // Cleanup may have run during the await; don't leak the registration
         if (cancelled) {

@@ -1,8 +1,9 @@
-import { App } from "locar";
+import { App, LocAR } from "locar";
 
 import { BACKEND_TYPES } from "@/lib/types/engine";
 
-import type { DeviceOrientationControls, LocAR, Webcam } from "locar";
+import type { Size } from "@react-three/fiber";
+import type { DeviceOrientationControls, Webcam } from "locar";
 import type {
   Camera,
   Group,
@@ -34,6 +35,10 @@ export interface AnchorEntry {
   onAttach?: (locar: LocAR) => void;
   onGpsUpdate?: (position: GeolocationPosition, distMoved: number) => void;
 }
+
+export type GeolocationBackend<T> = Backend<T> & {
+  setSize: (newSize: Size) => void;
+};
 
 /**
  * Internal state exposed by the geolocation backend.
@@ -74,6 +79,8 @@ export interface GeolocationSessionOptions {
   fakeLon?: number;
   /** Custom webcam constraints. */
   webcamConstraints?: MediaStreamConstraints;
+  /** Horizontal field of view. This will override any R3F canvas setting. LocAR will not render consistently between landscape and portrait without this. Defaults to 80.*/
+  hFov?: number;
   /**
    * GPS update callback. Fires when a new GPS position is received.
    * @param position Updated GPS position.
@@ -87,7 +94,7 @@ export interface GeolocationSessionOptions {
  */
 const createGeolocationBackend = (
   options?: GeolocationSessionOptions,
-): Backend<GeolocationInternal> => {
+): GeolocationBackend<GeolocationInternal> => {
   // LocAR's App orchestrates the LocAR core, webcam feed and device orientation
   // against our existing (react-three-fiber owned) camera, renderer and scene
   let app: App | null = null;
@@ -99,6 +106,8 @@ const createGeolocationBackend = (
   let cameraRef: Camera | null = null;
   let rendererRef: WebGLRenderer | null = null;
   let sceneRef: Scene | null = null;
+  let sizeRef: Size | null = null;
+  let lastSize = { width: 0, height: 0 };
 
   // anchor registry - moved from module-level globals in GeolocationAnchor
   const anchorRegistry = new Map<string, AnchorEntry>();
@@ -147,8 +156,8 @@ const createGeolocationBackend = (
   return {
     type: BACKEND_TYPES.GEOLOCATION,
 
-    async init(args: BackendInitArgs & { scene?: Scene }) {
-      const { camera, renderer, scene } = args;
+    async init(args: BackendInitArgs & { scene?: Scene; size: Size }) {
+      const { camera, renderer, scene, size } = args;
 
       if (!scene)
         throw new Error(
@@ -158,6 +167,14 @@ const createGeolocationBackend = (
       cameraRef = camera;
       rendererRef = renderer;
       sceneRef = scene;
+      sizeRef = size;
+
+      // ensure hfov is passed to the Three camera before it's passed to LocAR
+      const cam = cameraRef as PerspectiveCamera;
+      const hFov = options?.hFov ?? 80;
+
+      cam.fov = LocAR.htov(hFov, size.width / size.height);
+      cam.updateProjectionMatrix();
 
       // App wires the LocAR core, webcam and device orientation against our
       // existing three.js objects (LocAR >= 0.2.6 `threeObjects` option)
@@ -174,6 +191,10 @@ const createGeolocationBackend = (
           // TODO narrow `webcamConstraints` to LocAR's `{ video: { facingMode } }` shape
         }) as { video: { facingMode: string } },
         deviceOrientationOptions: { enabled: true },
+        dimensionsProvider: () =>
+          sizeRef
+            ? { width: sizeRef.width, height: sizeRef.height }
+            : { width: 0, height: 0 },
       });
 
       // App renders the camera feed as a DOM <video> (object-fit: cover) behind
@@ -271,6 +292,17 @@ const createGeolocationBackend = (
 
     update() {
       app?.deviceOrientationControls?.update?.();
+      if (
+        sizeRef !== null &&
+        (sizeRef.width !== lastSize.width || sizeRef.height !== lastSize.height)
+      ) {
+        lastSize = { width: sizeRef.width, height: sizeRef.height };
+        const aspect = sizeRef.width / sizeRef.height;
+        const cam = cameraRef as PerspectiveCamera;
+        cam.aspect = aspect;
+        cam.updateProjectionMatrix();
+        app?.syncFovWithWebcam(aspect);
+      }
     },
 
     dispose() {
@@ -307,6 +339,15 @@ const createGeolocationBackend = (
       sceneRef = null;
       gpsUpdateHandler = null;
       lastPosition = null;
+    },
+
+    setSize(newSize: Size) {
+      sizeRef = {
+        width: newSize.width,
+        height: newSize.height,
+        top: 0,
+        left: 0,
+      };
     },
 
     getInternal: (): GeolocationInternal => ({

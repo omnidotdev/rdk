@@ -7,7 +7,11 @@ import { createGeolocationBackend } from "@/geolocation";
 import type { PropsWithChildren } from "react";
 import type { Backend } from "@/lib/types/engine";
 // NB: relative type import path resolves downstream type issues
-import type { GeolocationSessionOptions } from "./geolocationBackend";
+import type {
+  GeolocationBackend,
+  GeolocationInternal,
+  GeolocationSessionOptions,
+} from "./geolocationBackend";
 
 export interface GeolocationSessionProps extends PropsWithChildren {
   /** Geolocation session options. */
@@ -22,7 +26,7 @@ const GeolocationSession = ({
   options = {},
   children,
 }: GeolocationSessionProps) => {
-  const { scene, camera, gl } = useThree();
+  const { scene, camera, gl, size } = useThree();
 
   const { registerBackend, unregisterBackend } = useXRStore();
 
@@ -43,7 +47,7 @@ const GeolocationSession = ({
 
         if (cancelled) return;
 
-        await registerBackend(backend, { scene, camera, renderer: gl });
+        await registerBackend(backend, { scene, camera, renderer: gl, size });
 
         backendRef.current = backend;
       } catch (err) {
@@ -63,6 +67,12 @@ const GeolocationSession = ({
       }
     };
   }, [scene, camera, gl, registerBackend, unregisterBackend]);
+
+  useEffect(() => {
+    (backendRef.current as GeolocationBackend<GeolocationInternal>)?.setSize(
+      size,
+    );
+  }, [size]);
 
   return children;
 };
