@@ -1,7 +1,6 @@
 import { App, LocAR } from "locar";
 
 import { BACKEND_TYPES } from "@/lib/types/engine";
-import { isIOS } from "./isIOS";
 
 import type { Size } from "@react-three/fiber";
 import type { DeviceOrientationControls, Webcam } from "locar";
@@ -221,32 +220,12 @@ const createGeolocationBackend = (
       // LocAR instance (which extends EventEmitter for gps events)
       locar = await app.start();
 
-      // LocAR's DeviceOrientationControls binds to the `deviceorientationabsolute`
-      // event by default, which is the correct absolute-heading source on
-      // Android/Chrome. iOS Safari never fires that event, so the control holds its
-      // neutral "device flat" pose, pitching the camera straight down and rendering
-      // an empty scene in every direction; it does fire the plain `deviceorientation`
-      // event, carrying webkitCompassHeading for absolute heading. Rebind to it on
-      // iOS ONLY. Rebinding on Android/Chrome swaps absolute heading for the plain
-      // event's relative values and rotates the whole scene (content off by ~90deg,
-      // omnidotdev/rdk#140). Verified on-device
-      const orientationControls = app.deviceOrientationControls;
-      if (
-        isIOS() &&
-        orientationControls &&
-        orientationControls.orientationChangeEventName !== "deviceorientation"
-      ) {
-        try {
-          orientationControls.disconnect();
-          orientationControls.orientationChangeEventName = "deviceorientation";
-          orientationControls.connect();
-        } catch (err) {
-          console.error(
-            "[geolocationBackend] failed to rebind device orientation event:",
-            err,
-          );
-        }
-      }
+      // Rely on LocAR's default `deviceorientationabsolute` binding on every
+      // platform. An earlier iOS-driven rebind to the plain `deviceorientation`
+      // event was removed: on Android/Chrome it swapped absolute heading for the
+      // plain event's relative values and rotated the scene ~90deg
+      // (omnidotdev/rdk#140), and iOS tracks heading correctly on the default event
+      // (verified on-device), so the rebind is no longer needed
 
       locar.on("gpsupdate", gpsUpdateHandler);
 
