@@ -1,6 +1,7 @@
 import { App, LocAR } from "locar";
 
 import { BACKEND_TYPES } from "@/lib/types/engine";
+import { isIOS } from "./isIOS";
 
 import type { Size } from "@react-three/fiber";
 import type { DeviceOrientationControls, Webcam } from "locar";
@@ -221,15 +222,17 @@ const createGeolocationBackend = (
       locar = await app.start();
 
       // LocAR's DeviceOrientationControls binds to the `deviceorientationabsolute`
-      // event by default. iOS Safari never fires that event, and some devices
-      // deliver it as a stuck zero reading, so no usable orientation arrives and the
-      // control holds its neutral "device flat" pose, pitching the camera straight
-      // down. Every anchor sits at the horizon, so the AR scene renders empty in
-      // every direction. Rebinding to the plain `deviceorientation` event (fired on
-      // all platforms, and carrying webkitCompassHeading for absolute heading on
-      // iOS) makes the camera track the device everywhere. Verified on-device
+      // event by default, which is the correct absolute-heading source on
+      // Android/Chrome. iOS Safari never fires that event, so the control holds its
+      // neutral "device flat" pose, pitching the camera straight down and rendering
+      // an empty scene in every direction; it does fire the plain `deviceorientation`
+      // event, carrying webkitCompassHeading for absolute heading. Rebind to it on
+      // iOS ONLY. Rebinding on Android/Chrome swaps absolute heading for the plain
+      // event's relative values and rotates the whole scene (content off by ~90deg,
+      // omnidotdev/rdk#140). Verified on-device
       const orientationControls = app.deviceOrientationControls;
       if (
+        isIOS() &&
         orientationControls &&
         orientationControls.orientationChangeEventName !== "deviceorientation"
       ) {
