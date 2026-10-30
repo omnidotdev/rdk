@@ -1,5 +1,13 @@
 # @omnidotdev/rdk
 
+## 0.14.1
+
+### Patch Changes
+
+- [#141](https://github.com/omnidotdev/rdk/pull/141) [`57fd398`](https://github.com/omnidotdev/rdk/commit/57fd3981428537e1df754dbe2b920243206b45bb) Thanks [@coopbri](https://github.com/coopbri)! - fix(geolocation): stop rebinding device orientation to `deviceorientation`
+  
+  The geolocation backend rebound LocAR's `DeviceOrientationControls` from the `deviceorientationabsolute` event to the plain `deviceorientation` event. On Android/Chrome `deviceorientationabsolute` already provides the correct absolute heading, so the rebind swapped it for the plain event's relative values and rotated the whole scene, leaving AR content off by roughly 90 degrees ([#140](https://github.com/omnidotdev/rdk-framework/issues/140)). The rebind was originally added for iOS, but iOS tracks heading correctly on the default event too (verified on-device), so it is removed entirely and every platform now uses LocAR's default `deviceorientationabsolute` binding.
+
 ## 0.14.0
 
 ### Minor Changes
