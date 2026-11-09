@@ -1,0 +1,12 @@
+name: PR Checks ✅
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  checks:
+    uses: omnidotdev/.github/.github/workflows/pr-checks.yml@master
+    with:
+      # rdk publishes packages, so a changeset is required.
+      require-changeset: true
