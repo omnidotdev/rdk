@@ -14,10 +14,11 @@ import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 import useGeolocationBackend from "./useGeolocationBackend";
+import { useMaterialStore } from "./useMaterialStore";
 
 import type { ThreeEvent } from "@react-three/fiber";
 import type { LocAR } from "locar";
-import type { ColorRepresentation } from "three";
+import type { ColorRepresentation, Material } from "three";
 
 export interface GeoLineProps {
   /** Array of coordinates forming the line. GeoJSON-style: [lon, lat, elevation?] */
@@ -148,6 +149,8 @@ const GeoLine = ({
   const geoRef = useRef(geo);
   geoRef.current = geo;
 
+  const addMaterial = useMaterialStore((state) => state.addMaterial);
+
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
   const [line, setLine] = useState<Line2 | Mesh | null>(null);
@@ -171,31 +174,44 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
+      const wayType = `${color.toString()}:${opacity.toFixed(2)}:${isDashed ? "1" : "0"}`;
+      const materialStore = useMaterialStore.getState().materialStore;
+      let material: Material | LineMaterial | null = null;
+
       if (isDashed) {
         const geometry = new LineGeometry().setFromPoints(pts);
 
-        const material = new LineMaterial({
-          color,
-          dashSize,
-          gapSize,
-          dashed: true,
-          worldUnits: true,
-          linewidth: lineWidth,
-          transparent: opacity < 1,
-          opacity,
-        });
-
-        const lineObj = new Line2(geometry, material);
+        if (materialStore[wayType] !== undefined) {
+          material = materialStore[wayType];
+        } else {
+          material = new LineMaterial({
+            color,
+            dashSize,
+            gapSize,
+            dashed: true,
+            worldUnits: true,
+            linewidth: lineWidth,
+            transparent: opacity < 1,
+            opacity,
+          });
+          addMaterial(wayType, material);
+        }
+        const lineObj = new Line2(geometry, material as LineMaterial);
         lineObj.computeLineDistances();
         setLine(lineObj);
       } else {
         const geometry = buildTriStripGeometry(pts, lineWidth);
-        const material = new MeshBasicMaterial({
-          color,
-          transparent: opacity < 1,
-          opacity,
-          side: DoubleSide,
-        });
+        if (materialStore[wayType] !== undefined) {
+          material = materialStore[wayType];
+        } else {
+          material = new MeshBasicMaterial({
+            color,
+            transparent: opacity < 1,
+            opacity,
+            side: DoubleSide,
+          });
+          addMaterial(wayType, material);
+        }
         setLine(new Mesh(geometry, material));
       }
     };
