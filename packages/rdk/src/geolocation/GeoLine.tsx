@@ -52,6 +52,10 @@ export interface GeoLineProps {
    */
   onClick?: (e: ThreeEvent<MouseEvent>) => void;
   /**
+   * Pointer down event handler. Can work better than onClick on touch screens
+   */
+  onPointerDown?: (e: ThreeEvent<PointerEvent>) => void;
+  /**
    * Pointer out event handler. When omitted, the line is not registered for pointer raycasting.
    */
   onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
@@ -140,6 +144,7 @@ const GeoLine = ({
   gapSize = 1,
   lineWidth = 1,
   onClick,
+  onPointerDown,
   onPointerOut,
   onPointerOver,
   opacity = 1,
@@ -239,6 +244,7 @@ const GeoLine = ({
     // biome-ignore lint/a11y/noStaticElementInteractions: <group> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics
     <group
       onClick={onClick}
+      onPointerDown={onPointerDown}
       onPointerOut={onPointerOut}
       onPointerOver={onPointerOver}
     >

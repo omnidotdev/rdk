@@ -43,6 +43,10 @@ export interface GeoPolygonProps {
    */
   onClick?: (e: ThreeEvent<MouseEvent>) => void;
   /**
+   * Pointer down event handler. Can work better than onClick on touch screens
+   */
+  onPointerDown?: (e: ThreeEvent<PointerEvent>) => void;
+  /**
    * Pointer out event handler. When omitted, the polygon is not registered for pointer raycasting.
    */
   onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
@@ -74,6 +78,7 @@ const GeoPolygon = ({
   opacity = 1,
   isWireframe = false,
   onClick,
+  onPointerDown,
   onPointerOut,
   onPointerOver,
   side = "double",
@@ -192,6 +197,7 @@ const GeoPolygon = ({
           <mesh
             geometry={geometryData.geometry}
             onClick={onClick}
+            onPointerDown={onPointerDown}
             onPointerOut={onPointerOut}
             onPointerOver={onPointerOver}
           >
