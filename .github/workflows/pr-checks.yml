@@ -8,8 +8,6 @@ jobs:
   checks:
     uses: omnidotdev/.github/.github/workflows/pr-checks.yml@master
     with:
-      # rdk publishes packages, so release-affecting changes need a changeset.
-      # Docs/tests/CI are exempt by default; demo apps don't ship, so exempt them too.
       require-changeset: true
       extra-exempt-paths: |
         apps/**
