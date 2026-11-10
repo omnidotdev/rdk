@@ -7,7 +7,3 @@ on:
 jobs:
   checks:
     uses: omnidotdev/.github/.github/workflows/pr-checks.yml@master
-    with:
-      require-changeset: true
-      extra-exempt-paths: |
-        apps/**
