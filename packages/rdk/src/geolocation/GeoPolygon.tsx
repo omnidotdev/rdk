@@ -12,11 +12,11 @@ import {
 
 import useGeolocationBackend from "./useGeolocationBackend";
 
-import type { ThreeEvent } from "@react-three/fiber";
+import type { EventHandlers } from "@react-three/fiber";
 import type { LocAR } from "locar";
 import type { Side } from "three";
 
-export interface GeoPolygonProps {
+export interface GeoPolygonProps extends Partial<EventHandlers> {
   /** Outer ring coordinates. GeoJSON-style: [lon, lat, elevation?] */
   coordinates: Array<[number, number, number?]>;
   /**
@@ -38,22 +38,6 @@ export interface GeoPolygonProps {
    * @default false
    */
   isWireframe?: boolean;
-  /**
-   * Click event handler. When omitted, the polygon is not registered for pointer raycasting.
-   */
-  onClick?: (e: ThreeEvent<MouseEvent>) => void;
-  /**
-   * Pointer down event handler. Can work better than onClick on touch screens
-   */
-  onPointerDown?: (e: ThreeEvent<PointerEvent>) => void;
-  /**
-   * Pointer out event handler. When omitted, the polygon is not registered for pointer raycasting.
-   */
-  onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
-  /**
-   * Pointer over event handler. When omitted, the polygon is not registered for pointer raycasting.
-   */
-  onPointerOver?: (e: ThreeEvent<PointerEvent>) => void;
   /**
    * Side to render: front, back, or double.
    * @default "double"
@@ -77,11 +61,8 @@ const GeoPolygon = ({
   color = "#ff0000",
   opacity = 1,
   isWireframe = false,
-  onClick,
-  onPointerDown,
-  onPointerOut,
-  onPointerOver,
   side = "double",
+  ...events
 }: GeoPolygonProps) => {
   const geo = useGeolocationBackend();
   const geoRef = useRef(geo);
@@ -194,13 +175,7 @@ const GeoPolygon = ({
       {geometryData && (
         <group position={[0, geometryData.avgElevation, 0]}>
           {/* biome-ignore lint/a11y/noStaticElementInteractions: <mesh> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics */}
-          <mesh
-            geometry={geometryData.geometry}
-            onClick={onClick}
-            onPointerDown={onPointerDown}
-            onPointerOut={onPointerOut}
-            onPointerOver={onPointerOver}
-          >
+          <mesh geometry={geometryData.geometry} {...events}>
             <meshBasicMaterial
               color={color}
               opacity={opacity}
