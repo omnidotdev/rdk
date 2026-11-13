@@ -181,7 +181,7 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
-      const wayType = `${color.toString()}:${opacity.toFixed(2)}:${lineWidth}:${isDashed ? `1:${dashSize}:${gapSize}` : "0"}`;
+      const wayType = `${color.toString()}:${opacity.toFixed(2)}:${isDashed ? `${lineWidth}:1:${dashSize}:${gapSize}` : ":0"}`;
       //const materialStore = useMaterialStore.getState().materialStore;
       let material: Material | LineMaterial | null = null;
 
