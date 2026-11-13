@@ -20,6 +20,11 @@ import type { ThreeEvent } from "@react-three/fiber";
 import type { LocAR } from "locar";
 import type { ColorRepresentation, Material } from "three";
 
+interface KeyedLine {
+  key: string;
+  line: Line2 | Mesh;
+}
+
 export interface GeoLineProps {
   /** Array of coordinates forming the line. GeoJSON-style: [lon, lat, elevation?] */
   coordinates: Array<[number, number, number?]>;
@@ -149,12 +154,14 @@ const GeoLine = ({
   const geoRef = useRef(geo);
   geoRef.current = geo;
 
-  const addMaterial = useMaterialStore((state) => state.addMaterial);
+  //const addMaterial = useMaterialStore((state) => state.addMaterial);
 
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
-  const [line, setLine] = useState<Line2 | Mesh | null>(null);
+  const [line, setLine] = useState<KeyedLine | null>(null);
 
+  const acquireMaterial = useMaterialStore((store) => store.acquireMaterial);
+  const releaseMaterial = useMaterialStore((store) => store.releaseMaterial);
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 2) return;
 
@@ -174,45 +181,43 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
-      const wayType = `${color.toString()}:${opacity.toFixed(2)}:${isDashed ? "1" : "0"}`;
-      const materialStore = useMaterialStore.getState().materialStore;
+      const wayType = `${color.toString()}:${opacity.toFixed(2)}:${lineWidth}:${isDashed ? `1:${dashSize}:${gapSize}` : "0"}`;
+      //const materialStore = useMaterialStore.getState().materialStore;
       let material: Material | LineMaterial | null = null;
 
       if (isDashed) {
         const geometry = new LineGeometry().setFromPoints(pts);
 
-        if (materialStore[wayType] !== undefined) {
-          material = materialStore[wayType];
-        } else {
-          material = new LineMaterial({
-            color,
-            dashSize,
-            gapSize,
-            dashed: true,
-            worldUnits: true,
-            linewidth: lineWidth,
-            transparent: opacity < 1,
-            opacity,
-          });
-          addMaterial(wayType, material);
-        }
+        material = acquireMaterial(
+          wayType,
+          () =>
+            new LineMaterial({
+              color,
+              dashSize,
+              gapSize,
+              dashed: true,
+              worldUnits: true,
+              linewidth: lineWidth,
+              transparent: opacity < 1,
+              opacity,
+            }),
+        );
         const lineObj = new Line2(geometry, material as LineMaterial);
         lineObj.computeLineDistances();
-        setLine(lineObj);
+        setLine({ key: wayType, line: lineObj });
       } else {
         const geometry = buildTriStripGeometry(pts, lineWidth);
-        if (materialStore[wayType] !== undefined) {
-          material = materialStore[wayType];
-        } else {
-          material = new MeshBasicMaterial({
-            color,
-            transparent: opacity < 1,
-            opacity,
-            side: DoubleSide,
-          });
-          addMaterial(wayType, material);
-        }
-        setLine(new Mesh(geometry, material));
+        material = acquireMaterial(
+          wayType,
+          () =>
+            new MeshBasicMaterial({
+              color,
+              transparent: opacity < 1,
+              opacity,
+              side: DoubleSide,
+            }),
+        );
+        setLine({ key: wayType, line: new Mesh(geometry, material) });
       }
     };
 
@@ -230,9 +235,8 @@ const GeoLine = ({
 
       setLine((prev) => {
         if (prev) {
-          prev.geometry.dispose();
-          const material = prev.material as MeshBasicMaterial | LineMaterial;
-          material.dispose();
+          prev.line.geometry.dispose();
+          releaseMaterial(prev.key);
         }
 
         return null;
@@ -258,7 +262,7 @@ const GeoLine = ({
       onPointerOut={onPointerOut}
       onPointerOver={onPointerOver}
     >
-      {line && <primitive object={line} />}
+      {line?.line && <primitive object={line.line} />}
     </group>,
     anchor,
   );

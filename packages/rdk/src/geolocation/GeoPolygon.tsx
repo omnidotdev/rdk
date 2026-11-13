@@ -59,6 +59,11 @@ export interface GeoPolygonProps {
   side?: "front" | "back" | "double";
 }
 
+interface KeyedMaterial {
+  key: string;
+  material: Material;
+}
+
 const SIDE_MAP: Record<"front" | "back" | "double", Side> = {
   front: FrontSide,
   back: BackSide,
@@ -84,7 +89,7 @@ const GeoPolygon = ({
   const geoRef = useRef(geo);
   geoRef.current = geo;
 
-  const addMaterial = useMaterialStore((store) => store.addMaterial);
+  //const addMaterial = useMaterialStore((store) => store.addMaterial);
 
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
@@ -93,7 +98,10 @@ const GeoPolygon = ({
     avgElevation: number;
   } | null>(null);
 
-  const [material, setMaterial] = useState<Material | null>(null);
+  const acquireMaterial = useMaterialStore((store) => store.acquireMaterial);
+  const releaseMaterial = useMaterialStore((store) => store.releaseMaterial);
+
+  const [material, setMaterial] = useState<KeyedMaterial | null>(null);
 
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 3) return;
@@ -169,22 +177,19 @@ const GeoPolygon = ({
 
       setGeometryData({ geometry: shapeGeometry, avgElevation });
 
-      const wayType = `${color}:${opacity.toFixed(2)}:2`; // 0=normal line, 1=dashed line, 2=polygon
-      const materialStore = useMaterialStore.getState().materialStore;
-      let material = null;
-      if (materialStore[wayType] !== undefined) {
-        material = materialStore[wayType];
-      } else {
-        material = new MeshBasicMaterial({
-          color,
-          transparent: opacity < 1,
-          wireframe: isWireframe,
-          opacity,
-          side: SIDE_MAP[side],
-        });
-        addMaterial(wayType, material);
-      }
-      setMaterial(material);
+      const wayType = `${color}:${opacity.toFixed(2)}::2:${isWireframe}:${side}`; // 0=normal line, 1=dashed line, 2=polygon
+      const material = acquireMaterial(
+        wayType,
+        () =>
+          new MeshBasicMaterial({
+            color,
+            transparent: opacity < 1,
+            wireframe: isWireframe,
+            opacity,
+            side: SIDE_MAP[side],
+          }),
+      );
+      setMaterial({ key: wayType, material });
     };
 
     geoRef.current.registerAnchor(anchorId, {
@@ -198,7 +203,9 @@ const GeoPolygon = ({
 
     return () => {
       geoRef.current.unregisterAnchor(anchorId);
-      material?.dispose();
+      if (material !== null) {
+        releaseMaterial(material.key);
+      }
 
       setGeometryData((prev) => {
         if (prev) prev.geometry.dispose();
@@ -206,11 +213,21 @@ const GeoPolygon = ({
         return null;
       });
     };
-  }, [anchorId, anchor, coordinates, holes, geo.isSuccess]);
+  }, [
+    anchorId,
+    anchor,
+    coordinates,
+    holes,
+    geo.isSuccess,
+    color,
+    opacity,
+    side,
+    isWireframe,
+  ]);
 
   return createPortal(
     <group>
-      {geometryData && material && (
+      {geometryData && material?.material && (
         <group position={[0, geometryData.avgElevation, 0]}>
           {/* biome-ignore lint/a11y/noStaticElementInteractions: <mesh> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics */}
           <mesh
@@ -218,7 +235,7 @@ const GeoPolygon = ({
             onClick={onClick}
             onPointerOut={onPointerOut}
             onPointerOver={onPointerOver}
-            material={material}
+            material={material.material}
           />
         </group>
       )}
