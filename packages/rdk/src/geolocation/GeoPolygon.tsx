@@ -12,7 +12,7 @@ import {
 } from "three";
 
 import useGeolocationBackend from "./useGeolocationBackend";
-import { useMaterialStore } from "./useMaterialStore";
+import { getColorKey, useMaterialStore } from "./useMaterialStore";
 
 import type { EventHandlers } from "@react-three/fiber";
 import type { LocAR } from "locar";
@@ -47,11 +47,6 @@ export interface GeoPolygonProps extends Partial<EventHandlers> {
   side?: "front" | "back" | "double";
 }
 
-interface KeyedMaterial {
-  key: string;
-  material: Material;
-}
-
 const SIDE_MAP: Record<"front" | "back" | "double", Side> = {
   front: FrontSide,
   back: BackSide,
@@ -75,8 +70,6 @@ const GeoPolygon = ({
   const geoRef = useRef(geo);
   geoRef.current = geo;
 
-  //const addMaterial = useMaterialStore((store) => store.addMaterial);
-
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
   const [geometryData, setGeometryData] = useState<{
@@ -87,10 +80,15 @@ const GeoPolygon = ({
   const acquireMaterial = useMaterialStore((store) => store.acquireMaterial);
   const releaseMaterial = useMaterialStore((store) => store.releaseMaterial);
 
-  const [material, setMaterial] = useState<KeyedMaterial | null>(null);
+  const [material, setMaterial] = useState<Material | null>(null);
 
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 3) return;
+
+    // track what this effect acquired in its own closure so cleanup can release
+    // it directly (state updaters never run after unmount)
+    let shapeGeometry: ShapeGeometry | null = null;
+    let materialKey: string | null = null;
 
     const [lon, lat, alt = 0] = coordinates[0];
 
@@ -152,20 +150,24 @@ const GeoPolygon = ({
         }
       }
 
-      const shapeGeometry = new ShapeGeometry(shape);
+      const geometry = new ShapeGeometry(shape);
+      shapeGeometry = geometry;
 
       // calculate average elevation
       const totalElev = outerPoints.reduce((sum, p) => sum + p.elev, 0);
       const avgElevation = totalElev / outerPoints.length;
 
       // rotate to lie flat on XZ plane
-      shapeGeometry.rotateX(-Math.PI / 2);
+      geometry.rotateX(-Math.PI / 2);
 
-      setGeometryData({ geometry: shapeGeometry, avgElevation });
+      setGeometryData({ geometry, avgElevation });
 
-      const wayType = `${color}:${opacity.toFixed(2)}::2:${isWireframe}:${side}`; // 0=normal line, 1=dashed line, 2=polygon
+      // the `2` marks a polygon (`0` is a solid line, `1` a dashed line)
+      const key = `${getColorKey(color)}:${opacity.toFixed(2)}::2:${isWireframe}:${side}`;
+      materialKey = key;
+
       const material = acquireMaterial(
-        wayType,
+        key,
         () =>
           new MeshBasicMaterial({
             color,
@@ -175,7 +177,7 @@ const GeoPolygon = ({
             side: SIDE_MAP[side],
           }),
       );
-      setMaterial({ key: wayType, material });
+      setMaterial(material);
     };
 
     geoRef.current.registerAnchor(anchorId, {
@@ -189,15 +191,12 @@ const GeoPolygon = ({
 
     return () => {
       geoRef.current.unregisterAnchor(anchorId);
-      if (material !== null) {
-        releaseMaterial(material.key);
-      }
 
-      setGeometryData((prev) => {
-        if (prev) prev.geometry.dispose();
+      shapeGeometry?.dispose();
+      if (materialKey) releaseMaterial(materialKey);
 
-        return null;
-      });
+      setGeometryData(null);
+      setMaterial(null);
     };
   }, [
     anchorId,
@@ -213,12 +212,12 @@ const GeoPolygon = ({
 
   return createPortal(
     <group>
-      {geometryData && material?.material && (
+      {geometryData && material && (
         <group position={[0, geometryData.avgElevation, 0]}>
           {/* biome-ignore lint/a11y/noStaticElementInteractions: <mesh> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics */}
           <mesh
             geometry={geometryData.geometry}
-            material={material.material}
+            material={material}
             {...events}
           />
         </group>

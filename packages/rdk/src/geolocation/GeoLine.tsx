@@ -14,16 +14,11 @@ import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 import useGeolocationBackend from "./useGeolocationBackend";
-import { useMaterialStore } from "./useMaterialStore";
+import { getColorKey, useMaterialStore } from "./useMaterialStore";
 
 import type { EventHandlers } from "@react-three/fiber";
 import type { LocAR } from "locar";
-import type { ColorRepresentation, Material } from "three";
-
-interface KeyedLine {
-  key: string;
-  line: Line2 | Mesh;
-}
+import type { ColorRepresentation } from "three";
 
 export interface GeoLineProps extends Partial<EventHandlers> {
   /** Array of coordinates forming the line. GeoJSON-style: [lon, lat, elevation?] */
@@ -140,16 +135,20 @@ const GeoLine = ({
   const geoRef = useRef(geo);
   geoRef.current = geo;
 
-  //const addMaterial = useMaterialStore((state) => state.addMaterial);
-
   const [anchor] = useState(() => new Group());
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
-  const [line, setLine] = useState<KeyedLine | null>(null);
+  const [line, setLine] = useState<Line2 | Mesh | null>(null);
 
   const acquireMaterial = useMaterialStore((store) => store.acquireMaterial);
   const releaseMaterial = useMaterialStore((store) => store.releaseMaterial);
+
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 2) return;
+
+    // track what this effect acquired in its own closure so cleanup can release
+    // it directly (state updaters never run after unmount)
+    let lineObj: Line2 | Mesh | null = null;
+    let materialKey: string | null = null;
 
     const [lon, lat, alt = 0] = coordinates[0];
 
@@ -167,15 +166,15 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
-      const wayType = `${color.toString()}:${opacity.toFixed(2)}:${isDashed ? `${lineWidth}:1:${dashSize}:${gapSize}` : ":0"}`;
-      //const materialStore = useMaterialStore.getState().materialStore;
-      let material: Material | LineMaterial | null = null;
+      // non-dashed line width lives in the geometry, not the material
+      const key = `${getColorKey(color)}:${opacity.toFixed(2)}:${isDashed ? `${lineWidth}:1:${dashSize}:${gapSize}` : ":0"}`;
+      materialKey = key;
 
       if (isDashed) {
         const geometry = new LineGeometry().setFromPoints(pts);
 
-        material = acquireMaterial(
-          wayType,
+        const material = acquireMaterial(
+          key,
           () =>
             new LineMaterial({
               color,
@@ -188,13 +187,13 @@ const GeoLine = ({
               opacity,
             }),
         );
-        const lineObj = new Line2(geometry, material as LineMaterial);
-        lineObj.computeLineDistances();
-        setLine({ key: wayType, line: lineObj });
+        const dashedLine = new Line2(geometry, material as LineMaterial);
+        dashedLine.computeLineDistances();
+        lineObj = dashedLine;
       } else {
         const geometry = buildTriStripGeometry(pts, lineWidth);
-        material = acquireMaterial(
-          wayType,
+        const material = acquireMaterial(
+          key,
           () =>
             new MeshBasicMaterial({
               color,
@@ -203,8 +202,10 @@ const GeoLine = ({
               side: DoubleSide,
             }),
         );
-        setLine({ key: wayType, line: new Mesh(geometry, material) });
+        lineObj = new Mesh(geometry, material);
       }
+
+      setLine(lineObj);
     };
 
     geoRef.current.registerAnchor(anchorId, {
@@ -219,14 +220,10 @@ const GeoLine = ({
     return () => {
       geoRef.current.unregisterAnchor(anchorId);
 
-      setLine((prev) => {
-        if (prev) {
-          prev.line.geometry.dispose();
-          releaseMaterial(prev.key);
-        }
+      lineObj?.geometry.dispose();
+      if (materialKey) releaseMaterial(materialKey);
 
-        return null;
-      });
+      setLine(null);
     };
   }, [
     anchorId,
@@ -243,7 +240,7 @@ const GeoLine = ({
 
   return createPortal(
     // biome-ignore lint/a11y/noStaticElementInteractions: <group> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics
-    <group {...events}>{line?.line && <primitive object={line.line} />}</group>,
+    <group {...events}>{line && <primitive object={line} />}</group>,
     anchor,
   );
 };

@@ -1,8 +1,11 @@
 import { Canvas } from "@react-three/fiber";
-import { fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
+import { Color } from "three";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeoLine } from "../src/geolocation";
+import useGeolocationBackend from "../src/geolocation/useGeolocationBackend";
+import { useMaterialStore } from "../src/geolocation/useMaterialStore";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
 vi.mock("../src/geolocation/useGeolocationBackend", () => ({
@@ -34,8 +37,44 @@ const SIMPLE_LINE_COORDINATES: Array<[number, number]> = [
   [-113.6373, 48.6905],
 ];
 
+const FAKE_LOCAR = {
+  lonLatToWorldCoords: (lon: number, lat: number) => [lon, lat],
+};
+
+/**
+ * Mock a ready geolocation backend and return its `registerAnchor` spy.
+ */
+const mockReadyBackend = () => {
+  const registerAnchor = vi.fn();
+
+  vi.mocked(useGeolocationBackend).mockReturnValue({
+    isPending: false,
+    isSuccess: true,
+    registerAnchor,
+    unregisterAnchor: vi.fn(),
+  } as unknown as ReturnType<typeof useGeolocationBackend>);
+
+  return registerAnchor;
+};
+
+/**
+ * Attach every registered anchor, as the backend does on the first GPS fix.
+ */
+const attachAll = (registerAnchor: ReturnType<typeof vi.fn>) => {
+  act(() => {
+    for (const [, entry] of registerAnchor.mock.calls) {
+      entry.onAttach(FAKE_LOCAR);
+    }
+  });
+};
+
+const cachedMaterials = () => [
+  ...useMaterialStore.getState().materialStore.values(),
+];
+
 beforeEach(() => {
   clearGlobalMocks();
+  useMaterialStore.setState({ materialStore: new Map() });
 });
 
 describe("GeoLine", () => {
@@ -169,5 +208,85 @@ describe("GeoLine", () => {
 
     expect(onPointerDown).toHaveBeenCalledTimes(1);
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("shares one material between lines with the same style", () => {
+    const registerAnchor = mockReadyBackend();
+
+    render(
+      <Canvas>
+        <GeoLine coordinates={SAMPLE_ROUTE_COORDINATES} color="#00ff00" />
+        <GeoLine coordinates={SIMPLE_LINE_COORDINATES} color="#00ff00" />
+      </Canvas>,
+    );
+    attachAll(registerAnchor);
+
+    const cached = cachedMaterials();
+
+    expect(cached).toHaveLength(1);
+    expect(cached[0].refCount).toBe(2);
+  });
+
+  it("keeps a shared material alive when one of its lines unmounts", () => {
+    const registerAnchor = mockReadyBackend();
+
+    const { rerender } = render(
+      <Canvas>
+        <GeoLine coordinates={SAMPLE_ROUTE_COORDINATES} />
+        <GeoLine coordinates={SIMPLE_LINE_COORDINATES} />
+      </Canvas>,
+    );
+    attachAll(registerAnchor);
+
+    const [{ material }] = cachedMaterials();
+    const dispose = vi.spyOn(material, "dispose");
+
+    rerender(
+      <Canvas>
+        <GeoLine coordinates={SAMPLE_ROUTE_COORDINATES} />
+      </Canvas>,
+    );
+
+    expect(dispose).not.toHaveBeenCalled();
+    expect(cachedMaterials()).toHaveLength(1);
+  });
+
+  it("disposes a material once its last line unmounts", () => {
+    const registerAnchor = mockReadyBackend();
+
+    const { unmount } = render(
+      <Canvas>
+        <GeoLine coordinates={SAMPLE_ROUTE_COORDINATES} isDashed={true} />
+      </Canvas>,
+    );
+    attachAll(registerAnchor);
+
+    const [{ material }] = cachedMaterials();
+    const dispose = vi.spyOn(material, "dispose");
+
+    unmount();
+
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect(cachedMaterials()).toHaveLength(0);
+  });
+
+  it("does not share materials between different `Color` instances", () => {
+    const registerAnchor = mockReadyBackend();
+
+    render(
+      <Canvas>
+        <GeoLine
+          coordinates={SAMPLE_ROUTE_COORDINATES}
+          color={new Color("red")}
+        />
+        <GeoLine
+          coordinates={SIMPLE_LINE_COORDINATES}
+          color={new Color("blue")}
+        />
+      </Canvas>,
+    );
+    attachAll(registerAnchor);
+
+    expect(cachedMaterials()).toHaveLength(2);
   });
 });
