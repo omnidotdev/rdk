@@ -1,5 +1,11 @@
 # @omnidotdev/rdk
 
+## 0.15.0
+
+### Minor Changes
+
+- [#144](https://github.com/omnidotdev/rdk/pull/144) [`1572b17`](https://github.com/omnidotdev/rdk/commit/1572b17abbdb450a6c7c847fa71328d95c3fca06) Thanks [@nickw1](https://github.com/nickw1)! - Forward all R3F pointer and click events on `GeoLine` and `GeoPolygon`
+
 ## 0.14.1
 
 ### Patch Changes
