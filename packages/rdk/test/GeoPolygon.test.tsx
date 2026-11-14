@@ -1,8 +1,9 @@
 import { Canvas } from "@react-three/fiber";
-import { render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeoPolygon } from "../src/geolocation";
+import useGeolocationBackend from "../src/geolocation/useGeolocationBackend";
 import { clearGlobalMocks } from "./mocks/globals.mock";
 
 vi.mock("../src/geolocation/useGeolocationBackend", () => ({
@@ -197,5 +198,48 @@ describe("GeoPolygon", () => {
     );
 
     expect(container.firstChild).toBeTruthy();
+  });
+
+  it("forwards R3F event handlers to the polygon mesh", () => {
+    const registerAnchor = vi.fn();
+
+    vi.mocked(useGeolocationBackend).mockReturnValue({
+      isPending: false,
+      isSuccess: true,
+      registerAnchor,
+      unregisterAnchor: vi.fn(),
+    } as unknown as ReturnType<typeof useGeolocationBackend>);
+
+    const onClick = vi.fn();
+    const onPointerDown = vi.fn();
+
+    const { container } = render(
+      <Canvas>
+        <GeoPolygon
+          coordinates={SAMPLE_TRIANGLE_COORDINATES}
+          onClick={onClick}
+          onPointerDown={onPointerDown}
+        />
+      </Canvas>,
+    );
+
+    // the mesh only mounts once the backend attaches the anchor
+    const { onAttach } = registerAnchor.mock.calls[0][1];
+
+    act(() => {
+      onAttach({
+        lonLatToWorldCoords: (lon: number, lat: number) => [lon, lat],
+      });
+    });
+
+    const mesh = container.querySelector("mesh");
+
+    expect(mesh).toBeTruthy();
+
+    fireEvent.pointerDown(mesh as Element);
+    fireEvent.click(mesh as Element);
+
+    expect(onPointerDown).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });
