@@ -14,11 +14,11 @@ import {
 import useGeolocationBackend from "./useGeolocationBackend";
 import { useMaterialStore } from "./useMaterialStore";
 
-import type { ThreeEvent } from "@react-three/fiber";
+import type { EventHandlers } from "@react-three/fiber";
 import type { LocAR } from "locar";
 import type { Material, Side } from "three";
 
-export interface GeoPolygonProps {
+export interface GeoPolygonProps extends Partial<EventHandlers> {
   /** Outer ring coordinates. GeoJSON-style: [lon, lat, elevation?] */
   coordinates: Array<[number, number, number?]>;
   /**
@@ -40,18 +40,6 @@ export interface GeoPolygonProps {
    * @default false
    */
   isWireframe?: boolean;
-  /**
-   * Click event handler. When omitted, the polygon is not registered for pointer raycasting.
-   */
-  onClick?: (e: ThreeEvent<MouseEvent>) => void;
-  /**
-   * Pointer out event handler. When omitted, the polygon is not registered for pointer raycasting.
-   */
-  onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
-  /**
-   * Pointer over event handler. When omitted, the polygon is not registered for pointer raycasting.
-   */
-  onPointerOver?: (e: ThreeEvent<PointerEvent>) => void;
   /**
    * Side to render: front, back, or double.
    * @default "double"
@@ -80,10 +68,8 @@ const GeoPolygon = ({
   color = "#ff0000",
   opacity = 1,
   isWireframe = false,
-  onClick,
-  onPointerOut,
-  onPointerOver,
   side = "double",
+  ...events
 }: GeoPolygonProps) => {
   const geo = useGeolocationBackend();
   const geoRef = useRef(geo);
@@ -232,10 +218,8 @@ const GeoPolygon = ({
           {/* biome-ignore lint/a11y/noStaticElementInteractions: <mesh> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics */}
           <mesh
             geometry={geometryData.geometry}
-            onClick={onClick}
-            onPointerOut={onPointerOut}
-            onPointerOver={onPointerOver}
             material={material.material}
+            {...events}
           />
         </group>
       )}
