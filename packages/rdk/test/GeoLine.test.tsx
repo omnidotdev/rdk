@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GeoLine } from "../src/geolocation";
@@ -144,5 +144,30 @@ describe("GeoLine", () => {
     );
 
     expect(container.firstChild).toBeTruthy();
+  });
+
+  it("forwards R3F event handlers to the line group", () => {
+    const onClick = vi.fn();
+    const onPointerDown = vi.fn();
+
+    const { container } = render(
+      <Canvas>
+        <GeoLine
+          coordinates={SAMPLE_ROUTE_COORDINATES}
+          onClick={onClick}
+          onPointerDown={onPointerDown}
+        />
+      </Canvas>,
+    );
+
+    const group = container.querySelector("group");
+
+    expect(group).toBeTruthy();
+
+    fireEvent.pointerDown(group as Element);
+    fireEvent.click(group as Element);
+
+    expect(onPointerDown).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });
