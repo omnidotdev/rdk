@@ -2,7 +2,9 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": [
     "@changesets/changelog-github",
-    { "repo": "omnidotdev/rdk-framework" }
+    {
+      "repo": "omnidotdev/rdk"
+    }
   ],
   "commit": false,
   "access": "public",
