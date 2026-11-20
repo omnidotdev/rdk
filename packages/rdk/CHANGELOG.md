@@ -1,5 +1,21 @@
 # @omnidotdev/rdk
 
+## 0.16.0
+
+### Minor Changes
+
+- [#157](https://github.com/omnidotdev/rdk/pull/157) [`f96a708`](https://github.com/omnidotdev/rdk/commit/f96a708027412ed30ed12864fa70963596790fef) Thanks [@coopbri](https://github.com/coopbri)! - Run ONNX vision models (object detection and segmentation) on the CPU by default, with a new `onnx.webgpu` option to opt into WebGPU
+  
+  Some GPU and driver setups hang on WebGPU inference, which froze the whole page as soon as object detection started. ONNX models now run on the CPU unless `onnx: { webgpu: true }` is set. With WebGPU enabled, a stalled frame restarts the model on the CPU, and frames that arrive while a model is still running are dropped instead of failing with "Session already started"
+
+### Patch Changes
+
+- [#155](https://github.com/omnidotdev/rdk/pull/155) [`4ad7e06`](https://github.com/omnidotdev/rdk/commit/4ad7e0621466d524c35d82594d422f91d5af527b) Thanks [@coopbri](https://github.com/coopbri)! - Stop ONNX vision tracking and report the failure through `onError` when the browser blocks reading camera frames, instead of running the model on blank frames
+  
+  Under strict fingerprinting protection (such as Firefox's `privacy.resistFingerprinting`), the browser hands back blank pixels when the ONNX worker reads a frame, so object detection and segmentation silently saw nothing. The ONNX provider now detects this, stops once, and passes a clear error to `onError`, matching the MediaPipe provider
+
+- [#158](https://github.com/omnidotdev/rdk/pull/158) [`3fe8bec`](https://github.com/omnidotdev/rdk/commit/3fe8bec89877e2a40a2c8b93a4d32669eb1665e1) Thanks [@coopbri](https://github.com/coopbri)! - Load ONNX Runtime's wasm files for the installed `onnxruntime-web` version instead of always the latest release from the CDN, so a new ONNX Runtime release can no longer break object detection and segmentation with a JS and wasm mismatch
+
 ## 0.15.0
 
 ### Minor Changes
