@@ -14,7 +14,11 @@ import type {
   ONNXWorkerResult,
 } from "../worker/types";
 
-/** Timeout before force-resetting isProcessing if worker stalls */
+/**
+ * Timeout before treating a frame as stalled. With `onnx.webgpu` a stall
+ * restarts the worker on the CPU (some GPU and driver setups hang on WebGPU
+ * inference); on the CPU it just resets.
+ */
 const PROCESSING_STALL_TIMEOUT = 5000;
 
 class ONNXProvider implements VisionProvider {
@@ -32,6 +36,9 @@ class ONNXProvider implements VisionProvider {
   private callbacks: Array<(frame: VisionFrame) => void> = [];
   private errorCallbacks: Array<(error: Error) => void> = [];
   private isStopped = false;
+  /** Run on the CPU (wasm) only: the default, and after a WebGPU stall */
+  private cpuOnly: boolean;
+  private isRestarting = false;
   private options: VisionSessionOptions;
   private messageHandler: ((event: MessageEvent) => void) | null = null;
   private pendingModelCallbacks = new Map<
@@ -41,6 +48,7 @@ class ONNXProvider implements VisionProvider {
 
   constructor(options: VisionSessionOptions) {
     this.options = options;
+    this.cpuOnly = !options.onnx?.webgpu;
   }
 
   /** Post a typed request to the worker, with an optional transfer list */
@@ -55,7 +63,14 @@ class ONNXProvider implements VisionProvider {
   async initialize(video: HTMLVideoElement): Promise<void> {
     this.videoElement = video;
 
-    // Initialize worker
+    await this.startWorker();
+  }
+
+  /**
+   * Create the worker, wait for it to initialize, and load the configured
+   * models.
+   */
+  private async startWorker(): Promise<void> {
     this.worker = new Worker(
       new URL("../worker/onnxWorker.ts", import.meta.url),
       { type: "module" },
@@ -82,6 +97,10 @@ class ONNXProvider implements VisionProvider {
             this.handleResult(data.result);
             break;
           }
+          case "skipped": {
+            this.isProcessing = false;
+            break;
+          }
           case "modelLoaded": {
             const pending = this.pendingModelCallbacks.get(data.modelName);
             if (pending) {
@@ -104,7 +123,10 @@ class ONNXProvider implements VisionProvider {
               clearTimeout(timeout);
               reject(new Error(data.error));
             } else if (data.fatal) {
-              this.fail(data.error);
+              this.fail(
+                data.error,
+                "Vision tracking stopped because this browser blocked reading camera frames. Allow canvas access for this site, or turn off strict fingerprinting protection.",
+              );
             } else {
               console.error("ONNX worker error:", data.error);
             }
@@ -140,12 +162,17 @@ class ONNXProvider implements VisionProvider {
         return;
       }
 
-      // Stall recovery: force-reset if worker hasn't responded
+      // Stall recovery: the worker hasn't responded to the last frame
       if (
         this.isProcessing &&
         this.processingStartTime > 0 &&
         now - this.processingStartTime > PROCESSING_STALL_TIMEOUT
       ) {
+        if (!this.cpuOnly) {
+          void this.restartOnCpu();
+          return;
+        }
+
         console.warn("ONNX processing stall detected, resetting");
         this.isProcessing = false;
       }
@@ -189,17 +216,14 @@ class ONNXProvider implements VisionProvider {
   /**
    * Stop detection for good and notify error subscribers once.
    */
-  private fail(cause: unknown): void {
+  private fail(cause: unknown, message: string): void {
     if (this.isStopped) return;
 
     this.isStopped = true;
     this.stopDetection();
     console.error("Vision processing stopped:", cause);
 
-    const error = new VisionStoppedError(
-      "Vision tracking stopped because this browser blocked reading camera frames. Allow canvas access for this site, or turn off strict fingerprinting protection.",
-      cause,
-    );
+    const error = new VisionStoppedError(message, cause);
 
     for (const callback of this.errorCallbacks) callback(error);
   }
@@ -207,7 +231,18 @@ class ONNXProvider implements VisionProvider {
   dispose(): void {
     this.isDisposed = true;
     this.stopDetection();
+    this.teardownWorker();
 
+    this.videoElement = null;
+    this.callbacks.length = 0;
+    this.errorCallbacks.length = 0;
+  }
+
+  /**
+   * Terminate the worker (cancelling any in-flight inference) and forget its
+   * models.
+   */
+  private teardownWorker(): void {
     if (this.worker) {
       if (this.messageHandler) {
         this.worker.removeEventListener("message", this.messageHandler);
@@ -218,12 +253,43 @@ class ONNXProvider implements VisionProvider {
       this.worker = null;
     }
 
-    this.videoElement = null;
-    this.callbacks.length = 0;
-    this.errorCallbacks.length = 0;
     this.loadedModels.clear();
     this.pendingModelCallbacks.clear();
     this.isInitialized = false;
+  }
+
+  /**
+   * Replace a worker stuck on WebGPU inference with one that runs on the CPU,
+   * then resume detection.
+   */
+  private async restartOnCpu(): Promise<void> {
+    if (this.isRestarting) return;
+
+    this.isRestarting = true;
+    this.cpuOnly = true;
+    console.warn("ONNX inference stalled on WebGPU, falling back to the CPU");
+
+    this.stopDetection();
+    this.teardownWorker();
+
+    try {
+      await this.startWorker();
+    } catch (error) {
+      this.fail(
+        error,
+        "Vision tracking stopped because object detection could not restart.",
+      );
+      return;
+    } finally {
+      this.isRestarting = false;
+    }
+
+    if (this.isDisposed) {
+      this.teardownWorker();
+      return;
+    }
+
+    if (!this.isStopped) this.startDetection();
   }
 
   private async loadModel(model: ONNXModelConfig): Promise<void> {
@@ -233,7 +299,7 @@ class ONNXProvider implements VisionProvider {
       this.pendingModelCallbacks.set(model.name, { resolve, reject });
     });
 
-    this.post({ type: "loadModel", model });
+    this.post({ type: "loadModel", model, cpuOnly: this.cpuOnly });
 
     await promise;
     this.loadedModels.set(model.name, model);

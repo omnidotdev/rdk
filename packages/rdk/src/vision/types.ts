@@ -112,6 +112,13 @@ export type VisionSessionOptions = {
   /** ONNX-specific options */
   onnx?: {
     models: ONNXModelConfig[];
+    /**
+     * Run inference on WebGPU when available (default `false`, CPU via wasm).
+     * Much faster, but some GPU and driver setups hang on WebGPU inference and
+     * freeze the page's rendering. A stalled frame restarts on the CPU, though
+     * a hung GPU can keep the page frozen.
+     */
+    webgpu?: boolean;
   };
 };
 
