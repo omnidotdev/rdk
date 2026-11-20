@@ -122,5 +122,7 @@ export type VisionProvider = {
   startDetection(): void;
   stopDetection(): void;
   onDetection(callback: (frame: VisionFrame) => void): () => void;
+  /** Subscribe to errors that stop detection for good */
+  onError?(callback: (error: Error) => void): () => void;
   dispose(): void;
 };

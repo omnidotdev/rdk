@@ -8,8 +8,12 @@ import type { VisionFrame } from "./types";
 
 // Shared mock provider state (hoisted above the vi.mock factory)
 const mocks = vi.hoisted(() => {
-  const state: { emit: ((frame: VisionFrame) => void) | null } = {
+  const state: {
+    emit: ((frame: VisionFrame) => void) | null;
+    fail: ((error: Error) => void) | null;
+  } = {
     emit: null,
+    fail: null,
   };
   const provider = {
     type: "mock",
@@ -17,6 +21,7 @@ const mocks = vi.hoisted(() => {
     startDetection: vi.fn(),
     stopDetection: vi.fn(),
     onDetection: vi.fn(),
+    onError: vi.fn(),
     dispose: vi.fn(),
   };
   return { state, provider };
@@ -40,6 +45,13 @@ const videoElement = {} as unknown as HTMLVideoElement;
 
 beforeEach(() => {
   mocks.state.emit = null;
+  mocks.state.fail = null;
+  mocks.provider.onError.mockImplementation((cb: (error: Error) => void) => {
+    mocks.state.fail = cb;
+    return () => {
+      mocks.state.fail = null;
+    };
+  });
   vi.mocked(createVisionProvider).mockReturnValue(mocks.provider);
   mocks.provider.initialize.mockImplementation(async () => {});
   mocks.provider.onDetection.mockImplementation(
@@ -53,6 +65,28 @@ beforeEach(() => {
 });
 
 describe("createVisionBackend", () => {
+  it("forwards provider errors to the error callback", async () => {
+    const onError = vi.fn();
+    const backend = createVisionBackend({ videoElement }, onError);
+    await backend.init(initArgs);
+
+    const error = new Error("tracking stopped");
+    mocks.state.fail?.(error);
+
+    expect(onError).toHaveBeenCalledWith(error);
+  });
+
+  it("stops forwarding provider errors after dispose", async () => {
+    const onError = vi.fn();
+    const backend = createVisionBackend({ videoElement }, onError);
+    await backend.init(initArgs);
+    expect(mocks.state.fail).not.toBeNull();
+
+    backend.dispose?.();
+
+    expect(mocks.state.fail).toBeNull();
+  });
+
   it("declares the vision backend type", () => {
     expect(createVisionBackend({}).type).toBe("vision");
   });

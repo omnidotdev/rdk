@@ -4,7 +4,7 @@ import {
   HandLandmarker,
   PoseLandmarker,
 } from "@mediapipe/tasks-vision";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import MediaPipeProvider from "./mediapipeProvider";
 
@@ -71,6 +71,72 @@ describe("MediaPipeProvider task gating", () => {
 
     const opts = vi.mocked(PoseLandmarker.createFromOptions).mock.calls[0][1];
     expect(opts.outputSegmentationMasks).toBe(false);
+  });
+});
+
+describe("MediaPipeProvider fatal errors", () => {
+  const liveVideo = { videoWidth: 640, videoHeight: 480 } as HTMLVideoElement;
+
+  const handModel = (detect: () => unknown, close = vi.fn()) => {
+    vi.mocked(HandLandmarker.createFromOptions).mockResolvedValue({
+      detectForVideo: vi.fn(detect),
+      close,
+    } as unknown as HandLandmarker);
+  };
+
+  beforeEach(() => {
+    vi.spyOn(window, "requestAnimationFrame").mockReturnValue(1);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("stops and reports once when the MediaPipe runtime traps", async () => {
+    const trap = new WebAssembly.RuntimeError("index out of bounds");
+    handModel(() => {
+      throw trap;
+    });
+    const provider = new MediaPipeProvider({ tasks: ["hands"], useGpu: false });
+    const onError = vi.fn();
+    provider.onError?.(onError);
+    await provider.initialize(liveVideo);
+
+    provider.startDetection();
+
+    expect(onError).toHaveBeenCalledOnce();
+    expect(onError.mock.calls[0][0]).toBeInstanceOf(Error);
+    expect(onError.mock.calls[0][0].cause).toBe(trap);
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+  });
+
+  it("keeps processing after a recoverable error", async () => {
+    handModel(() => {
+      throw new Error("transient");
+    });
+    const provider = new MediaPipeProvider({ tasks: ["hands"], useGpu: false });
+    const onError = vi.fn();
+    provider.onError?.(onError);
+    await provider.initialize(liveVideo);
+
+    provider.startDetection();
+
+    expect(onError).not.toHaveBeenCalled();
+    expect(window.requestAnimationFrame).toHaveBeenCalledOnce();
+  });
+
+  it("disposes cleanly when a crashed model throws on close", async () => {
+    handModel(
+      () => ({ landmarks: [] }),
+      vi.fn(() => {
+        throw new WebAssembly.RuntimeError("index out of bounds");
+      }),
+    );
+    const provider = new MediaPipeProvider({ tasks: ["hands"], useGpu: false });
+    await provider.initialize(liveVideo);
+
+    expect(() => provider.dispose()).not.toThrow();
   });
 });
 

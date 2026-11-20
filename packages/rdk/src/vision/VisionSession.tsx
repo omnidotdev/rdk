@@ -45,7 +45,9 @@ const VisionSession: React.FC<VisionSessionProps> = ({
 
     const initSession = async () => {
       try {
-        const backend = createVisionBackend(optionsRef.current);
+        const backend = createVisionBackend(optionsRef.current, (error) =>
+          onErrorRef.current?.(error),
+        );
 
         if (cancelled) return;
 

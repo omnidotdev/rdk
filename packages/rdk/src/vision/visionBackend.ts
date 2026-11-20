@@ -76,11 +76,13 @@ const cleanupVideo = (video: HTMLVideoElement | null): void => {
 /** Create a vision backend following the Backend interface contract */
 const createVisionBackend = (
   options: VisionSessionOptions,
+  onError?: (error: Error) => void,
 ): Backend<VisionInternal> => {
   let provider: VisionProvider | null = null;
   let videoElement: HTMLVideoElement | null = null;
   let ownsVideo = false;
   let providerUnsubscribe: (() => void) | null = null;
+  let providerErrorUnsubscribe: (() => void) | null = null;
   const callbacks: Array<(frame: VisionFrame) => void> = [];
 
   // Stable reference — hoisted out of getInternal so identity never changes
@@ -115,6 +117,8 @@ const createVisionBackend = (
           }
         }
       });
+      providerErrorUnsubscribe =
+        provider.onError?.((error) => onError?.(error)) ?? null;
       provider.startDetection();
     },
 
@@ -125,6 +129,8 @@ const createVisionBackend = (
     dispose(): void {
       providerUnsubscribe?.();
       providerUnsubscribe = null;
+      providerErrorUnsubscribe?.();
+      providerErrorUnsubscribe = null;
       provider?.dispose();
       if (ownsVideo) {
         cleanupVideo(videoElement);
