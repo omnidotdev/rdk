@@ -1,5 +1,23 @@
 # @omnidotdev/rdk
 
+## 0.15.0
+
+### Minor Changes
+
+- [#144](https://github.com/omnidotdev/rdk/pull/144) [`1572b17`](https://github.com/omnidotdev/rdk/commit/1572b17abbdb450a6c7c847fa71328d95c3fca06) Thanks [@nickw1](https://github.com/nickw1)! - Forward all R3F pointer and click events on `GeoLine` and `GeoPolygon`
+
+- [#152](https://github.com/omnidotdev/rdk/pull/152) [`8471ad4`](https://github.com/omnidotdev/rdk/commit/8471ad476e887f5ed8e803483d8f42c2f8092cd6) Thanks [@coopbri](https://github.com/coopbri)! - Support `@mediapipe/tasks-vision` v1 and add a `mediapipe.wasmBasePath` vision option
+  
+  The MediaPipe wasm now loads from the v1 CDN build, so the `@mediapipe/tasks-vision` peer dependency is now `^1.0.0`. Apps on 0.10 must upgrade, since the JS bundle and wasm have to come from the same release. Set `mediapipe.wasmBasePath` to self-host the wasm files or pin an exact version
+
+### Patch Changes
+
+- [#143](https://github.com/omnidotdev/rdk/pull/143) [`9b2fff4`](https://github.com/omnidotdev/rdk/commit/9b2fff475491dabd31cdeac606aca8f510b4c0a7) Thanks [@nickw1](https://github.com/nickw1)! - Share materials between `GeoLine` and `GeoPolygon` instances with the same style, improving performance in scenes with many lines and polygons
+
+- [#153](https://github.com/omnidotdev/rdk/pull/153) [`bcca57c`](https://github.com/omnidotdev/rdk/commit/bcca57c5c7fd3a9517014241593863e26392353d) Thanks [@coopbri](https://github.com/coopbri)! - Stop MediaPipe vision tracking and report the failure through `onError` when the browser blocks a feature it needs, instead of retrying every frame
+  
+  Under strict fingerprinting protection (such as Firefox's `privacy.resistFingerprinting`), MediaPipe crashes on its first frame. Vision sessions previously stayed on "Starting..." while retrying every frame, which could freeze the tab. They now stop once and pass a clear error to `onError`. Custom vision providers can opt in through a new optional `onError` method on `VisionProvider`
+
 ## 0.14.1
 
 ### Patch Changes
