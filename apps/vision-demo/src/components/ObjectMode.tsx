@@ -9,7 +9,7 @@ import type { VisionSessionOptions } from "@omnidotdev/rdk/vision";
 
 // Plain YOLOv8n export (output [1, 84, 8400]); NMS runs in the RDK decoder.
 const MODEL_URL =
-  "https://raw.githubusercontent.com/Hyuto/yolov8-onnxruntime-web/master/public/model/yolov8n.onnx";
+  "https://cdn.jsdelivr.net/gh/Hyuto/yolov8-onnxruntime-web@fc4a52c466d15ad4519873a0cef22fbc935b93b6/public/model/yolov8n.onnx";
 
 /**
  * ONNX object-detection mode: rear camera -> ONNX Runtime Web (YOLOv8n) in a
