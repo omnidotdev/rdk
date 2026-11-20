@@ -21,6 +21,11 @@ type Models = {
   poseLandmarker?: any;
 };
 
+// keep the major in sync with the `@mediapipe/tasks-vision` peer range, since
+// the JS bundle and wasm must come from the same release
+const DEFAULT_WASM_BASE_PATH =
+  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1/wasm";
+
 class MediaPipeProvider implements VisionProvider {
   readonly type = "mediapipe" as const;
 
@@ -45,7 +50,7 @@ class MediaPipeProvider implements VisionProvider {
       await import("@mediapipe/tasks-vision");
 
     const vision = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10/wasm",
+      this.options.mediapipe?.wasmBasePath ?? DEFAULT_WASM_BASE_PATH,
     );
 
     const delegate = (this.options.useGpu ?? true) ? "GPU" : "CPU";
