@@ -99,6 +99,16 @@ export type VisionSessionOptions = {
   videoElement?: HTMLVideoElement;
   /** Progress callback for model loading */
   onProgress?: (progress: VisionProgress | null) => void;
+  /** MediaPipe-specific options */
+  mediapipe?: {
+    /**
+     * Base URL of the MediaPipe Tasks Vision wasm files. Defaults to the
+     * jsDelivr CDN build matching the supported major version. Set this to
+     * self-host the files or pin an exact version (it must match the installed
+     * `@mediapipe/tasks-vision` version)
+     */
+    wasmBasePath?: string;
+  };
   /** ONNX-specific options */
   onnx?: {
     models: ONNXModelConfig[];
