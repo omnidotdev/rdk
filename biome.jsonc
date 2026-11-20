@@ -31,6 +31,8 @@
       "!!**/bun.lock",
       "!!**/*.gen.*",
       "!!**/.cache",
+      "!!**/.changeset",
+      "!!**/CHANGELOG.md",
       "!!**/build",
       "!!**/dist",
       "!!**/generated",
@@ -46,6 +48,11 @@
     "indentWidth": 2,
     "lineWidth": 80
   },
+  "tailwind": {
+    "attributes": ["class", "className"],
+    "mergeFunctions": ["cn", "clsx", "classnames"],
+    "variantFunctions": ["cva", "tv"]
+  },
   "linter": {
     "rules": {
       "correctness": {
@@ -55,13 +62,9 @@
         }
       },
       "nursery": {
-        "useSortedClasses": {
+        "useTailwindSortedClasses": {
           "fix": "safe",
-          "level": "error",
-          "options": {
-            "attributes": ["class", "className"],
-            "functions": ["cn", "clsx", "classnames", "cva", "tv"]
-          }
+          "level": "error"
         }
       },
       "style": {
