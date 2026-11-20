@@ -7,6 +7,24 @@ on:
     branches: [master]
 
 jobs:
+  check:
+    name: Lint and type check 🔍
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run check
+      - name: Type check
+        run: bunx tsc --noEmit -p packages/rdk
+      - name: Knip
+        run: bun run knip
+
   test_unit:
     name: Run unit tests 🃏
     timeout-minutes: 1
