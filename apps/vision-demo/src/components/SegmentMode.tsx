@@ -14,7 +14,7 @@ import type { VisionSessionOptions } from "@omnidotdev/rdk/vision";
 // YOLOv8n-seg export (detection [1,116,8400] + prototypes [1,32,160,160]);
 // mask assembly + NMS run in the RDK decoder.
 const MODEL_URL =
-  "https://raw.githubusercontent.com/Hyuto/yolov8-seg-onnxruntime-web/master/public/model/yolov8n-seg.onnx";
+  "https://cdn.jsdelivr.net/gh/Hyuto/yolov8-seg-onnxruntime-web@2f404048359f26bc7d00f80e9a6f10e3b19b8ced/public/model/yolov8n-seg.onnx";
 
 /**
  * ONNX instance-segmentation mode: rear camera -> ONNX Runtime Web (YOLOv8n-seg)

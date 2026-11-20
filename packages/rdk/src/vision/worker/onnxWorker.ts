@@ -2,6 +2,7 @@
 // Loads onnxruntime-web models and runs inference off the main thread.
 
 import { getDecoder } from "./decoders";
+import { getOrtWasmPaths } from "./ortAssets";
 import { computeLetterbox, isPaddingIntact, rgbaToNchw } from "./preprocess";
 
 import type { InferenceSession } from "onnxruntime-web";
@@ -44,8 +45,7 @@ const models = new Map<string, LoadedModel>();
 const loadOrt = (): Promise<OrtModule> => {
   if (!ortPromise) {
     ortPromise = import("onnxruntime-web").then((ort) => {
-      ort.env.wasm.wasmPaths =
-        "https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/";
+      ort.env.wasm.wasmPaths = getOrtWasmPaths(ort.env.versions.web);
       return ort;
     });
   }
