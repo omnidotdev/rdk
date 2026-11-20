@@ -5,6 +5,8 @@
 // ImageBitmap serialisation issues that silently break detection on
 // mobile browsers.
 
+import VisionStoppedError from "./visionStoppedError";
+
 import type {
   LandmarkDetection,
   VisionFrame,
@@ -20,19 +22,6 @@ type Models = {
   // biome-ignore lint/suspicious/noExplicitAny: MediaPipe model instances
   poseLandmarker?: any;
 };
-
-/**
- * Error raised when detection stops for good, carrying the underlying failure.
- */
-class VisionStoppedError extends Error {
-  readonly cause: unknown;
-
-  constructor(message: string, cause: unknown) {
-    super(message);
-    this.name = "VisionStoppedError";
-    this.cause = cause;
-  }
-}
 
 // keep the major in sync with the `@mediapipe/tasks-vision` peer range, since
 // the JS bundle and wasm must come from the same release
