@@ -73,3 +73,27 @@ describe("MediaPipeProvider task gating", () => {
     expect(opts.outputSegmentationMasks).toBe(false);
   });
 });
+
+describe("MediaPipeProvider wasm source", () => {
+  it("loads the wasm matching the supported MediaPipe major by default", async () => {
+    const provider = new MediaPipeProvider({ tasks: ["hands"], useGpu: false });
+    await provider.initialize(video);
+
+    expect(FilesetResolver.forVisionTasks).toHaveBeenCalledWith(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1/wasm",
+    );
+  });
+
+  it("loads the wasm from `mediapipe.wasmBasePath` when set", async () => {
+    const provider = new MediaPipeProvider({
+      tasks: ["hands"],
+      useGpu: false,
+      mediapipe: { wasmBasePath: "/mediapipe/wasm" },
+    });
+    await provider.initialize(video);
+
+    expect(FilesetResolver.forVisionTasks).toHaveBeenCalledWith(
+      "/mediapipe/wasm",
+    );
+  });
+});
