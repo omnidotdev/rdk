@@ -21,6 +21,19 @@ type Models = {
   poseLandmarker?: any;
 };
 
+/**
+ * Error raised when detection stops for good, carrying the underlying failure.
+ */
+class VisionStoppedError extends Error {
+  readonly cause: unknown;
+
+  constructor(message: string, cause: unknown) {
+    super(message);
+    this.name = "VisionStoppedError";
+    this.cause = cause;
+  }
+}
+
 class MediaPipeProvider implements VisionProvider {
   readonly type = "mediapipe" as const;
 
@@ -32,6 +45,7 @@ class MediaPipeProvider implements VisionProvider {
   private animationId: number | null = null;
   private lastProcessTime = 0;
   private callbacks: Array<(frame: VisionFrame) => void> = [];
+  private errorCallbacks: Array<(error: Error) => void> = [];
   private options: VisionSessionOptions;
 
   constructor(options: VisionSessionOptions) {
@@ -167,17 +181,31 @@ class MediaPipeProvider implements VisionProvider {
     };
   }
 
+  onError(callback: (error: Error) => void): () => void {
+    this.errorCallbacks.push(callback);
+
+    return () => {
+      const index = this.errorCallbacks.indexOf(callback);
+      if (index > -1) this.errorCallbacks.splice(index, 1);
+    };
+  }
+
   dispose(): void {
     this.isDisposed = true;
     this.stopDetection();
 
-    if (this.models.handLandmarker) this.models.handLandmarker.close();
-    if (this.models.faceLandmarker) this.models.faceLandmarker.close();
-    if (this.models.poseLandmarker) this.models.poseLandmarker.close();
+    for (const model of Object.values(this.models)) {
+      try {
+        model?.close();
+      } catch {
+        // a model whose runtime already trapped throws on close; nothing is left to release
+      }
+    }
     this.models = {};
 
     this.videoElement = null;
     this.callbacks = [];
+    this.errorCallbacks = [];
     this.isInitialized = false;
     this.isProcessing = false;
   }
@@ -308,11 +336,33 @@ class MediaPipeProvider implements VisionProvider {
 
       this.handleResult(result);
     } catch (error) {
+      // a trap leaves the MediaPipe runtime unusable, so retrying every frame
+      // only spins (and can hang the tab); stop and report it once instead
+      if (error instanceof WebAssembly.RuntimeError) {
+        this.fail(error);
+        return;
+      }
+
       console.error("Vision processing error:", error);
     }
 
     this.animationId = requestAnimationFrame(this.processFrame);
   };
+
+  /**
+   * Stop detection for good and notify error subscribers.
+   */
+  private fail(cause: unknown): void {
+    this.stopDetection();
+    console.error("Vision processing stopped:", cause);
+
+    const error = new VisionStoppedError(
+      "Vision tracking stopped because this browser blocked a graphics feature it needs. Strict fingerprinting protection is a common cause.",
+      cause,
+    );
+
+    for (const callback of this.errorCallbacks) callback(error);
+  }
 
   private handleResult(result: VisionFrame): void {
     const minConfidence = this.options.minConfidence ?? 0.7;
