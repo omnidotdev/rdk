@@ -40,6 +40,10 @@ const DEFAULT_INPUT_SIZE = 640;
 let ortPromise: Promise<OrtModule> | null = null;
 const models = new Map<string, LoadedModel>();
 
+// a session cannot run two inferences at once, so frames that arrive mid-run
+// are dropped rather than queued
+let isBusy = false;
+
 /** Lazily import onnxruntime-web (optional peer dep) and point wasm at a CDN */
 const loadOrt = (): Promise<OrtModule> => {
   if (!ortPromise) {
@@ -128,11 +132,11 @@ const handleMessage = async (event: MessageEvent): Promise<void> => {
     }
 
     case "loadModel": {
-      const { model } = message;
+      const { model, cpuOnly } = message;
       try {
         const ort = await loadOrt();
         const session = await ort.InferenceSession.create(model.path, {
-          executionProviders: ["webgpu", "wasm"],
+          executionProviders: cpuOnly ? ["wasm"] : ["webgpu", "wasm"],
         });
         models.set(model.name, { config: model, session });
         post({ type: "modelLoaded", modelName: model.name });
@@ -148,6 +152,14 @@ const handleMessage = async (event: MessageEvent): Promise<void> => {
 
     case "process": {
       const { imageBitmap, sourceWidth, sourceHeight, options } = message;
+
+      if (isBusy) {
+        imageBitmap.close();
+        post({ type: "skipped" });
+        break;
+      }
+
+      isBusy = true;
       try {
         const ort = await loadOrt();
         const started = performance.now();
@@ -190,6 +202,7 @@ const handleMessage = async (event: MessageEvent): Promise<void> => {
           fatal: error instanceof CanvasReadbackBlockedError,
         });
       } finally {
+        isBusy = false;
         imageBitmap.close();
       }
       break;

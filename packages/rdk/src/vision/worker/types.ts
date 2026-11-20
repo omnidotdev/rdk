@@ -24,7 +24,12 @@ export type ONNXWorkerResult = {
 /** Messages sent from the main thread to the ONNX worker */
 export type ONNXWorkerRequest =
   | { type: "init" }
-  | { type: "loadModel"; model: ONNXModelConfig }
+  | {
+      type: "loadModel";
+      model: ONNXModelConfig;
+      /** Skip WebGPU and run on the CPU (wasm) */
+      cpuOnly?: boolean;
+    }
   | {
       type: "process";
       imageBitmap: ImageBitmap;
@@ -40,6 +45,8 @@ export type ONNXWorkerResponse =
   | { type: "modelLoaded"; modelName: string }
   | { type: "modelError"; modelName: string; error: string }
   | { type: "result"; result: ONNXWorkerResult }
+  /** A frame arrived while another was still running and was dropped */
+  | { type: "skipped" }
   | {
       type: "error";
       error: string;
