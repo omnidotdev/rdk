@@ -5,16 +5,18 @@ import {
   DoubleSide,
   FrontSide,
   Group,
+  MeshBasicMaterial,
   Path,
   Shape,
   ShapeGeometry,
 } from "three";
 
 import useGeolocationBackend from "./useGeolocationBackend";
+import { getColorKey, useMaterialStore } from "./useMaterialStore";
 
 import type { EventHandlers } from "@react-three/fiber";
 import type { LocAR } from "locar";
-import type { Side } from "three";
+import type { Material, Side } from "three";
 
 export interface GeoPolygonProps extends Partial<EventHandlers> {
   /** Outer ring coordinates. GeoJSON-style: [lon, lat, elevation?] */
@@ -75,8 +77,18 @@ const GeoPolygon = ({
     avgElevation: number;
   } | null>(null);
 
+  const acquireMaterial = useMaterialStore((store) => store.acquireMaterial);
+  const releaseMaterial = useMaterialStore((store) => store.releaseMaterial);
+
+  const [material, setMaterial] = useState<Material | null>(null);
+
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 3) return;
+
+    // track what this effect acquired in its own closure so cleanup can release
+    // it directly (state updaters never run after unmount)
+    let shapeGeometry: ShapeGeometry | null = null;
+    let materialKey: string | null = null;
 
     const [lon, lat, alt = 0] = coordinates[0];
 
@@ -138,16 +150,34 @@ const GeoPolygon = ({
         }
       }
 
-      const shapeGeometry = new ShapeGeometry(shape);
+      const geometry = new ShapeGeometry(shape);
+      shapeGeometry = geometry;
 
       // calculate average elevation
       const totalElev = outerPoints.reduce((sum, p) => sum + p.elev, 0);
       const avgElevation = totalElev / outerPoints.length;
 
       // rotate to lie flat on XZ plane
-      shapeGeometry.rotateX(-Math.PI / 2);
+      geometry.rotateX(-Math.PI / 2);
 
-      setGeometryData({ geometry: shapeGeometry, avgElevation });
+      setGeometryData({ geometry, avgElevation });
+
+      // the `2` marks a polygon (`0` is a solid line, `1` a dashed line)
+      const key = `${getColorKey(color)}:${opacity.toFixed(2)}::2:${isWireframe}:${side}`;
+      materialKey = key;
+
+      const material = acquireMaterial(
+        key,
+        () =>
+          new MeshBasicMaterial({
+            color,
+            transparent: opacity < 1,
+            wireframe: isWireframe,
+            opacity,
+            side: SIDE_MAP[side],
+          }),
+      );
+      setMaterial(material);
     };
 
     geoRef.current.registerAnchor(anchorId, {
@@ -162,28 +192,34 @@ const GeoPolygon = ({
     return () => {
       geoRef.current.unregisterAnchor(anchorId);
 
-      setGeometryData((prev) => {
-        if (prev) prev.geometry.dispose();
+      shapeGeometry?.dispose();
+      if (materialKey) releaseMaterial(materialKey);
 
-        return null;
-      });
+      setGeometryData(null);
+      setMaterial(null);
     };
-  }, [anchorId, anchor, coordinates, holes, geo.isSuccess]);
+  }, [
+    anchorId,
+    anchor,
+    coordinates,
+    holes,
+    geo.isSuccess,
+    color,
+    opacity,
+    side,
+    isWireframe,
+  ]);
 
   return createPortal(
     <group>
-      {geometryData && (
+      {geometryData && material && (
         <group position={[0, geometryData.avgElevation, 0]}>
           {/* biome-ignore lint/a11y/noStaticElementInteractions: <mesh> is an R3F WebGL scene object, not a DOM element; these are three.js raycast events with no a11y semantics */}
-          <mesh geometry={geometryData.geometry} {...events}>
-            <meshBasicMaterial
-              color={color}
-              opacity={opacity}
-              transparent={opacity < 1}
-              wireframe={isWireframe}
-              side={SIDE_MAP[side]}
-            />
-          </mesh>
+          <mesh
+            geometry={geometryData.geometry}
+            material={material}
+            {...events}
+          />
         </group>
       )}
     </group>,

@@ -14,6 +14,7 @@ import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 
 import useGeolocationBackend from "./useGeolocationBackend";
+import { getColorKey, useMaterialStore } from "./useMaterialStore";
 
 import type { EventHandlers } from "@react-three/fiber";
 import type { LocAR } from "locar";
@@ -138,8 +139,16 @@ const GeoLine = ({
   const anchorId = useMemo(() => Math.random().toString(36).slice(2, 11), []);
   const [line, setLine] = useState<Line2 | Mesh | null>(null);
 
+  const acquireMaterial = useMaterialStore((store) => store.acquireMaterial);
+  const releaseMaterial = useMaterialStore((store) => store.releaseMaterial);
+
   useEffect(() => {
     if (!geo.isSuccess || coordinates.length < 2) return;
+
+    // track what this effect acquired in its own closure so cleanup can release
+    // it directly (state updaters never run after unmount)
+    let lineObj: Line2 | Mesh | null = null;
+    let materialKey: string | null = null;
 
     const [lon, lat, alt = 0] = coordinates[0];
 
@@ -157,33 +166,46 @@ const GeoLine = ({
         return new Vector3(x - originX, elev - originElev, z - originZ);
       });
 
+      // non-dashed line width lives in the geometry, not the material
+      const key = `${getColorKey(color)}:${opacity.toFixed(2)}:${isDashed ? `${lineWidth}:1:${dashSize}:${gapSize}` : ":0"}`;
+      materialKey = key;
+
       if (isDashed) {
         const geometry = new LineGeometry().setFromPoints(pts);
 
-        const material = new LineMaterial({
-          color,
-          dashSize,
-          gapSize,
-          dashed: true,
-          worldUnits: true,
-          linewidth: lineWidth,
-          transparent: opacity < 1,
-          opacity,
-        });
-
-        const lineObj = new Line2(geometry, material);
-        lineObj.computeLineDistances();
-        setLine(lineObj);
+        const material = acquireMaterial(
+          key,
+          () =>
+            new LineMaterial({
+              color,
+              dashSize,
+              gapSize,
+              dashed: true,
+              worldUnits: true,
+              linewidth: lineWidth,
+              transparent: opacity < 1,
+              opacity,
+            }),
+        );
+        const dashedLine = new Line2(geometry, material as LineMaterial);
+        dashedLine.computeLineDistances();
+        lineObj = dashedLine;
       } else {
         const geometry = buildTriStripGeometry(pts, lineWidth);
-        const material = new MeshBasicMaterial({
-          color,
-          transparent: opacity < 1,
-          opacity,
-          side: DoubleSide,
-        });
-        setLine(new Mesh(geometry, material));
+        const material = acquireMaterial(
+          key,
+          () =>
+            new MeshBasicMaterial({
+              color,
+              transparent: opacity < 1,
+              opacity,
+              side: DoubleSide,
+            }),
+        );
+        lineObj = new Mesh(geometry, material);
       }
+
+      setLine(lineObj);
     };
 
     geoRef.current.registerAnchor(anchorId, {
@@ -198,15 +220,10 @@ const GeoLine = ({
     return () => {
       geoRef.current.unregisterAnchor(anchorId);
 
-      setLine((prev) => {
-        if (prev) {
-          prev.geometry.dispose();
-          const material = prev.material as MeshBasicMaterial | LineMaterial;
-          material.dispose();
-        }
+      lineObj?.geometry.dispose();
+      if (materialKey) releaseMaterial(materialKey);
 
-        return null;
-      });
+      setLine(null);
     };
   }, [
     anchorId,
