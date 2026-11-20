@@ -1,5 +1,7 @@
 // ONNX provider - supports ONNX models like RF-DETR and YOLO
 
+import VisionStoppedError from "./visionStoppedError";
+
 import type {
   ONNXModelConfig,
   VisionFrame,
@@ -28,6 +30,8 @@ class ONNXProvider implements VisionProvider {
   private lastProcessTime = 0;
   private processingStartTime = 0;
   private callbacks: Array<(frame: VisionFrame) => void> = [];
+  private errorCallbacks: Array<(error: Error) => void> = [];
+  private isStopped = false;
   private options: VisionSessionOptions;
   private messageHandler: ((event: MessageEvent) => void) | null = null;
   private pendingModelCallbacks = new Map<
@@ -99,6 +103,8 @@ class ONNXProvider implements VisionProvider {
             if (!this.isInitialized) {
               clearTimeout(timeout);
               reject(new Error(data.error));
+            } else if (data.fatal) {
+              this.fail(data.error);
             } else {
               console.error("ONNX worker error:", data.error);
             }
@@ -125,7 +131,7 @@ class ONNXProvider implements VisionProvider {
     }
 
     const processFrame = () => {
-      if (!this.videoElement || !this.isInitialized) return;
+      if (!this.videoElement || !this.isInitialized || this.isStopped) return;
 
       const now = Date.now();
       const throttle = this.options.throttle ?? 100;
@@ -171,6 +177,33 @@ class ONNXProvider implements VisionProvider {
     };
   }
 
+  onError(callback: (error: Error) => void): () => void {
+    this.errorCallbacks.push(callback);
+
+    return () => {
+      const index = this.errorCallbacks.indexOf(callback);
+      if (index > -1) this.errorCallbacks.splice(index, 1);
+    };
+  }
+
+  /**
+   * Stop detection for good and notify error subscribers once.
+   */
+  private fail(cause: unknown): void {
+    if (this.isStopped) return;
+
+    this.isStopped = true;
+    this.stopDetection();
+    console.error("Vision processing stopped:", cause);
+
+    const error = new VisionStoppedError(
+      "Vision tracking stopped because this browser blocked reading camera frames. Allow canvas access for this site, or turn off strict fingerprinting protection.",
+      cause,
+    );
+
+    for (const callback of this.errorCallbacks) callback(error);
+  }
+
   dispose(): void {
     this.isDisposed = true;
     this.stopDetection();
@@ -187,6 +220,7 @@ class ONNXProvider implements VisionProvider {
 
     this.videoElement = null;
     this.callbacks.length = 0;
+    this.errorCallbacks.length = 0;
     this.loadedModels.clear();
     this.pendingModelCallbacks.clear();
     this.isInitialized = false;

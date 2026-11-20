@@ -2,7 +2,7 @@
 // Loads onnxruntime-web models and runs inference off the main thread.
 
 import { getDecoder } from "./decoders";
-import { computeLetterbox, rgbaToNchw } from "./preprocess";
+import { computeLetterbox, isPaddingIntact, rgbaToNchw } from "./preprocess";
 
 import type { InferenceSession } from "onnxruntime-web";
 import type {
@@ -22,7 +22,19 @@ type OrtModule = typeof import("onnxruntime-web");
 type LoadedModel = { config: ONNXModelConfig; session: InferenceSession };
 
 /** YOLO-style neutral gray used for letterbox padding */
-const LETTERBOX_PAD = "rgb(114, 114, 114)";
+const LETTERBOX_GRAY = 114;
+const LETTERBOX_PAD = `rgb(${LETTERBOX_GRAY}, ${LETTERBOX_GRAY}, ${LETTERBOX_GRAY})`;
+
+/**
+ * Raised when the browser hands back blank pixels instead of the frame, which
+ * no later frame will fix.
+ */
+class CanvasReadbackBlockedError extends Error {
+  constructor() {
+    super("Canvas readback blocked");
+    this.name = "CanvasReadbackBlockedError";
+  }
+}
 const DEFAULT_INPUT_SIZE = 640;
 
 let ortPromise: Promise<OrtModule> | null = null;
@@ -58,11 +70,8 @@ const runModel = async (
   options: ONNXProcessOptions,
 ): Promise<DecodeResult> => {
   const size = loaded.config.inputSize ?? DEFAULT_INPUT_SIZE;
-  const { scale, padX, padY, drawWidth, drawHeight } = computeLetterbox(
-    sourceWidth,
-    sourceHeight,
-    size,
-  );
+  const letterbox = computeLetterbox(sourceWidth, sourceHeight, size);
+  const { scale, padX, padY, drawWidth, drawHeight } = letterbox;
 
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext("2d");
@@ -72,6 +81,10 @@ const runModel = async (
   ctx.fillRect(0, 0, size, size);
   ctx.drawImage(bitmap, padX, padY, drawWidth, drawHeight);
   const { data: rgba } = ctx.getImageData(0, 0, size, size);
+
+  if (!isPaddingIntact(rgba, letterbox, LETTERBOX_GRAY)) {
+    throw new CanvasReadbackBlockedError();
+  }
 
   const input = new ort.Tensor("float32", rgbaToNchw(rgba, size), [
     1,
@@ -174,6 +187,7 @@ const handleMessage = async (event: MessageEvent): Promise<void> => {
         post({
           type: "error",
           error: error instanceof Error ? error.message : "Unknown error",
+          fatal: error instanceof CanvasReadbackBlockedError,
         });
       } finally {
         imageBitmap.close();

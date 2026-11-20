@@ -40,4 +40,9 @@ export type ONNXWorkerResponse =
   | { type: "modelLoaded"; modelName: string }
   | { type: "modelError"; modelName: string; error: string }
   | { type: "result"; result: ONNXWorkerResult }
-  | { type: "error"; error: string };
+  | {
+      type: "error";
+      error: string;
+      /** Detection cannot recover, so the provider should stop */
+      fatal?: boolean;
+    };

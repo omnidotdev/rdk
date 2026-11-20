@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { computeLetterbox, rgbaToNchw } from "./preprocess";
+import { computeLetterbox, isPaddingIntact, rgbaToNchw } from "./preprocess";
 
 describe("computeLetterbox", () => {
   it("pads the shorter axis for a landscape frame", () => {
@@ -61,5 +61,29 @@ describe("rgbaToNchw", () => {
       1,
       1, // B
     ]);
+  });
+});
+
+describe("isPaddingIntact", () => {
+  const gray = (v: number) =>
+    new Uint8ClampedArray([v, v, v, 255, 0, 0, 0, 255]);
+  const landscape = computeLetterbox(1280, 720, 640);
+
+  it("accepts padding that reads back as the fill gray", () => {
+    expect(isPaddingIntact(gray(114), landscape, 114)).toBe(true);
+  });
+
+  it("tolerates small readback noise", () => {
+    expect(isPaddingIntact(gray(116), landscape, 114)).toBe(true);
+  });
+
+  it("rejects padding that reads back blank (blocked canvas readback)", () => {
+    expect(isPaddingIntact(gray(255), landscape, 114)).toBe(false);
+  });
+
+  it("cannot judge a square frame with no padding", () => {
+    expect(
+      isPaddingIntact(gray(255), computeLetterbox(640, 640, 640), 114),
+    ).toBe(true);
   });
 });
