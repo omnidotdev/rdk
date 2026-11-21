@@ -20,7 +20,7 @@
     "@vitejs/plugin-react": "^6.0.0",
     "typescript": "^7.0.0",
     "vite": "^8.0.0",
-    "vite-plugin-mkcert": "^1.17.9"
+    "vite-plugin-mkcert": "^2.0.0"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.0.0",
