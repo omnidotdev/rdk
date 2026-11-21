@@ -86,7 +86,7 @@
     "onnxruntime-web": "^1.22.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "three": "^0.185.0"
+    "three": "^0.185.0 || ^0.187.0"
   },
   "peerDependenciesMeta": {
     "@ar-js-org/ar.js": {
