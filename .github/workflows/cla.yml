@@ -8,11 +8,12 @@ on:
 
 jobs:
   cla:
-    uses: omnidotdev/.github/.github/workflows/cla.yml@14deafce959128349164ec2f92171994bbf85f17 # master
+    uses: omnidotdev/.github/.github/workflows/cla.yml@master
     permissions:
       actions: read
       contents: write
       pull-requests: write
       statuses: write
     secrets:
-      GH_PAT: ${{ secrets.GH_PAT }}
+      CLA_APP_CLIENT_ID: ${{ secrets.CLA_APP_CLIENT_ID }}
+      CLA_APP_PRIVATE_KEY: ${{ secrets.CLA_APP_PRIVATE_KEY }}
