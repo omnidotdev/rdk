@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@import "@omnidotdev/thornberry/base.css";
+@source "../node_modules/@omnidotdev/thornberry/build";
+
+/* Thornberry keys its dark styles off a `.dark` ancestor */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/*
+ * One dark theme: the camera fills the screen, so the controls sit on it as
+ * translucent glass. The primary is RDK's teal from rdk.omni.dev, lifted for
+ * contrast on dark
+ */
+:root {
+  --background: oklch(0.16 0.012 220);
+  --foreground: oklch(0.97 0.004 220);
+  --card: oklch(0.19 0.014 220 / 0.78);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.2 0.014 220);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.76 0.12 199);
+  --primary-foreground: oklch(0.2 0.03 199);
+  --secondary: oklch(0.3 0.016 220);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.24 0.014 220 / 0.8);
+  --muted-foreground: oklch(0.74 0.012 220);
+  --accent: oklch(0.32 0.02 220);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.64 0.2 25);
+  --border: oklch(1 0 0 / 0.12);
+  --input: oklch(1 0 0 / 0.16);
+  --ring: var(--primary);
+  --radius: 0.75rem;
+
+  color-scheme: dark;
+}
+
+/* A full-screen camera view: no page scrolling, unlike Thornberry's default */
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keep controls clear of notches and the gesture bar */
+@utility pt-safe {
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+}
+
+@utility pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}

@@ -2,10 +2,11 @@ import { CameraBackground, VisionSession, yolo } from "@omnidotdev/rdk/vision";
 import { Canvas } from "@react-three/fiber";
 import { useCallback, useMemo, useState } from "react";
 
-import ErrorBanner from "./ErrorBanner";
+import { cameraConstraints } from "@/lib/modes";
 import ObjectBoxesOverlay from "./ObjectBoxesOverlay";
 
 import type { VisionSessionOptions } from "@omnidotdev/rdk/vision";
+import type { ModeProps } from "@/lib/modes";
 
 // Plain YOLOv8n export (output [1, 84, 8400]); NMS runs in the RDK decoder.
 const MODEL_URL =
@@ -15,11 +16,9 @@ const MODEL_URL =
  * ONNX object-detection mode: rear camera -> ONNX Runtime Web (YOLOv8n) in a
  * worker -> bounding boxes. Exercises the full ONNX provider + decoder path.
  */
-const ObjectMode = () => {
+const ObjectMode = ({ webgpu, facing, onProgress, onError }: ModeProps) => {
   const [video, setVideo] = useState<HTMLVideoElement | null>(null);
-  const [error, setError] = useState("");
 
-  const handleError = useCallback((err: Error) => setError(err.message), []);
   const handleReady = useCallback((v: HTMLVideoElement) => setVideo(v), []);
 
   const options: VisionSessionOptions = useMemo(
@@ -28,37 +27,35 @@ const ObjectMode = () => {
       tasks: ["objects"],
       minConfidence: 0.35,
       maxResults: 20,
-      onnx: { models: [yolo(MODEL_URL)] },
+      onnx: { models: [yolo(MODEL_URL)], webgpu },
+      onProgress,
       videoElement: video ?? undefined,
     }),
-    [video],
+    [video, webgpu, onProgress],
   );
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <CameraBackground
-        constraints={{
-          facingMode: "environment",
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          frameRate: { ideal: 30 },
-        }}
-        mirrored={false}
+        constraints={cameraConstraints(facing)}
+        mirrored={facing === "user"}
         onReady={handleReady}
-        onError={handleError}
+        onError={onError}
       />
 
       {video && (
+        // nothing 3D draws here (the overlay below is plain DOM), so the canvas
+        // only renders on demand and leaves the GPU to the model
         <Canvas
+          frameloop="demand"
+          dpr={1}
           style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
         >
-          <VisionSession options={options} onError={handleError} />
+          <VisionSession options={options} onError={onError} />
         </Canvas>
       )}
 
-      <ObjectBoxesOverlay />
-
-      {error && <ErrorBanner message={error} />}
+      <ObjectBoxesOverlay mirror={facing === "user"} />
     </div>
   );
 };

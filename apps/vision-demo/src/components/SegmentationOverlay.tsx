@@ -12,6 +12,14 @@ const COLORS: [number, number, number][] = [
 ];
 
 const MASK_ALPHA = 140;
+const MAX_DPR = 2;
+
+/** A label's color stays the same between frames */
+const colorFor = (label: string) => {
+  let hash = 0;
+  for (const char of label) hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  return COLORS[Math.abs(hash) % COLORS.length];
+};
 
 type SegmentationOverlayProps = {
   /** Mirror masks horizontally to match a mirrored (selfie) preview */
@@ -40,11 +48,17 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
     const scratchCtx = scratch.getContext("2d");
     if (!scratchCtx) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    // reallocating the backing store is costly at phone pixel ratios, so only
+    // do it when the canvas size actually changes
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
-    canvas.width = cw * dpr;
-    canvas.height = ch * dpr;
+    const width = Math.round(cw * dpr);
+    const height = Math.round(ch * dpr);
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cw, ch);
 
@@ -60,24 +74,23 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
     const ry =
       frameAspect > containerAspect ? 1 : containerAspect / frameAspect;
 
-    ctx.font = "600 14px system-ui, sans-serif";
-    ctx.textBaseline = "top";
+    ctx.font = "600 13px ui-sans-serif, system-ui, sans-serif";
+    ctx.textBaseline = "middle";
     ctx.imageSmoothingEnabled = true;
 
-    masks.forEach((m, i) => {
-      const [r, g, b] = COLORS[i % COLORS.length];
+    for (const m of masks) {
+      const [r, g, b] = colorFor(m.label);
 
       // Paint the mask into the reused scratch canvas, then scale into the box
       scratch.width = m.maskWidth;
       scratch.height = m.maskHeight;
       const img = scratchCtx.createImageData(m.maskWidth, m.maskHeight);
+      // mask values are alpha, soft at the edges, so scaling stays smooth
       for (let p = 0; p < m.mask.length; p++) {
-        if (m.mask[p]) {
-          img.data[p * 4] = r;
-          img.data[p * 4 + 1] = g;
-          img.data[p * 4 + 2] = b;
-          img.data[p * 4 + 3] = MASK_ALPHA;
-        }
+        img.data[p * 4] = r;
+        img.data[p * 4 + 1] = g;
+        img.data[p * 4 + 2] = b;
+        img.data[p * 4 + 3] = (m.mask[p] * MASK_ALPHA) / 255;
       }
       scratchCtx.putImageData(img, 0, 0);
 
@@ -92,24 +105,20 @@ const SegmentationOverlay = ({ mirror = false }: SegmentationOverlayProps) => {
       ctx.drawImage(scratch, left, top, nw * cw, nh * ch);
 
       const label = `${m.label} ${Math.round(m.confidence * 100)}%`;
-      const labelTop = Math.max(0, top - 18);
+      const pillTop = Math.max(4, top - 28);
       ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      ctx.fillRect(left, labelTop, ctx.measureText(label).width + 8, 18);
-      ctx.fillStyle = "#000";
-      ctx.fillText(label, left + 4, labelTop + 2);
-    });
+      ctx.beginPath();
+      ctx.roundRect(left, pillTop, ctx.measureText(label).width + 16, 22, 11);
+      ctx.fill();
+      ctx.fillStyle = "#0b1114";
+      ctx.fillText(label, left + 8, pillTop + 11);
+    }
   }, [frame, mirror]);
 
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
-      }}
+      className="pointer-events-none absolute inset-0 size-full"
     />
   );
 };

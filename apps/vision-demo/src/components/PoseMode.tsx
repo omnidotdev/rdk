@@ -1,15 +1,14 @@
 import { VisionAnchor, VisionOverlay } from "@omnidotdev/rdk/vision";
 import { useFrame } from "@react-three/fiber";
-import { useCallback, useRef, useState } from "react";
+import { useRef } from "react";
 
-import ErrorBanner from "./ErrorBanner";
+import { cameraConstraints, MEDIAPIPE_OPTIONS } from "@/lib/modes";
 
 import type { VisionTask } from "@omnidotdev/rdk/vision";
 import type { Mesh } from "three";
+import type { ModeProps } from "@/lib/modes";
 
-type PoseModeProps = {
-  tasks: VisionTask[];
-};
+const TASKS: VisionTask[] = ["poses"];
 
 const PulsatingOctahedron = () => {
   const meshRef = useRef<Mesh>(null);
@@ -35,24 +34,22 @@ const PulsatingOctahedron = () => {
   );
 };
 
-const PoseMode = ({ tasks }: PoseModeProps) => {
-  const [error, setError] = useState("");
-
-  const handleError = useCallback((err: Error) => {
-    setError(err.message);
-  }, []);
-
-  return (
-    <>
-      <VisionOverlay tasks={tasks} showDebug onError={handleError}>
-        <VisionAnchor task="poses" debug>
-          <PulsatingOctahedron />
-        </VisionAnchor>
-      </VisionOverlay>
-
-      {error && <ErrorBanner message={error} />}
-    </>
-  );
-};
+const PoseMode = ({ debug, facing, onProgress, onError }: ModeProps) => (
+  <VisionOverlay
+    tasks={TASKS}
+    options={MEDIAPIPE_OPTIONS}
+    showStatus={false}
+    cameraConstraints={cameraConstraints(facing)}
+    mirrored={facing === "user"}
+    onProgress={onProgress}
+    onError={onError}
+  >
+    <ambientLight intensity={0.8} />
+    <directionalLight position={[2, 3, 5]} intensity={1.5} />
+    <VisionAnchor task="poses" debug={debug} mirror={facing === "user"}>
+      <PulsatingOctahedron />
+    </VisionAnchor>
+  </VisionOverlay>
+);
 
 export default PoseMode;
