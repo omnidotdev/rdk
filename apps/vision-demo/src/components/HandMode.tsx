@@ -1,47 +1,50 @@
-import { HandTracker, VisionOverlay } from "@omnidotdev/rdk/vision";
+import {
+  HandTracker,
+  VisionAnchor,
+  VisionOverlay,
+} from "@omnidotdev/rdk/vision";
 import { useFrame } from "@react-three/fiber";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import * as THREE from "three";
 
-import ErrorBanner from "./ErrorBanner";
-import GestureHUD from "./GestureHUD";
+import { cameraConstraints, MEDIAPIPE_OPTIONS } from "@/lib/modes";
 
 import type { VisionTask } from "@omnidotdev/rdk/vision";
+import type { ModeProps } from "@/lib/modes";
 
-type HandModeProps = {
-  tasks: VisionTask[];
-};
+const TASKS: VisionTask[] = ["hands"];
 
-const HandMode = ({ tasks }: HandModeProps) => {
-  const [gesture, setGesture] = useState({ name: "", confidence: 0 });
-  const [error, setError] = useState("");
-
-  const handleGesture = useCallback((name: string, confidence: number) => {
-    setGesture({ name, confidence });
-  }, []);
-
-  const handleError = useCallback((err: Error) => {
-    setError(err.message);
-  }, []);
-
-  return (
-    <>
-      <VisionOverlay tasks={tasks} showDebug onError={handleError}>
-        <HandCursorWithGesture onGesture={handleGesture} />
-      </VisionOverlay>
-
-      <GestureHUD gesture={gesture.name} confidence={gesture.confidence} />
-      {error && <ErrorBanner message={error} />}
-    </>
-  );
-};
-
-// Separate component so HandTracker's onGesture can lift state to HandMode
-const HandCursorWithGesture = ({
+/**
+ * Hand tracking: a sphere follows the hand, and recognized gestures are
+ * reported to the app shell
+ */
+const HandMode = ({
+  debug,
+  facing,
+  onProgress,
+  onError,
   onGesture,
-}: {
-  onGesture: (gesture: string, confidence: number) => void;
-}) => {
+}: ModeProps) => (
+  <VisionOverlay
+    tasks={TASKS}
+    options={MEDIAPIPE_OPTIONS}
+    showStatus={false}
+    cameraConstraints={cameraConstraints(facing)}
+    mirrored={facing === "user"}
+    onProgress={onProgress}
+    onError={onError}
+  >
+    <ambientLight intensity={0.8} />
+    <directionalLight position={[2, 3, 5]} intensity={1.5} />
+    <HandCursor onGesture={onGesture} mirror={facing === "user"} />
+    {debug && <VisionAnchor task="hands" debug mirror={facing === "user"} />}
+  </VisionOverlay>
+);
+
+const HandCursor = ({
+  onGesture,
+  mirror,
+}: Pick<ModeProps, "onGesture"> & { mirror: boolean }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const targetPosition = useRef(new THREE.Vector3());
 
@@ -58,7 +61,11 @@ const HandCursorWithGesture = ({
   });
 
   return (
-    <HandTracker onHandMove={handleHandMove} onGesture={onGesture}>
+    <HandTracker
+      onHandMove={handleHandMove}
+      onGesture={onGesture}
+      mirror={mirror}
+    >
       <mesh ref={meshRef}>
         <sphereGeometry args={[0.15, 32, 32]} />
         <meshStandardMaterial

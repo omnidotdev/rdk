@@ -43,6 +43,12 @@
       "!!**/certificates"
     ]
   },
+  "css": {
+    "parser": {
+      // the vision demo styles with Tailwind v4 directives
+      "tailwindDirectives": true
+    }
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,
