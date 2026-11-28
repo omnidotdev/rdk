@@ -99,6 +99,32 @@ describe("yoloSegDecoder", () => {
     expect(masks).toHaveLength(0);
   });
 
+  it("keeps partial alpha at mask edges so scaled masks stay smooth", () => {
+    // coeffs = [1, 0] so each cell is sigmoid(proto0): sure inside, unsure at
+    // the 0.5 boundary, sure outside
+    const det = [4, 4, 8, 8, 0.9, 1, 0];
+    const proto0 = [10, 0, -10, 0.4, ...new Array(12).fill(-10)];
+    const proto = [...proto0, ...new Array(16).fill(0)];
+
+    const { masks } = yoloSegDecoder.decode(
+      {
+        output0: { data: det, dims: [1, 7, 1] },
+        output1: { data: proto, dims: [1, 2, 4, 4] },
+      },
+      ctx(),
+    );
+
+    const [inside, boundary, outside, leaning] = Array.from(
+      masks?.[0].mask ?? [],
+    );
+    expect(inside).toBe(255);
+    expect(outside).toBe(0);
+    // the old cutoff sits at half alpha, so `>= 128` still means inside
+    expect(boundary).toBe(128);
+    expect(leaning).toBeGreaterThan(128);
+    expect(leaning).toBeLessThan(255);
+  });
+
   it("crops the mask to the detection's box", () => {
     // box covers only the left half of the input (x 0..4) -> proto x 0..2
     const det = [2, 4, 4, 8, 0.9, 1, 0];

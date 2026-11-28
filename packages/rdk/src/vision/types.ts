@@ -34,7 +34,11 @@ export type SegmentationMask = {
     width: number;
     height: number;
   };
-  /** Row-major alpha values (0-255) covering the bbox, sized maskWidth x maskHeight */
+  /**
+   * Row-major alpha values (0-255) covering the bbox, sized maskWidth x
+   * maskHeight. Edges carry partial alpha so the mask scales up smoothly; treat
+   * `>= 128` as inside for a hard cutout
+   */
   mask: Uint8Array;
   maskWidth: number;
   maskHeight: number;
