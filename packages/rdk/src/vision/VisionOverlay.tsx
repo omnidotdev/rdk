@@ -24,6 +24,12 @@ export type VisionOverlayProps = {
   showDebug?: boolean;
   /** Camera constraints */
   cameraConstraints?: CameraBackgroundProps["constraints"];
+  /**
+   * Mirror the camera preview horizontally, matching a user-facing (selfie)
+   * camera (default true). Set false for a rear or world-facing camera, and
+   * pass `mirror={false}` to any `VisionAnchor` inside so it lines up
+   */
+  mirrored?: boolean;
   /** Canvas style overrides */
   canvasStyle?: React.CSSProperties;
   /** Callback when camera is ready */
@@ -42,6 +48,7 @@ const VisionOverlay: React.FC<VisionOverlayProps> = ({
   children,
   showDebug: initialShowDebug = false,
   cameraConstraints,
+  mirrored = true,
   canvasStyle = DEFAULT_CANVAS_STYLE,
   onReady,
   onError,
@@ -90,6 +97,7 @@ const VisionOverlay: React.FC<VisionOverlayProps> = ({
     >
       <CameraBackground
         constraints={cameraConstraints}
+        mirrored={mirrored}
         onReady={handleVideoReady}
         onError={onError}
       />
