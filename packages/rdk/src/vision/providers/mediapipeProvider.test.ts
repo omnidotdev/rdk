@@ -126,6 +126,42 @@ describe("MediaPipeProvider fatal errors", () => {
     expect(window.requestAnimationFrame).toHaveBeenCalledOnce();
   });
 
+  it("waits for the next camera frame where the browser supports it", async () => {
+    handModel(() => ({ landmarks: [] }));
+    const requestVideoFrameCallback = vi.fn().mockReturnValue(7);
+    const cancelVideoFrameCallback = vi.fn();
+    const video = {
+      videoWidth: 640,
+      videoHeight: 480,
+      requestVideoFrameCallback,
+      cancelVideoFrameCallback,
+    } as unknown as HTMLVideoElement;
+    const provider = new MediaPipeProvider({ tasks: ["hands"], useGpu: false });
+    await provider.initialize(video);
+
+    provider.startDetection();
+    provider.stopDetection();
+
+    expect(requestVideoFrameCallback).toHaveBeenCalledOnce();
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+    expect(cancelVideoFrameCallback).toHaveBeenCalledWith(7);
+  });
+
+  it("reports how long the models took for each frame", async () => {
+    handModel(() => ({ landmarks: [] }));
+    const provider = new MediaPipeProvider({ tasks: ["hands"], useGpu: false });
+    const onDetection = vi.fn();
+    provider.onDetection(onDetection);
+    await provider.initialize(liveVideo);
+
+    provider.startDetection();
+
+    expect(onDetection).toHaveBeenCalledOnce();
+    expect(onDetection.mock.calls[0][0].processingTime).toBeGreaterThanOrEqual(
+      0,
+    );
+  });
+
   it("disposes cleanly when a crashed model throws on close", async () => {
     handModel(
       () => ({ landmarks: [] }),

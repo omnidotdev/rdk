@@ -10,8 +10,13 @@ import type {
 
 /** IoU threshold for YOLO-seg non-maximum suppression */
 const SEG_IOU_THRESHOLD = 0.45;
-/** Mask coefficient cutoff after sigmoid */
-const MASK_THRESHOLD = 0.5;
+/**
+ * Mask probabilities between these bounds fade from transparent to opaque, so
+ * the coarse prototype grid scales into a smooth edge. They sit evenly around
+ * 0.5, so alpha `>= 128` matches a plain 0.5 cutoff
+ */
+const MASK_EDGE_LOW = 0.3;
+const MASK_EDGE_HIGH = 0.7;
 
 const sigmoid = (x: number): number => 1 / (1 + Math.exp(-x));
 
@@ -136,9 +141,16 @@ export const yoloSegDecoder: ONNXDecoder = {
           for (let k = 0; k < numCoeffs; k++) {
             sum += cand.coeffs[k] * protoData[k * plane + py * protoW + px];
           }
-          if (sigmoid(sum) > MASK_THRESHOLD) {
-            mask[(py - py0) * cw + (px - px0)] = 255;
-          }
+          const t = Math.min(
+            1,
+            Math.max(
+              0,
+              (sigmoid(sum) - MASK_EDGE_LOW) / (MASK_EDGE_HIGH - MASK_EDGE_LOW),
+            ),
+          );
+          mask[(py - py0) * cw + (px - px0)] = Math.round(
+            t * t * (3 - 2 * t) * 255,
+          );
         }
       }
 

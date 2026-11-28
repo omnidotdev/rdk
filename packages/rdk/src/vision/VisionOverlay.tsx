@@ -12,6 +12,7 @@ import type { VisionSessionOptions, VisionTask } from "./types";
 import type { VisionProgress } from "./worker/types";
 
 const DEFAULT_CANVAS_STYLE: React.CSSProperties = {};
+const DEFAULT_DPR: [number, number] = [1, 2];
 
 export type VisionOverlayProps = {
   /** Vision tasks to enable */
@@ -22,6 +23,18 @@ export type VisionOverlayProps = {
   children?: React.ReactNode;
   /** Show debug overlay */
   showDebug?: boolean;
+  /**
+   * Show the built-in status and debug panels (default true). Set false to
+   * draw your own interface, reading progress from `onProgress` and
+   * detections from `useVisionFrame`
+   */
+  showStatus?: boolean;
+  /**
+   * Device pixel ratio range for the 3D canvas (default `[1, 2]`). Phone
+   * screens often report 3x, which triples the pixels drawn every frame for
+   * little visible gain on overlay content
+   */
+  dpr?: number | [min: number, max: number];
   /** Camera constraints */
   cameraConstraints?: CameraBackgroundProps["constraints"];
   /**
@@ -34,6 +47,8 @@ export type VisionOverlayProps = {
   canvasStyle?: React.CSSProperties;
   /** Callback when camera is ready */
   onReady?: () => void;
+  /** Model loading progress, `null` once loading finishes */
+  onProgress?: (progress: VisionProgress | null) => void;
   /** Callback for vision errors */
   onError?: (error: Error) => void;
 };
@@ -47,10 +62,13 @@ const VisionOverlay: React.FC<VisionOverlayProps> = ({
   options,
   children,
   showDebug: initialShowDebug = false,
+  showStatus = true,
+  dpr = DEFAULT_DPR,
   cameraConstraints,
   mirrored = true,
   canvasStyle = DEFAULT_CANVAS_STYLE,
   onReady,
+  onProgress,
   onError,
 }) => {
   const [showDebug, setShowDebug] = useState(initialShowDebug);
@@ -62,12 +80,12 @@ const VisionOverlay: React.FC<VisionOverlayProps> = ({
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
 
-  const onProgressRef = useRef(setProgress);
-  onProgressRef.current = setProgress;
-  const handleProgress = useCallback(
-    (p: VisionProgress | null) => onProgressRef.current(p),
-    [],
-  );
+  const onProgressRef = useRef(onProgress);
+  onProgressRef.current = onProgress;
+  const handleProgress = useCallback((p: VisionProgress | null) => {
+    setProgress(p);
+    onProgressRef.current?.(p);
+  }, []);
 
   const handleVideoReady = useCallback((video: HTMLVideoElement) => {
     setVideoElement(video);
@@ -111,6 +129,7 @@ const VisionOverlay: React.FC<VisionOverlayProps> = ({
             ...canvasStyle,
           }}
           camera={{ position: [0, 0, 5], fov: 75 }}
+          dpr={dpr}
           gl={{ alpha: true, premultipliedAlpha: false }}
         >
           <XRWrapper options={sessionOptions} onError={onError}>
@@ -119,14 +138,16 @@ const VisionOverlay: React.FC<VisionOverlayProps> = ({
         </Canvas>
       )}
 
-      <VisionStatus
-        tasks={tasks}
-        progress={progress}
-        showDebug={showDebug}
-        onToggleDebug={() => setShowDebug((prev) => !prev)}
-      />
+      {showStatus && (
+        <VisionStatus
+          tasks={tasks}
+          progress={progress}
+          showDebug={showDebug}
+          onToggleDebug={() => setShowDebug((prev) => !prev)}
+        />
+      )}
 
-      {showDebug && (
+      {showStatus && showDebug && (
         <VisionDebug
           tasks={tasks}
           width={320}

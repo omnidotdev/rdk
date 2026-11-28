@@ -37,6 +37,8 @@ class MediaPipeProvider implements VisionProvider {
   private isDisposed = false;
   private videoElement: HTMLVideoElement | null = null;
   private animationId: number | null = null;
+  /** Whether `animationId` came from `requestVideoFrameCallback` */
+  private scheduledOnVideoFrame = false;
   private lastProcessTime = 0;
   private callbacks: Array<(frame: VisionFrame) => void> = [];
   private errorCallbacks: Array<(error: Error) => void> = [];
@@ -161,8 +163,29 @@ class MediaPipeProvider implements VisionProvider {
   stopDetection(): void {
     this.isProcessing = false;
     if (this.animationId) {
-      cancelAnimationFrame(this.animationId);
+      if (this.scheduledOnVideoFrame) {
+        this.videoElement?.cancelVideoFrameCallback(this.animationId);
+      } else {
+        cancelAnimationFrame(this.animationId);
+      }
       this.animationId = null;
+    }
+  }
+
+  /**
+   * Run the next detection when the camera delivers a new frame, so a frame
+   * is never processed twice (a 120 Hz display would otherwise run the
+   * models up to four times per 30 fps camera frame). Falls back to the
+   * display refresh where `requestVideoFrameCallback` is unsupported
+   */
+  private scheduleNext(): void {
+    const video = this.videoElement;
+    if (video && typeof video.requestVideoFrameCallback === "function") {
+      this.scheduledOnVideoFrame = true;
+      this.animationId = video.requestVideoFrameCallback(this.processFrame);
+    } else {
+      this.scheduledOnVideoFrame = false;
+      this.animationId = requestAnimationFrame(this.processFrame);
     }
   }
 
@@ -210,13 +233,13 @@ class MediaPipeProvider implements VisionProvider {
     const now = performance.now();
     const throttle = this.options.throttle ?? 16;
     if (now - this.lastProcessTime < throttle) {
-      this.animationId = requestAnimationFrame(this.processFrame);
+      this.scheduleNext();
       return;
     }
 
     const { videoWidth, videoHeight } = this.videoElement;
     if (videoWidth === 0 || videoHeight === 0) {
-      this.animationId = requestAnimationFrame(this.processFrame);
+      this.scheduleNext();
       return;
     }
 
@@ -328,6 +351,7 @@ class MediaPipeProvider implements VisionProvider {
         }
       }
 
+      result.processingTime = performance.now() - now;
       this.handleResult(result);
     } catch (error) {
       // a trap leaves the MediaPipe runtime unusable, so retrying every frame
@@ -340,7 +364,7 @@ class MediaPipeProvider implements VisionProvider {
       console.error("Vision processing error:", error);
     }
 
-    this.animationId = requestAnimationFrame(this.processFrame);
+    this.scheduleNext();
   };
 
   /**
