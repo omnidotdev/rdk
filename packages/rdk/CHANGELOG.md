@@ -1,5 +1,27 @@
 # @omnidotdev/rdk
 
+## 0.17.0
+
+### Minor Changes
+
+- [#164](https://github.com/omnidotdev/rdk/pull/164) [`21fbec7`](https://github.com/omnidotdev/rdk/commit/21fbec7d2302572027fee5666b79ca7452c9276b) Thanks [@coopbri](https://github.com/coopbri)! - Add `showStatus`, `dpr`, and `onProgress` props to `VisionOverlay` for apps that draw their own interface
+  
+  Set `showStatus={false}` to hide the built-in status and debug panels, then read model loading progress from `onProgress` and detections from `useVisionFrame`. `dpr` sets the 3D canvas pixel ratio and now defaults to `[1, 2]`, so phones that report a 3x screen no longer draw three times the pixels every frame
+
+- [#163](https://github.com/omnidotdev/rdk/pull/163) [`ecd6767`](https://github.com/omnidotdev/rdk/commit/ecd6767e1cb2936d40763f34fd8cf70865840cee) Thanks [@coopbri](https://github.com/coopbri)! - Add a `mirrored` prop to `VisionOverlay` so the camera preview can be shown unmirrored
+  
+  `VisionOverlay` always mirrored its camera preview like a selfie camera, which flipped rear-facing or world-facing feeds. Set `mirrored={false}` for those, and pass `mirror={false}` to any `VisionAnchor` inside so anchored content lines up. The default stays `true`, so existing apps are unchanged
+
+### Patch Changes
+
+- [#164](https://github.com/omnidotdev/rdk/pull/164) [`21fbec7`](https://github.com/omnidotdev/rdk/commit/21fbec7d2302572027fee5666b79ca7452c9276b) Thanks [@coopbri](https://github.com/coopbri)! - MediaPipe tracking now runs once per new camera frame instead of once per screen refresh, and fills in each frame's `processingTime`
+  
+  On a 60 Hz screen with a 30 fps camera, the old loop ran the models on the same camera frame twice. Browsers without `requestVideoFrameCallback` keep the previous behavior
+
+- [#164](https://github.com/omnidotdev/rdk/pull/164) [`21fbec7`](https://github.com/omnidotdev/rdk/commit/21fbec7d2302572027fee5666b79ca7452c9276b) Thanks [@coopbri](https://github.com/coopbri)! - Segmentation masks now fade out over their edges instead of stepping, so they stay smooth when scaled up to the camera view
+  
+  Mask cells were either fully on or fully off, which drew a mask as visible stair steps on a phone screen. Values near the edge are now partial alpha. To keep a hard cutout, treat `>= 128` as inside, which matches the previous cutoff
+
 ## 0.16.0
 
 ### Minor Changes
